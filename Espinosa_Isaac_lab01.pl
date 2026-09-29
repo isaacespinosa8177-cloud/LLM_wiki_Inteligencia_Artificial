@@ -1,0 +1,235 @@
+bayardo.
+margarita.
+marcelo.
+alicia.
+mauricio.
+anita.
+marisol.
+vladimir.
+paulina.
+giovanni.
+isaac.
+elias.
+jude.
+ismael.
+dani.
+nico.
+renata.
+valeria.
+
+parent(bayardo, mauricio).
+parent(margarita, mauricio).
+parent(bayardo, anita).
+parent(margarita, anita).
+
+parent(marcelo, marisol).
+parent(alicia, marisol).
+parent(marcelo, vladimir).
+parent(alicia, vladimir).
+parent(marcelo, paulina).
+parent(alicia, paulina).
+
+parent(marisol, isaac).
+parent(mauricio, isaac).
+parent(marisol, elias).
+parent(mauricio, elias).
+
+parent(anita, jude).
+parent(vladimir, jude).
+
+parent(paulina, ismael).
+parent(giovanni, ismael).
+parent(paulina, dani).
+parent(giovanni, dani).
+parent(paulina, nico).
+parent(giovanni, nico).
+
+parent(isaac, valeria).
+parent(renata, valeria).
+
+spouse(marisol, mauricio).
+spouse(anita, vladimir).
+spouse(paulina, giovanni).
+spouse(isaac, renata).
+
+female(margarita).
+female(alicia).
+female(marisol).
+female(anita).
+female(paulina).
+female(renata).
+female(valeria).
+
+male(bayardo).
+male(marcelo).
+male(mauricio).
+male(vladimir).
+male(giovanni).
+male(isaac).
+male(elias).
+male(jude).
+male(ismael).
+male(dani).
+male(nico).
+
+mother(M, C) :-
+    parent(M, C),
+    female(M).
+
+sibling(X, Y) :-
+    parent(P, X),
+    parent(P, Y),
+    X \= Y.
+
+sister(S, P) :-
+    parent(M, S),
+    parent(M, P),
+    S \= P,
+    female(S).
+
+grandmother(G, C) :-
+    parent(G, P),
+    parent(P, C),
+    female(G).
+
+uncle(U, N) :-
+    parent(P, N),
+    parent(G, P),
+    parent(G, U),
+    U \= P,
+    male(U).
+
+cousin(C1, C2) :-
+    parent(P1, C1),
+    parent(P2, C2),
+    parent(G, P1),
+    parent(G, P2),
+    P1 \= P2,
+    C1 \= C2.
+
+father_in_law(F, P) :-
+    spouse(P, S),
+    parent(F, S),
+    male(F).
+
+father(F, C) :-
+    parent(F, C),
+    male(F).
+
+brother(B, P) :-
+    parent(M, B),
+    parent(M, P),
+    B \= P,
+    male(B).
+
+descendant(D, A) :-
+    parent(A, D).
+
+descendant(D, A) :-
+    parent(A, P),
+    descendant(D, P).
+
+:- use_module(library(plunit)).
+
+:- begin_tests(family).
+
+% Positive tests
+
+test(mother_marisol) :-
+    mother(marisol, isaac).
+
+test(mother_margarita) :-
+    mother(margarita, mauricio).
+
+test(mother_alicia) :-
+    mother(alicia, paulina).
+
+test(father_mauricio) :-
+    father(mauricio, isaac).
+
+test(father_bayardo) :-
+    father(bayardo, anita).
+
+test(father_marcelo) :-
+    father(marcelo, vladimir).
+
+test(sister_anita) :-
+    sister(anita, mauricio).
+
+test(sister_paulina) :-
+    sister(paulina, marisol).
+
+test(brother_elias) :-
+    brother(elias, isaac).
+
+test(brother_vladimir) :-
+    brother(vladimir, marisol).
+
+test(grandmother_margarita) :-
+    grandmother(margarita, isaac).
+
+test(grandmother_alicia) :-
+    grandmother(alicia, isaac).
+
+test(uncle_vladimir) :-
+    uncle(vladimir, isaac).
+
+test(cousin_ismael_jude) :-
+    cousin(ismael, jude).
+
+test(cousin_nico_jude) :-
+    cousin(nico, jude).
+
+test(father_in_law_bayardo) :-
+    father_in_law(bayardo, marisol).
+
+test(descendant_valeria_isaac) :-
+    descendant(valeria, isaac).
+
+test(descendant_valeria_marisol) :-
+    descendant(valeria, marisol).
+
+
+% Negative tests
+
+test(not_mother_mauricio) :-
+    \+ mother(mauricio, isaac).
+
+test(not_father_marisol) :-
+    \+ father(marisol, isaac).
+
+test(not_sister_isaac) :-
+    \+ sister(isaac, elias).
+
+test(not_brother_marisol) :-
+    \+ brother(marisol, isaac).
+
+test(not_cousin_isaac_elias) :-
+    \+ cousin(isaac, elias).
+
+test(nobody_is_their_own_sibling) :-
+    \+ sibling(isaac, isaac).
+
+:- end_tests(family).
+
+:- run_tests.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
