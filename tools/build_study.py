@@ -7,8 +7,13 @@ Usage:
 Writes:
   wiki/study/intuitive-pseudocode.md   every "Pseudocódigo intuitivo" section,
                                        in the order of wiki/index.md
-Generated files carry a "do not edit" banner: edit the concept pages instead.
+  study-tools/anki/ia-wiki-flashcards.txt
+                                       Anki deck (tab-separated, HTML) built from the
+                                       glossary, exam questions, practice problems and
+                                       pseudocode sections
+Generated files carry a "do not edit" banner: edit the wiki pages instead.
 """
+import html
 import re
 from datetime import date
 from pathlib import Path
@@ -83,5 +88,111 @@ def build_pseudocode():
     print(f"wrote {target.relative_to(ROOT)} ({count} algorithms)")
 
 
+UNIT_TAGS = {"1": "unit1-agents", "2": "unit2-search", "3": "unit3-logic", "4": "unit4-optimization"}
+
+
+def md_to_html(text):
+    """Small markdown → HTML converter, enough for Anki cards."""
+    text = re.sub(r"```mermaid.*?```", "<i>(diagram: see the wiki page)</i>", text, flags=re.S)
+    blocks, out = re.split(r"(```.*?```)", text, flags=re.S), []
+    for block in blocks:
+        if block.startswith("```"):
+            code = re.sub(r"^```\w*\n?|```$", "", block)
+            out.append("<pre>" + html.escape(code.rstrip()) + "</pre>")
+            continue
+        b = html.escape(block)
+        b = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", b)
+        b = re.sub(r"(?<![\w*])\*(?!\s)(.+?)\*(?!\w)", r"<i>\1</i>", b)
+        b = re.sub(r"`([^`]+)`", r"<code>\1</code>", b)
+        b = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", b)        # drop link targets
+        b = b.replace("\\*", "*").replace("\\_", "_").replace("\\|", "|")
+        out.append(b.strip().replace("\n", "<br>"))
+    return "<br>".join(x for x in out if x)
+
+
+def cards_from_glossary():
+    text = (WIKI / "glossary.md").read_text(encoding="utf-8")
+    for line in text.splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) == 4 and cells[0] not in ("English", "---") and not set(cells[0]) <= {"-"}:
+            front = md_to_html(cells[0])
+            back = f"<b>{md_to_html(cells[1])}</b><br>{md_to_html(cells[2])}"
+            yield front, back, "glossary"
+
+
+def cards_from_details(path, default_tag):
+    """<details><summary>Q</summary> A </details> blocks; unit taken from the nearest heading."""
+    text = path.read_text(encoding="utf-8")
+    unit_tag = default_tag
+    for part in re.split(r"(?m)^(## .+)$", text):
+        if part.startswith("## "):
+            m = re.search(r"Unidad (\d)", part)
+            if m:
+                unit_tag = UNIT_TAGS.get(m.group(1), default_tag)
+            current_heading = part[3:].strip()
+            continue
+        for q, a in re.findall(r"<details><summary>(.*?)</summary>(.*?)</details>", part, flags=re.S):
+            yield md_to_html(q.strip()), md_to_html(a.strip()), unit_tag
+
+
+def cards_from_practice(path, tag):
+    """Each '## Problem n — title' section: statement → solution."""
+    text = path.read_text(encoding="utf-8")
+    for sec in re.split(r"(?m)^## ", text)[1:]:
+        if not sec.startswith("Problem"):
+            continue
+        title, body = sec.split("\n", 1)
+        m = re.search(r"<details><summary>.*?</summary>(.*?)</details>", body, flags=re.S)
+        if not m:
+            continue
+        statement = body[: m.start()].strip()
+        yield (f"<b>{html.escape(title.strip())}</b><br>" + md_to_html(statement),
+               md_to_html(m.group(1).strip()), tag + " practice")
+
+
+def cards_from_pseudocode():
+    for unit, pages in concept_order():
+        m = re.match(r"Unit (\d)", unit)
+        tag = UNIT_TAGS.get(m.group(1), "general") if m else "general"
+        for page in pages:
+            body = section_of(page, PSEUDO_HEADING)
+            if not body:
+                continue
+            idea = re.search(r"\*\*Idea \(ES\):\*\*(.+)", body)
+            steps = re.search(r"```text\n(.*?)```", body, flags=re.S)
+            say = re.search(r"\*\*Say it in the exam \(EN\):\*\*(.+)", body)
+            front = (f"Write the intuitive pseudocode: <b>{html.escape(title_of(page))}</b>"
+                     + (f"<br><i>Idea: {md_to_html(idea.group(1).strip())}</i>" if idea else ""))
+            back = ("<pre>" + html.escape(steps.group(1).rstrip()) + "</pre>" if steps else "")
+            if say:
+                back += "<br>" + md_to_html(say.group(1).strip())
+            yield front, back, tag + " pseudocode"
+
+
+def build_anki():
+    cards = list(cards_from_glossary())
+    cards += list(cards_from_details(WIKI / "study" / "exam-questions.md", "exam"))
+    for n, tag in [("1-agents", "unit1-agents"), ("2-search", "unit2-search"),
+                   ("3-logic", "unit3-logic"), ("4-optimization", "unit4-optimization")]:
+        cards += list(cards_from_practice(WIKI / "study" / f"practice-unit-{n}.md", tag))
+    cards += list(cards_from_pseudocode())
+    out_dir = ROOT / "study-tools" / "anki"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    lines = ["#separator:tab", "#html:true", "#deck:Inteligencia Artificial (LLM Wiki)",
+             "#notetype:Basic", "#tags column:3"]
+    for front, back, tags in cards:
+        clean = lambda x: x.replace("\t", " ").replace("\n", "<br>")
+        lines.append(f"{clean(front)}\t{clean(back)}\t{tags}")
+    target = out_dir / "ia-wiki-flashcards.txt"
+    target.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    counts = {}
+    for _, _, tags in cards:
+        for t in tags.split():
+            counts[t] = counts.get(t, 0) + 1
+    print(f"wrote {target.relative_to(ROOT)} ({len(cards)} cards: {counts})")
+    return len(cards), counts
+
+
 if __name__ == "__main__":
     build_pseudocode()
+    build_anki()

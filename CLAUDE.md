@@ -148,7 +148,8 @@ concept pages first; create new pages only for genuinely new concepts.
 
 ### Query
 1. Read `wiki/index.md`, then the relevant pages; go to `.cache/text/` or `raw/` only
-   when the wiki lacks the detail.
+   when the wiki lacks the detail. `python3 tools/search.py "<terms>"` finds the right
+   sections fast (wiki and extracted sources, accent-insensitive).
 2. Answer in the bilingual style, citing wiki pages and sources.
 3. If the answer is reusable (a comparison, a derivation, a worked exercise, an exam
    question), **file it** under `wiki/study/` (or extend a concept page), link it from
@@ -190,10 +191,12 @@ and this wiki is maintained by an agent. So, for every assignment:
 
 - `tools/extract_text.py [path…]` — .pptx (slides + speaker notes, stdlib only) and
   .pdf (`pdftotext`) → `.cache/text/`. Cached by mtime.
+- `tools/search.py "<query>" [--wiki|--sources] [-n N]` — BM25 keyword search over wiki
+  sections and extracted slides/PDF pages.
 - `tools/lint_wiki.py` — checks broken relative links, pages unreachable from
   `index.md`, and missing frontmatter keys. Exit code 1 on problems.
 - `tools/build_study.py` — regenerates the generated study files (intuitive-pseudocode
-  cheat sheet, …). Run it after every wiki change, before linting. Never hand-edit
+  cheat sheet, Anki deck `study-tools/anki/ia-wiki-flashcards.txt`, …). Run it after every wiki change, before linting. Never hand-edit
   files marked "generated".
 
 ## 8. Quality bar
