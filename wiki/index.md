@@ -23,10 +23,10 @@ Catalog of every page. The LLM reads this first when answering a question and up
 - [Dorigo, Maniezzo & Colorni 1996 — Ant System](sources/paper-dorigo-1996-ant-system.md) — pheromone-based TSP solver; α=1, β=5, ρ=0.5.
 - [Holland 1992 — Genetic Algorithms](sources/paper-holland-1992-genetic-algorithms.md) — crossover, schemata, implicit parallelism.
 
-**Books (reference — chapter maps, pending ingest)**
-- [Russell & Norvig — AIMA 4e](sources/book-russell-norvig-aima.md) — main textbook.
+**Books (chapter maps; AIMA 2–6 and Eiben & Smith 3–5 ingested)**
+- [Russell & Norvig — AIMA 4e](sources/book-russell-norvig-aima.md) — main textbook; ch. 2–6 ingested.
 - [Luger — AI 6e](sources/book-luger-ai.md) — secondary textbook; Prolog §14.
-- [Eiben & Smith — Evolutionary Computing](sources/book-eiben-smith-evolutionary-computing.md) — EA textbook.
+- [Eiben & Smith — Evolutionary Computing](sources/book-eiben-smith-evolutionary-computing.md) — EA textbook; ch. 3–5 ingested.
 
 **Code**
 - [Class optimization scripts](sources/code-class-optimization.md) — gradient descent and simulated annealing (with 2 bugs noted).
@@ -72,6 +72,8 @@ Catalog of every page. The LLM reads this first when answering a question and up
 - [Simulated Annealing](concepts/simulated-annealing.md) — e^(−Δ/T), cooling schedules.
 - [Evolutionary Computation](concepts/evolutionary-computation.md) — EP, ES, GA; the generic EA loop.
 - [Genetic Algorithms](concepts/genetic-algorithms.md) — encoding, selection, crossover, mutation, schema theorem.
+- [EA Representation and Variation](concepts/ea-representation-and-variation.md) — binary/integer/real/permutation operators: bit-flip, uniform, Gaussian, PMX, order crossover.
+- [EA Selection and Population Management](concepts/ea-selection-and-population-management.md) — FPS, ranking, tournament, SUS, elitism, (μ+λ)/(μ,λ), takeover time, diversity.
 - [Swarm Intelligence](concepts/swarm-intelligence.md) — Millonas' principles, stigmergy.
 - [Particle Swarm Optimization](concepts/particle-swarm-optimization.md) — p_best, g_best, inertia.
 - [Ant Colony Optimization](concepts/ant-colony-optimization.md) — τ^α η^β, evaporation, TSP.

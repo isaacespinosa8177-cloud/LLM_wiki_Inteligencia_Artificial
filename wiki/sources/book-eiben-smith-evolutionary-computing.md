@@ -7,7 +7,7 @@ updated: 2026-10-01
 ---
 # Book — Eiben & Smith, *Introduction to Evolutionary Computing* (2nd ed., Springer, 2015)
 
-> **Summary (EN):** The standard textbook on evolutionary algorithms: representations, variation operators, selection and population management, the main EA dialects (GA, ES, EP, GP), parameter tuning and control, memetic algorithms, multiobjective EAs, constraint handling and theory. Not yet ingested; this page maps chapters to wiki topics for the optimization unit.
+> **Summary (EN):** The standard textbook on evolutionary algorithms: representations, variation operators, selection and population management, the main EA dialects (GA, ES, EP, GP), parameter tuning and control, memetic algorithms, multiobjective EAs, constraint handling and theory. Chapters 3–5 (what an EA is; representation, mutation and recombination; fitness, selection and population management) have been ingested; the rest is mapped to wiki topics.
 
 ## Ficha
 
@@ -17,7 +17,7 @@ updated: 2026-10-01
 | Autores | A. E. Eiben, J. E. Smith |
 | Editorial | Springer, 2015 (2.ª ed., Natural Computing Series) |
 | Extensión | 294 páginas del PDF |
-| Estado | 📘 Referencia — **pendiente de ingestar por capítulos** |
+| Estado | ✅ Caps. 3–5 ingestados (2026-10-01). 📘 Resto: referencia |
 
 ## Mapa de capítulos ↔ wiki
 
@@ -25,9 +25,9 @@ updated: 2026-10-01
 |---|---|---|
 | 1 | Problems to Be Solved | [Optimization Basics](../concepts/optimization-basics.md) |
 | 2 | Evolutionary Computing: The Origins | [Evolutionary Computation](../concepts/evolutionary-computation.md) |
-| 3 | What Is an Evolutionary Algorithm? | [Evolutionary Computation](../concepts/evolutionary-computation.md), [Genetic Algorithms](../concepts/genetic-algorithms.md) |
-| 4 | Representation, Mutation, and Recombination | [Genetic Algorithms](../concepts/genetic-algorithms.md) |
-| 5 | Fitness, Selection, and Population Management | [Genetic Algorithms](../concepts/genetic-algorithms.md) |
+| 3 ✅ | What Is an Evolutionary Algorithm? | [Evolutionary Computation](../concepts/evolutionary-computation.md), [Genetic Algorithms](../concepts/genetic-algorithms.md) |
+| 4 ✅ | Representation, Mutation, and Recombination | [EA Representation and Variation](../concepts/ea-representation-and-variation.md) |
+| 5 ✅ | Fitness, Selection, and Population Management | [EA Selection and Population Management](../concepts/ea-selection-and-population-management.md) |
 | 6 | Popular EA Variants (GA, ES, EP, GP, DE, PSO, EDA) | [Evolutionary Computation](../concepts/evolutionary-computation.md), [PSO](../concepts/particle-swarm-optimization.md) |
 | 7–8 | Parameter Tuning; Parameter Control | — (buen siguiente ingest) |
 | 9 | Working with EAs (experimentos, métricas) | — |
@@ -38,4 +38,5 @@ updated: 2026-10-01
 
 ## Notas
 
-- Recomendado ingestar primero los caps. 3–5 para profundizar la unidad de GA (selección por torneo/ruleta, elitismo, representaciones reales).
+- Siguiente ingest recomendado: cap. 6 (variantes populares: ES, EP, GP, DE, PSO) y cap. 16 (teoría, teorema de esquemas).
+- Errata encontrada en la Tabla 3.3 (ver [errata](../study/errata.md)).

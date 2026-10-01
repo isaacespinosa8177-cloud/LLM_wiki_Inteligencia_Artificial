@@ -21,6 +21,7 @@ updated: 2026-10-01
 | 6 | [Slides 01](../sources/slides-01-introduction-to-ai.md), slide 11 | Backpropagation "1975" | Suele atribuirse a Werbos (1974) y popularizarse con Rumelhart, Hinton y Williams (1986). En examen, usar la fecha de clase si la piden. | Nota |
 | 7 | [Kennedy & Eberhart 1995](../sources/paper-kennedy-eberhart-1995-pso.md) vs. [tarea PSO](../assignments/pso-task.md) | Paper: sin w, coeficientes 2 | La tarea usa la variante con inercia w (posterior). Ambas válidas; decir cuál se usa. | Nota |
 | 8 | [AIMA 4e](../sources/book-russell-norvig-aima.md), notas del cap. 6 | AlphaGo venció a Lee Sedol "4–1 in 2015" | El match fue en **marzo de 2016** (conocimiento general). AIMA también imprime "9!/2 = 181,400" estados del 8-puzzle: son **181 440**. | Nota |
+| 9 | [Eiben & Smith](../sources/book-eiben-smith-evolutionary-computing.md), Tabla 3.3 (p. 36) | Tras mutar, `11100` → x = 26, f = 676 y `10100` → x = 18, f = 324; media 588.5 | `11100`₂ = **28** (f = 784) y `10100`₂ = **20** (f = 400); media **634.5**. Probablemente las mutaciones pretendidas eran `11010` y `10010`. | Nota (verificado en el PDF) |
 
 ## Bugs en código de clase y tareas
 

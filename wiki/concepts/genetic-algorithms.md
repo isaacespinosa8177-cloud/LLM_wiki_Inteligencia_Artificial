@@ -56,9 +56,9 @@ def genetic_algorithm():
     return best(population, fitness)
 ```
 
-**Codificar números reales en bits.** La tarea usa 8 bits por variable en **signo-magnitud**: 1 bit de signo + 7 bits de magnitud → rango [−127, 127] (con un "−0" redundante). Alternativas: binario con desplazamiento, **código Gray** (vecinos difieren en un bit), o representación real directa (Eiben & Smith cap. 4).
+**Codificar números reales en bits.** La tarea usa 8 bits por variable en **signo-magnitud**: 1 bit de signo + 7 bits de magnitud → rango [−127, 127] (con un "−0" redundante). Alternativas: binario con desplazamiento, **código Gray** (vecinos difieren en un bit), o representación real directa (Eiben & Smith cap. 4; ver [EA Representation and Variation](ea-representation-and-variation.md)).
 
-**Métodos de selección** (complemento, Eiben & Smith cap. 5):
+**Métodos de selección** (Eiben & Smith cap. 5; detalle en [EA Selection](ea-selection-and-population-management.md)):
 - **Ruleta** (proporcional a la aptitud): sensible a la escala de f.
 - **Torneo**: tomar k al azar y quedarse con el mejor; presión controlada por k.
 - **Truncamiento**: quedarse con los K mejores (lo que hace la tarea: K = 10 de 100) — presión de selección muy alta.
@@ -123,6 +123,30 @@ function REPRODUCE(parent1, parent2) returns an individual
 
 *Curiosidad (AIMA):* el **efecto Baldwin** — el aprendizaje durante la vida "suaviza" el paisaje de aptitud y acelera la evolución (simulado por Hinton y Nowlan, 1987).
 
+### Un ciclo a mano (Eiben & Smith §3.3): maximizar x² con x ∈ [0, 31]
+
+Representación de 5 bits, selección proporcional, cruce de un punto, bit-flip, reemplazo generacional completo.
+
+| # | Población inicial | x | f = x² | P(sel) | Esperado f/f̄ | Copias reales |
+|---|---|---|---|---|---|---|
+| 1 | 01101 | 13 | 169 | 0.14 | 0.58 | 1 |
+| 2 | 11000 | 24 | 576 | 0.49 | 1.97 | 2 |
+| 3 | 01000 | 8 | 64 | 0.06 | 0.22 | 0 |
+| 4 | 10011 | 19 | 361 | 0.31 | 1.23 | 1 |
+| | **Suma / media / máx.** | | 1170 / 293 / 576 | | | |
+
+Cruce (parejas 1–2 con punto 4 y 2–4 con punto 2): `0110|1 × 1100|0 → 01100 (12, 144), 11001 (25, 625)`; `11|000 × 10|011 → 11011 (27, 729), 10000 (16, 256)` → suma 1754, media 439, máx. 729.
+
+Mutación (un bit en dos hijos): `01100 → 11100` y `10000 → 10100`. Correctamente decodificados son **28 (784)** y **20 (400)**, con lo que la media sería **634.5**. ⚠️ El libro imprime 26 (676) y 18 (324) y media 588.5 — un error de la Tabla 3.3 (ver [errata](../study/errata.md)). La conclusión no cambia: en una generación la media pasa de 293 a > 580 y el máximo de 576 a 729.
+
+### Lo que añade Eiben & Smith (caps. 3–5)
+
+- **Dos fuerzas:** la variación crea diversidad; la selección sube la calidad. La aptitud puede verse como algo a **optimizar** o como **adaptación** al entorno.
+- **Comportamiento típico (§3.5):** al inicio la población está dispersa, luego "sube colinas" y al final se concentra en unos pocos picos (quizá subóptimos → **convergencia prematura**). Curva **anytime**: gran progreso al principio y luego meseta → la inicialización heurística y las corridas muy largas rara vez valen la pena.
+- **No Free Lunch:** promediado sobre "todos" los problemas, ningún algoritmo de caja negra supera a la búsqueda aleatoria; los EA son buenos "generalistas", los algoritmos específicos son mejores en su problema.
+- **Condición de terminación:** óptimo alcanzado (± ε) **o** límite de CPU / de evaluaciones / sin mejora por X generaciones / diversidad muy baja.
+- **EA para 8 reinas (Tabla 3.4):** permutaciones, cruce *cut-and-crossfill* (100 %), mutación swap (80 %), padres = los 2 mejores de 5 al azar, reemplazar a los peores, población 100, parar con solución o 10 000 evaluaciones.
+
 ## Ejemplo del curso
 
 [Tarea GA](../assignments/genetic-algorithm-task.md): población 100, 16 bits, 100 épocas, selección por truncamiento K = 10 + elitismo, cruce de un punto, p_m = 0.1 por bit. Con `random.seed(0)`, el mejor llegó a f = 11 en la época 1 y al óptimo (x, y) = (−2, 2), f = 10, en la época 20.
@@ -136,6 +160,8 @@ function REPRODUCE(parent1, parent2) returns an individual
 
 ## Relacionado
 
+- [EA Representation and Variation](ea-representation-and-variation.md)
+- [EA Selection and Population Management](ea-selection-and-population-management.md)
 - [Local Search and Hill Climbing](local-search-hill-climbing.md)
 - [Evolutionary Computation](evolutionary-computation.md)
 - [Optimization Basics](optimization-basics.md)
@@ -148,4 +174,4 @@ function REPRODUCE(parent1, parent2) returns an individual
 - [Slides 04](../sources/slides-04-optimization.md), slides 5–7.
 - [Holland 1992](../sources/paper-holland-1992-genetic-algorithms.md).
 - [AIMA 4e](../sources/book-russell-norvig-aima.md) §4.1.4 (ingestado: diseño de EAs, ejemplo de 8 reinas, esquemas, pseudocódigo).
-- [Eiben & Smith](../sources/book-eiben-smith-evolutionary-computing.md) caps. 4–5, 16 (selección y teorema de esquemas).
+- [Eiben & Smith](../sources/book-eiben-smith-evolutionary-computing.md) caps. 3–5 (ingestado: ciclo x², 8 reinas, comportamiento de un EA, operadores y selección); cap. 16 (teorema de esquemas, pendiente).

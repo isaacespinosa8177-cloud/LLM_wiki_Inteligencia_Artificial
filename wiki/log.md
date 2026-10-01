@@ -55,3 +55,15 @@ Recent activity: `grep "^## \[" wiki/log.md | tail -5`
 ## [2026-10-01] setup | Study plan for the test on Thu Oct 8
 
 - Created study/study-plan.md (7 days, daily routine, priorities). Isaac's preferences recorded: exams answered in English with Spanish explanations; wants intuitive pseudocode, Anki flashcards, interactive quiz, visualizers, diagrams, practice problems, search tool, Marp decks, textbook chapters (AIMA 2–6, Eiben & Smith 3–5).
+
+## [2026-10-01] ingest | AIMA 4e chapters 2–6
+
+- Updated: intelligent-agents (4 factors of rationality, omniscience, information gathering), task-environments (known/unknown, Fig. 2.6), agent-types (learning agents), problem-formulation (BEST-FIRST-SEARCH, node structure, redundant paths, graph vs. tree-like), uninformed-search (UCS example, IDS numbers, bidirectional, Fig. 3.15), heuristics (b*, Fig. 3.26, dominance, relaxed problems, pattern DBs, landmarks), a-star-search (optimality proof, contours, weighted A*, IDA*, RBFS, SMA*), greedy-best-first-search, simulated-annealing (AIMA version, sign convention), genetic-algorithms (EA design, 8-queens GA, schema), gradient-descent (continuous local search, Newton–Raphson), optimization-basics, constraint-satisfaction-problems (rewritten: AC-3, k-consistency, MRV/degree/LCV, FC vs. MAC, backjumping, min-conflicts, tree CSPs), adversarial-search-minimax (game definition, Fig. 6.2, H-MINIMAX, evaluation, quiescence, horizon effect), alpha-beta-pruning (Fig. 6.5, move ordering, transposition tables).
+- Created: local-search-hill-climbing, search-in-complex-environments, monte-carlo-tree-search (UCB1 example verified), stochastic-and-partially-observable-games.
+- Refined: admissible vs. consistent heuristics for A* optimality (errata #4, slides-02 note). Added errata #8 (AIMA AlphaGo date, 181,400 typo).
+
+## [2026-10-01] ingest | Eiben & Smith chapters 3–5
+
+- Created: ea-representation-and-variation (ch. 4), ea-selection-and-population-management (ch. 5 + §3.1–3.2).
+- Updated: genetic-algorithms (x² cycle by hand, EA behaviour, No Free Lunch, 8-queens EA), evolutionary-computation (components, natural vs. artificial evolution).
+- Found an error in Eiben & Smith Table 3.3 (mutants decoded wrongly) → errata #9, verified against the PDF page.

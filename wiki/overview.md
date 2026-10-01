@@ -52,6 +52,7 @@ updated: 2026-10-01
 
 ## Estado de la wiki
 
-- Ingestado: las 5 presentaciones, los 3 papers, el código de clase, los ejemplos de Prolog y las 6 tareas.
-- Pendiente: los 3 libros (AIMA, Luger, Eiben & Smith) — tienen mapas de capítulos listos para ingestar por partes.
+- Ingestado: las 5 presentaciones, los 3 papers, el código de clase, los ejemplos de Prolog, las 6 tareas y el enunciado de HW01.
+- Plan para el test del jueves 8 de octubre: [Study plan](study/study-plan.md).
+- Libros: AIMA caps. 2–6 y Eiben & Smith caps. 3–5 ingestados (2026-10-01); resto de AIMA, Luger y Eiben con mapas de capítulos listos para ingestar por partes.
 - Revisar antes del examen: [Errata](study/errata.md).
