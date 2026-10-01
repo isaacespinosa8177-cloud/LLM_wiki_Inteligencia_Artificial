@@ -1,0 +1,70 @@
+---
+title: Simulated Annealing
+type: concept
+tags: [optimization, local-search, stochastic]
+sources: [code-class-optimization, paper-dorigo-1996-ant-system, book-russell-norvig-aima]
+updated: 2026-10-01
+---
+# Simulated Annealing (Recocido simulado)
+
+> **Summary (EN):** Simulated annealing is local search that sometimes accepts worse moves to escape local optima. A neighbor with cost change Δ is always accepted if Δ < 0 and otherwise with probability e^(−Δ/T). The temperature T starts high (lots of exploration, almost a random walk) and is lowered by a cooling schedule until the search becomes greedy hill climbing. The class script applies it to the Rastrigin function; Dorigo et al. use it as a baseline for Ant System.
+
+## Términos clave
+
+| English | Español | Significado |
+|---|---|---|
+| Annealing | Recocido | Calentar un metal y enfriarlo lentamente para que alcance un estado de baja energía. |
+| Temperature T | Temperatura | Controla cuánto empeoramiento se acepta. |
+| Cooling schedule | Esquema de enfriamiento | Cómo baja T (p. ej. geométrico T ← αT). |
+| Metropolis criterion | Criterio de Metropolis | Aceptar con probabilidad e^(−Δ/T). |
+| Energy Δ | Diferencia de energía | f(nuevo) − f(actual) al minimizar. |
+
+## Explicación
+
+**Intuición.** Hill climbing se queda en el primer valle. SA permite "subir colinas" de vez en cuando: al principio (T alta) acepta casi cualquier movimiento; al final (T baja) casi solo mejoras. Si T baja lo suficientemente despacio, la probabilidad de terminar en el óptimo global tiende a 1 (complemento AIMA §4.1.2).
+
+**Probabilidad de aceptación** (al minimizar):
+
+| Δ | T alta (100) | T baja (0.1) |
+|---|---|---|
+| −1 (mejora) | 1 | 1 |
+| +1 | e^(−0.01) ≈ 0.99 | e^(−10) ≈ 0.00005 |
+| +10 | e^(−0.1) ≈ 0.90 | ≈ 0 |
+
+**Código de clase (`sa_functions.py`, resumido):**
+
+```python
+def simulated_annealing(func, bounds, max_iter, initial_temp, cooling_rate):
+    current = random point in bounds;  best = current;  T = initial_temp
+    for i in range(max_iter):
+        new = clip(current + uniform(-1, 1, size=dim), bounds)
+        delta = func(new) - func(current)
+        if delta < 0 or random() < exp(-delta / T):
+            current = new
+            if func(new) < func(best): best = new
+        T *= cooling_rate
+    return best
+```
+
+Aplicado a Rastrigin 2-D en [−5.12, 5.12]², T₀ = 100, α = 0.8, 100 000 iteraciones.
+
+⚠️ **Enfriamiento demasiado rápido.** Con α = 0.8, T < 10⁻⁸ tras ~105 iteraciones: el 99.9 % de las iteraciones son hill climbing puro (y T llega a 0.0 tras ~3 400, causando divisiones por cero). Valores típicos de α: 0.95–0.9999, o ajustar α para que T llegue a ~10⁻³ al final: α = (T_final/T₀)^(1/max_iter).
+
+## Errores comunes y tips de examen
+
+- SA mantiene **una** solución (no es poblacional), pero es estocástico.
+- Con T → ∞ es caminata aleatoria; con T = 0 es hill climbing.
+- Guardar siempre la **mejor** solución vista: la actual puede empeorar.
+
+## Relacionado
+
+- [Optimization Basics](optimization-basics.md)
+- [Gradient Descent](gradient-descent.md)
+- [Ant Colony Optimization](ant-colony-optimization.md) (comparado con SA en el paper)
+- [Metaheuristics comparison](../study/metaheuristics-comparison.md)
+
+## Fuentes
+
+- [Code — class optimization](../sources/code-class-optimization.md) (`sa_functions.py`).
+- [Dorigo et al. 1996](../sources/paper-dorigo-1996-ant-system.md) §VI (comparación).
+- [AIMA 4e](../sources/book-russell-norvig-aima.md) §4.1.2 (complemento).

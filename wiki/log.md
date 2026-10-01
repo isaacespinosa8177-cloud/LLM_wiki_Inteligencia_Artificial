@@ -1,0 +1,46 @@
+# Log
+
+Append-only record of wiki activity. Newest entries at the bottom.
+Recent activity: `grep "^## \[" wiki/log.md | tail -5`
+
+## [2026-10-01] setup | Wiki created from Karpathy's LLM Wiki pattern
+
+- Downloaded the pattern (gist `karpathy/442a6bf555914893e9891c11519de94f`) to `docs/llm-wiki-pattern.md`.
+- Decisions with Isaac: bilingual pages (English key terms, code and summaries; Spanish explanations); sources moved into `raw/` by type; standard markdown links (GitHub viewing, not Obsidian); first pass = slides + papers + code, books as chapter maps.
+- Moved course files into `raw/{slides,papers,books,code/class,code/prolog_examples,assignments}`. Unzipped `01_Code (1).zip` into `raw/code/prolog_examples/` (dropped macOS metadata); removed `Espinosa_Isaac_lab01 (1).zip` (byte-identical to the `.pl`).
+- Wrote schema `CLAUDE.md` (+ `AGENTS.md` pointer), `README.md`, `tools/extract_text.py`, `tools/lint_wiki.py`.
+
+## [2026-10-01] ingest | Slides 01–04 and XX (5 lecture decks)
+
+- Created sources: slides-01-introduction-to-ai, slides-02-problem-solving, slides-03-intelligent-agents, slides-04-optimization, slides-xx-logic-programming-prolog.
+- Created concepts: what-is-ai, history-of-ai, neural-networks, statistical-vs-causal-models, intelligent-agents, task-environments, agent-types, state-representation, problem-formulation, uninformed-search, heuristics, greedy-best-first-search, a-star-search, adversarial-search-minimax, alpha-beta-pruning, constraint-satisfaction-problems, n-queens, propositional-and-first-order-logic, horn-clauses-and-backward-chaining, unification, prolog, prolog-recursion-and-lists, optimization-basics, evolutionary-computation, genetic-algorithms, swarm-intelligence, particle-swarm-optimization, ant-colony-optimization, artificial-bee-colony.
+- Flagged: Prolog attributed to Dennis Ritchie (slides 01 s9); GA dated 1992 (slides 04 s5). See study/errata.
+
+## [2026-10-01] ingest | Papers: Kennedy & Eberhart 1995, Dorigo et al. 1996, Holland 1992
+
+- Created sources: paper-kennedy-eberhart-1995-pso, paper-dorigo-1996-ant-system, paper-holland-1992-genetic-algorithms.
+- Filled update equations missing from slides (images) in PSO, ACO pages; added schema theory to GA page.
+
+## [2026-10-01] ingest | Code: class optimization scripts and Prolog examples
+
+- Created sources: code-class-optimization, code-prolog-examples; concepts gradient-descent, simulated-annealing.
+- Bugs recorded: gd_steroids surface (y+1 vs y+2); sa_functions cooling 0.8 too fast.
+
+## [2026-10-01] ingest | Assignments (6) — code executed to record real results
+
+- Created assignments: deber-1-search-problems, astar-vs-dijkstra, tic-tac-toe-4x4-minimax, prolog-lab-01-family, genetic-algorithm-task, pso-task.
+- Ran: A\* (5 exp.) vs Dijkstra (9 exp.), cost 418; 8-puzzle BFS/DFS/greedy; farmer (7) and missionaries (11); Sudoku naive/MRV/FC on a sample board; GA (seed 0, optimum at epoch 20); PSO (seed 0, f = 10.0); Prolog lab in SWI-Prolog 9.0.4 (24/24 pass, 15 choicepoint warnings).
+- Bugs recorded: tic-tac-toe win score ±1 < heuristic (2/54 positions miss an immediate win); lab spouse/2 asymmetry; DFS depth-limit + global visited.
+
+## [2026-10-01] ingest | Books as chapter maps (not yet ingested in depth)
+
+- Created sources: book-russell-norvig-aima, book-luger-ai, book-eiben-smith-evolutionary-computing, each mapping chapters to wiki pages.
+
+## [2026-10-01] setup | Hub pages
+
+- Created overview, glossary (≈75 terms), people, index; study pages search-algorithms-comparison, metaheuristics-comparison, exam-questions (34), errata.
+
+## [2026-10-01] lint | First pass
+
+- `python3 tools/lint_wiki.py`: 0 broken links, 0 orphans, all frontmatter present.
+- Suggested next ingests: AIMA ch. 3–6 (deepen search pages), Eiben & Smith ch. 3–5 (selection methods), Karaboga 2007 ABC paper (not in raw/), the Deber 1 statement and Sudoku boards (missing from raw/).

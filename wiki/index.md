@@ -1,0 +1,90 @@
+# Index — Inteligencia Artificial Wiki
+
+Catalog of every page. The LLM reads this first when answering a question and updates it on every ingest. Pages: 59 · Sources ingested: 10 of 13 (books pending) · Last update: 2026-10-01.
+
+## Start here
+
+- [Overview](overview.md) — course map: how the four units connect.
+- [Glossary](glossary.md) — English term → Spanish explanation, alphabetical.
+- [People](people.md) — who proposed what, and when.
+- [Log](log.md) — history of ingests, queries and lint passes.
+
+## Sources
+
+**Slides (lectures)**
+- [Slides 01 — Introduction to AI](sources/slides-01-introduction-to-ai.md) — definitions, timeline from Talos to LLMs, statistical vs. causal models.
+- [Slides 02 — Problem Solving](sources/slides-02-problem-solving.md) — formulation, BFS/DFS, greedy, A\*, minimax, alpha–beta, CSP.
+- [Slides 03 — Intelligent Agents](sources/slides-03-intelligent-agents.md) — agent function, rationality, PEAS, environments, agent types.
+- [Slides 04 — Optimization](sources/slides-04-optimization.md) — evolutionary computation, GA, PSO, ACO, ABC.
+- [Slides XX — Logic Programming with Prolog](sources/slides-xx-logic-programming-prolog.md) — Horn clauses to SWI-Prolog, N-Queens, Lab 01.
+
+**Papers**
+- [Kennedy & Eberhart 1995 — PSO](sources/paper-kennedy-eberhart-1995-pso.md) — how a flocking simulation became an optimizer.
+- [Dorigo, Maniezzo & Colorni 1996 — Ant System](sources/paper-dorigo-1996-ant-system.md) — pheromone-based TSP solver; α=1, β=5, ρ=0.5.
+- [Holland 1992 — Genetic Algorithms](sources/paper-holland-1992-genetic-algorithms.md) — crossover, schemata, implicit parallelism.
+
+**Books (reference — chapter maps, pending ingest)**
+- [Russell & Norvig — AIMA 4e](sources/book-russell-norvig-aima.md) — main textbook.
+- [Luger — AI 6e](sources/book-luger-ai.md) — secondary textbook; Prolog §14.
+- [Eiben & Smith — Evolutionary Computing](sources/book-eiben-smith-evolutionary-computing.md) — EA textbook.
+
+**Code**
+- [Class optimization scripts](sources/code-class-optimization.md) — gradient descent and simulated annealing (with 2 bugs noted).
+- [Prolog examples (01_Code)](sources/code-prolog-examples.md) — family, factorial, fibonacci, lists, BST, queens.
+
+## Concepts
+
+**Unit 1 — Foundations and agents**
+- [What Is AI?](concepts/what-is-ai.md) — definitions of intelligence, Turing Test, Dartmouth, four approaches.
+- [History of AI](concepts/history-of-ai.md) — merged timeline of every date in the course.
+- [Neural Networks](concepts/neural-networks.md) — perceptron, backprop, SVM, deep learning.
+- [Statistical vs. Causal Models](concepts/statistical-vs-causal-models.md) — formal vs. statistical models; Pearl's causal DAGs.
+- [Intelligent Agents](concepts/intelligent-agents.md) — agent function vs. program, rationality, PEAS.
+- [Task Environments](concepts/task-environments.md) — six environment dimensions, course problems classified.
+- [Agent Types](concepts/agent-types.md) — reflex, model-based, goal-based, utility-based.
+- [State Representation](concepts/state-representation.md) — atomic, factored, structured.
+
+**Unit 2 — Search**
+- [Problem Formulation](concepts/problem-formulation.md) — five components, state space, frontier and explored set.
+- [Uninformed Search](concepts/uninformed-search.md) — BFS, DFS, depth-limited, IDS, UCS/Dijkstra.
+- [Heuristics](concepts/heuristics.md) — admissible, consistent, Manhattan, misplaced tiles, h_SLD.
+- [Greedy Best-First Search](concepts/greedy-best-first-search.md) — f = h; fast, not optimal.
+- [A* Search](concepts/a-star-search.md) — f = g + h; full Romania trace.
+- [Adversarial Search and Minimax](concepts/adversarial-search-minimax.md) — MAX/MIN, cutoff, evaluation functions.
+- [Alpha–Beta Pruning](concepts/alpha-beta-pruning.md) — same answer, O(b^(m/2)).
+- [Constraint Satisfaction Problems](concepts/constraint-satisfaction-problems.md) — backtracking, MRV, forward checking, arc consistency.
+- [N-Queens](concepts/n-queens.md) — Prolog and Python versions; generate-and-test vs. test-as-you-go.
+
+**Unit 3 — Logic and Prolog**
+- [Propositional and First-Order Logic](concepts/propositional-and-first-order-logic.md) — syntax, CNF, decidability.
+- [Horn Clauses and Backward Chaining](concepts/horn-clauses-and-backward-chaining.md) — rules, facts, goals; Criminal(West).
+- [Unification](concepts/unification.md) — substitutions, occurs check.
+- [Prolog](concepts/prolog.md) — syntax, SLD resolution, is/2, NAF, cut, debugging.
+- [Recursion and Lists in Prolog](concepts/prolog-recursion-and-lists.md) — factorial, Fibonacci, lists, isPerm bug, BST.
+
+**Unit 4 — Optimization**
+- [Optimization Basics](concepts/optimization-basics.md) — local vs. global, exploration vs. exploitation, benchmark functions.
+- [Gradient Descent](concepts/gradient-descent.md) — w ← w − η∇f; learning-rate behavior.
+- [Simulated Annealing](concepts/simulated-annealing.md) — e^(−Δ/T), cooling schedules.
+- [Evolutionary Computation](concepts/evolutionary-computation.md) — EP, ES, GA; the generic EA loop.
+- [Genetic Algorithms](concepts/genetic-algorithms.md) — encoding, selection, crossover, mutation, schema theorem.
+- [Swarm Intelligence](concepts/swarm-intelligence.md) — Millonas' principles, stigmergy.
+- [Particle Swarm Optimization](concepts/particle-swarm-optimization.md) — p_best, g_best, inertia.
+- [Ant Colony Optimization](concepts/ant-colony-optimization.md) — τ^α η^β, evaporation, TSP.
+- [Artificial Bee Colony](concepts/artificial-bee-colony.md) — employed, onlooker and scout bees.
+
+## Assignments
+
+- [Deber 1 — Search problems](assignments/deber-1-search-problems.md) — 8-puzzle, 80-puzzle, N-Queens, river crossings, Sudoku (with results).
+- [A* vs. Dijkstra](assignments/astar-vs-dijkstra.md) — Romania map: 5 vs. 9 expansions, cost 418.
+- [Tic-tac-toe 4×4 Minimax](assignments/tic-tac-toe-4x4-minimax.md) — depth-4 minimax; win-score bug and fix.
+- [Prolog Lab 01 — Family](assignments/prolog-lab-01-family.md) — 24/24 tests pass; review and analysis answers.
+- [Genetic algorithm task](assignments/genetic-algorithm-task.md) — 16-bit GA reaches (−2, 2) at epoch 20.
+- [PSO task](assignments/pso-task.md) — vectorized PSO reaches (−2, 2), f = 10.
+
+## Study
+
+- [Search algorithms comparison](study/search-algorithms-comparison.md) — Unit 2 cheat sheet with real numbers.
+- [Metaheuristics comparison](study/metaheuristics-comparison.md) — Unit 4 cheat sheet.
+- [Exam questions](study/exam-questions.md) — 34 self-test questions with hidden answers.
+- [Errata](study/errata.md) — source contradictions and code bugs to remember.
