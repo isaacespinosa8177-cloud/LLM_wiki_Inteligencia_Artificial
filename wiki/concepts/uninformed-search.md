@@ -36,20 +36,39 @@ Expande primero el nodo **más profundo**, siguiendo una rama hasta el final. Fr
 - Tiempo **O(b^m)**, espacio **O(b·m)** — mucha menos memoria que BFS.
 - Variante **depth-limited**: DFS con profundidad máxima *l* (la tarea usa `max_depth = 10`). **IDS** (complemento, AIMA §3.4.4): repetir con l = 0, 1, 2…; completo, óptimo con costos uniformes, tiempo O(b^d), espacio O(b·d).
 
-### UCS / Dijkstra (complemento: AIMA §3.4.2)
-Frontera = **cola de prioridad por g(n)** (costo acumulado). Óptimo con costos ≥ 0; completo si los costos son ≥ ε > 0. Es exactamente lo que implementa `dijkstra()` en la tarea [A\* vs Dijkstra](../assignments/astar-vs-dijkstra.md). Es A\* con h = 0.
+**¿Cuánto es O(b^d) en la práctica?** (AIMA §3.4.1) Con b = 10, 1 millón de nodos/s y 1 KB/nodo: a profundidad d = 10 tarda < 3 horas pero necesita **10 terabytes** de memoria; a d = 14 tardaría 3.5 años. Conclusión: en BFS **la memoria es peor problema que el tiempo**.
 
-### Comparación
+BFS puede usar **prueba de meta temprana** (al generar el nodo), porque nunca encontrará un camino más corto a un estado ya alcanzado.
 
-| Criterio | BFS | DFS | Depth-limited | IDS | UCS (Dijkstra) |
-|---|---|---|---|---|---|
-| Frontera | FIFO | LIFO | LIFO | LIFO | Prioridad g(n) |
-| Completo | Sí¹ | No² | No (si l < d) | Sí¹ | Sí³ |
-| Óptimo | Sí⁴ | No | No | Sí⁴ | Sí |
-| Tiempo | O(b^d) | O(b^m) | O(b^l) | O(b^d) | O(b^(1+⌊C*/ε⌋)) |
-| Espacio | O(b^d) | O(b·m) | O(b·l) | O(b·d) | O(b^(1+⌊C*/ε⌋)) |
+### UCS / Dijkstra (AIMA §3.4.2)
+Frontera = **cola de prioridad por g(n)** (costo acumulado): best-first con f = PATH-COST. Se expande en "ondas" de costo uniforme (BFS lo hace en ondas de profundidad uniforme).
 
-¹ si *b* es finito. ² completo en espacios finitos con control de repetidos. ³ si costos ≥ ε > 0. ⁴ si todos los costos son iguales.
+**Ejemplo (AIMA Fig. 3.10), Sibiu → Bucarest:** expande Rimnicu Vilcea (80) → agrega Pitesti (177); expande Fagaras (99) → agrega Bucarest (310) pero **no** se detiene (la meta se prueba al expandir); expande Pitesti (177) → encuentra Bucarest por 278 y reemplaza al de 310; expande Bucarest (278) ✓. Si se probara la meta al generar, devolvería el camino de 310.
+
+Completo (costos ≥ ε > 0) y óptimo. Complejidad O(b^(1+⌊C*/ε⌋)), que puede ser **mucho mayor** que b^d porque explora árboles enteros de acciones baratas antes de probar una cara pero útil. Es exactamente `dijkstra()` de la tarea [A\* vs Dijkstra](../assignments/astar-vs-dijkstra.md), y es A\* con h = 0.
+
+### Backtracking search (AIMA §3.4.3)
+Variante de DFS que genera **un sucesor a la vez** y modifica el estado actual en lugar de copiarlo (deshaciendo la acción al retroceder): memoria O(m) acciones + un solo estado. Es la base de los [CSP](constraint-satisfaction-problems.md) y de [Prolog](prolog.md).
+
+### Iterative deepening (AIMA §3.4.4)
+Llama a depth-limited search con l = 0, 1, 2, … hasta encontrar solución. Combina lo mejor de DFS (memoria O(b·d)) y BFS (completo, óptimo con costos iguales). Parece derrochador, pero casi todos los nodos están en el último nivel: con b = 10, d = 5, **N(IDS) = 123 450** vs. **N(BFS) = 111 110** (solo ~11 % más). *"Iterative deepening is the preferred uninformed search method when the search state space is larger than can fit in memory and the depth of the solution is not known."*
+
+Un límite de profundidad bien elegido: el **diámetro** del grafo (en Rumania cualquier ciudad se alcanza en ≤ 9 acciones, mejor límite que 19).
+
+### Bidirectional search (AIMA §3.4.5)
+Busca hacia adelante desde el inicio y hacia atrás desde la meta hasta que las fronteras se encuentran. Motivación: b^(d/2) + b^(d/2) ≪ b^d (50 000 veces menos con b = d = 10). Requiere poder razonar hacia atrás (conocer predecesores).
+
+### Comparación (AIMA Fig. 3.15, versiones tree-like)
+
+| Criterio | BFS | UCS | DFS | Depth-limited | IDS | Bidireccional |
+|---|---|---|---|---|---|---|
+| Frontera | FIFO | Prioridad g(n) | LIFO | LIFO | LIFO | 2 fronteras |
+| Completo | Sí¹ | Sí¹˒² | No | No | Sí¹ | Sí¹˒⁴ |
+| Óptimo | Sí³ | Sí | No | No | Sí³ | Sí³˒⁴ |
+| Tiempo | O(b^d) | O(b^(1+⌊C*/ε⌋)) | O(b^m) | O(b^l) | O(b^d) | O(b^(d/2)) |
+| Espacio | O(b^d) | O(b^(1+⌊C*/ε⌋)) | O(b·m) | O(b·l) | O(b·d) | O(b^(d/2)) |
+
+¹ si *b* es finito y el espacio tiene solución o es finito. ² si los costos son ≥ ε > 0. ³ si todos los costos son iguales. ⁴ si ambas direcciones son BFS. En versiones **graph search**, DFS es completo en espacios finitos y las complejidades quedan acotadas por |V| + |E|.
 
 ## Ejemplo (8-puzzle de la tarea)
 
@@ -80,5 +99,5 @@ BFS garantiza la solución más corta; DFS encontró una más larga; la búsqued
 ## Fuentes
 
 - [Slides 02](../sources/slides-02-problem-solving.md), slides 6–10.
-- [AIMA 4e](../sources/book-russell-norvig-aima.md) §3.4 (UCS, IDS y tabla: complemento).
+- [AIMA 4e](../sources/book-russell-norvig-aima.md) §3.4 (ingestado: BFS, UCS con ejemplo Sibiu→Bucarest, backtracking, IDS, bidireccional, Fig. 3.15).
 - Resultados reales: [Deber 1](../assignments/deber-1-search-problems.md).

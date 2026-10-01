@@ -50,6 +50,23 @@ Iteración 1: w = (0,0) − 0.1·(−4, 4) = (0.4, −0.4). En general la distan
 
 **Conexión.** [Backpropagation](neural-networks.md) calcula ∇ de la pérdida respecto a los pesos; el descenso de gradiente los actualiza.
 
+### Búsqueda local en espacios continuos (AIMA §4.2)
+
+**Ejemplo de AIMA — 3 aeropuertos en Rumania.** Estado = (x₁, y₁, x₂, y₂, x₃, y₃) (6 variables). Objetivo: minimizar la suma de distancias al cuadrado de cada ciudad a su aeropuerto más cercano, f(x) = Σᵢ Σ_{c ∈ Cᵢ} (xᵢ − x_c)² + (yᵢ − y_c)². Un espacio continuo tiene **factor de ramificación infinito**, así que los algoritmos del cap. 3 no sirven directamente.
+
+| Técnica | Idea |
+|---|---|
+| **Discretización** | Rejilla de paso δ: cada estado tiene 12 sucesores (±δ en cada variable); luego cualquier búsqueda local |
+| **Empirical gradient** | Medir el cambio de f entre puntos cercanos = hill climbing en la versión discretizada |
+| **Gradiente analítico** | ∇f da dirección y magnitud de la máxima pendiente; a veces se resuelve ∇f = 0 en forma cerrada (1 aeropuerto → la media de las ciudades) |
+| **Paso de gradiente** | x ← x + α∇f(x) para maximizar (x ← x − α∇f(x) para minimizar); α = *step size* |
+| **Line search** | Extender la dirección del gradiente duplicando α hasta que f empiece a empeorar |
+| **Newton–Raphson** | x ← x − H_f(x)⁻¹ ∇f(x), con H la **Hessiana** (2.ª derivadas); ajusta una cuadrática y salta a su mínimo; caro en alta dimensión (n² entradas) |
+| **Optimización con restricciones** | Soluciones deben cumplir restricciones (aeropuertos en tierra firme dentro de Rumania) |
+| **Programación lineal / convexa** | Restricciones lineales (o región convexa) y objetivo lineal (o convexo) → **tiempo polinomial** |
+
+El dilema de α: muy pequeño → demasiados pasos; muy grande → se pasa del máximo (lo mismo que se ve con η en `gd_functions.py`). Los métodos continuos sufren igual que los discretos con máximos locales, crestas y mesetas; ayudan los reinicios aleatorios y el recocido simulado.
+
 ## Errores comunes y tips de examen
 
 - Es **menos** el gradiente (descenso); más el gradiente es ascenso.
@@ -58,6 +75,7 @@ Iteración 1: w = (0,0) − 0.1·(−4, 4) = (0.4, −0.4). En general la distan
 
 ## Relacionado
 
+- [Local Search and Hill Climbing](local-search-hill-climbing.md)
 - [Optimization Basics](optimization-basics.md)
 - [Simulated Annealing](simulated-annealing.md)
 - [Neural Networks](neural-networks.md)
@@ -66,4 +84,4 @@ Iteración 1: w = (0,0) − 0.1·(−4, 4) = (0.4, −0.4). En general la distan
 
 - [Code — class optimization](../sources/code-class-optimization.md) (`gd_functions.py`, `gd_steroids.py`).
 - [Slides 01](../sources/slides-01-introduction-to-ai.md), slide 11 (backprop).
-- [AIMA 4e](../sources/book-russell-norvig-aima.md) §4.2 (complemento).
+- [AIMA 4e](../sources/book-russell-norvig-aima.md) §4.2 (ingestado: aeropuertos, gradiente empírico, line search, Newton–Raphson, optimización convexa).

@@ -99,16 +99,16 @@ Ambos tableros: exactamente **1 solución** (contador de soluciones).
 
 **Generate-and-test en el peor caso:** 9^(celdas vacías) tableros → tablero 1: 9⁵¹ ≈ 4.6 × 10⁴⁸; tablero 2: 9⁵⁹ ≈ 2.0 × 10⁵⁶. Backtracking es mejor porque **comprueba las restricciones en cada asignación parcial** y descarta de una vez todos los tableros que comparten un prefijo inválido (si una asignación parcial viola una restricción, se eliminan 9^(restantes) tableros sin generarlos). Es la misma diferencia "generate & test vs. test as you go" de [N-Queens](../concepts/n-queens.md).
 
-**Chess vs. Go (resumen de conceptos; conocimiento general, a confirmar con AIMA cap. 6):**
+**Chess vs. Go** (ver [Monte Carlo Tree Search](../concepts/monte-carlo-tree-search.md); confirmado con AIMA cap. 6 salvo lo marcado como conocimiento general):
 
 | | Ajedrez | Go (19×19) |
 |---|---|---|
-| Factor de ramificación | ~35 | ~250 |
+| Factor de ramificación | ~35 (AIMA) | ~250 promedio; 361 al inicio (AIMA) |
 | Longitud típica | ~80 plies | ~150–200 jugadas |
 | Espacio de estados | ~10⁴⁴–10⁴⁷ posiciones | ~2.1 × 10¹⁷⁰ posiciones legales |
-| Árbol de juego | ~10¹²³ (número de Shannon ~10¹²⁰) | ~10³⁶⁰ |
-| Hito | Deep Blue vence a Kasparov (1997): alpha-beta + evaluación manual + hardware dedicado | AlphaGo vence a Lee Sedol (2016): MCTS + redes de política y valor |
-| Estado del arte | Stockfish (alpha-beta + red NNUE); AlphaZero / Leela (MCTS + red profunda, auto-juego) | AlphaGo Zero, AlphaZero, MuZero, KataGo (MCTS + redes, aprendizaje por refuerzo) |
+| Árbol de juego | 35⁸⁰ ≈ 10¹²³ (AIMA; número de Shannon ~10¹²⁰) | ~10³⁶⁰ (conocimiento general) |
+| Hito | Deep Blue vence a Kasparov (1997): alpha-beta a > 10⁸ posiciones/s, extensiones singulares hasta 40 plies (AIMA) | AlphaGo vence a Lee Sedol 4–1 (2016) y a Ke Jie 3–0 (2017): MCTS + redes neuronales + aprendizaje por refuerzo (AIMA) |
+| Estado del arte | Stockfish (alpha-beta, b efectivo < 3, red NNUE); AlphaZero venció a Stockfish 155–6 en 1000 partidas (2017, AIMA) | AlphaGo Zero, AlphaZero, MuZero, KataGo (MCTS + redes, auto-juego) |
 
 - *Similar:* ambos son de suma cero, deterministas, de información perfecta → en teoría minimax los resuelve.
 - *Diferente:* en Go el factor de ramificación y la dificultad de escribir una buena función de evaluación hacen inviable alpha-beta con profundidad útil; por eso triunfó MCTS + redes neuronales.

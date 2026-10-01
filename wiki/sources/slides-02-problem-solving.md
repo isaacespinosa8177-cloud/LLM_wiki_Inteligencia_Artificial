@@ -57,5 +57,5 @@ updated: 2026-10-01
 
 ## Notas y discrepancias
 
-- Slide 14 dice que A\* es "complete ... if h is admissible". La completitud además requiere factor de ramificación finito y costos de acción ≥ ε > 0 (AIMA 4e §3.5.2). Para **búsqueda en grafo** con conjunto de explorados, la optimalidad requiere **consistencia** (admisibilidad basta en búsqueda en árbol).
+- Slide 14 dice que A\* es "complete ... if h is admissible". La completitud además requiere factor de ramificación finito y costos de acción ≥ ε > 0 (AIMA 4e §3.5.2). Para la optimalidad, admisible basta si el algoritmo reabre estados al encontrar un camino más barato (como el best-first de AIMA 4e); si nunca reabre estados expandidos, hace falta **consistencia**.
 - Slide 7: BFS es óptimo solo si todos los costos son iguales; con costos distintos se usa Uniform-Cost Search / Dijkstra (no aparece en las slides pero sí en la tarea [A\* vs Dijkstra](../assignments/astar-vs-dijkstra.md)).

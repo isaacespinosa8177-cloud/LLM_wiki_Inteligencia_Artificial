@@ -52,6 +52,9 @@ Catalog of every page. The LLM reads this first when answering a question and up
 - [A* Search](concepts/a-star-search.md) — f = g + h; full Romania trace.
 - [Adversarial Search and Minimax](concepts/adversarial-search-minimax.md) — MAX/MIN, cutoff, evaluation functions.
 - [Alpha–Beta Pruning](concepts/alpha-beta-pruning.md) — same answer, O(b^(m/2)).
+- [Search in Complex Environments](concepts/search-in-complex-environments.md) — nondeterminism (AND–OR search), belief states, online search.
+- [Monte Carlo Tree Search](concepts/monte-carlo-tree-search.md) — selection/expansion/simulation/back-propagation, UCB1; Go, AlphaGo, Chess vs. Go.
+- [Stochastic and Partially Observable Games](concepts/stochastic-and-partially-observable-games.md) — expectiminimax, Kriegspiel, limits of game search.
 - [Constraint Satisfaction Problems](concepts/constraint-satisfaction-problems.md) — backtracking, MRV, forward checking, arc consistency.
 - [N-Queens](concepts/n-queens.md) — Prolog and Python versions; generate-and-test vs. test-as-you-go.
 
@@ -64,6 +67,7 @@ Catalog of every page. The LLM reads this first when answering a question and up
 
 **Unit 4 — Optimization**
 - [Optimization Basics](concepts/optimization-basics.md) — local vs. global, exploration vs. exploitation, benchmark functions.
+- [Local Search and Hill Climbing](concepts/local-search-hill-climbing.md) — hill climbing variants, random restarts, local beam search; 8-queens stats.
 - [Gradient Descent](concepts/gradient-descent.md) — w ← w − η∇f; learning-rate behavior.
 - [Simulated Annealing](concepts/simulated-annealing.md) — e^(−Δ/T), cooling schedules.
 - [Evolutionary Computation](concepts/evolutionary-computation.md) — EP, ES, GA; the generic EA loop.

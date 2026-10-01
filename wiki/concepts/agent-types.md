@@ -34,7 +34,18 @@ updated: 2026-10-01
 - **Basado en objetivos:** necesita saber *a dónde quiere ir*; esto conecta directamente con la unidad de [búsqueda](problem-formulation.md): el *problem-solving agent* es un agente basado en objetivos.
 - **Basado en utilidad:** distingue soluciones de distinta calidad. En [optimización](optimization-basics.md), la función objetivo/fitness hace el papel de utilidad.
 
-(Complemento: AIMA añade los **agentes que aprenden**, con elemento de desempeño, crítico, elemento de aprendizaje y generador de problemas — AIMA 4e §2.4.6.)
+### Agentes que aprenden (AIMA §2.4.6)
+
+Cualquiera de los cuatro tipos puede construirse **como agente que aprende**. Turing (1950) ya proponía construir máquinas que aprenden y "enseñarles", en vez de programarlas a mano. Cuatro componentes:
+
+| Componente | Función |
+|---|---|
+| **Performance element** (elemento de desempeño) | Lo que antes llamábamos "el agente": recibe percepciones y elige acciones. |
+| **Critic** (crítico) | Dice qué tan bien lo hace el agente respecto a un **estándar de desempeño fijo** y externo (las percepciones solas no dicen si algo es bueno: el jaque mate necesita un estándar que diga que es bueno). |
+| **Learning element** (elemento de aprendizaje) | Usa la retroalimentación del crítico para modificar el elemento de desempeño. |
+| **Problem generator** (generador de problemas) | Sugiere acciones **exploratorias** que dan experiencias nuevas e informativas (como los experimentos de Galileo). |
+
+El generador de problemas es la versión "agente" de **exploración vs. explotación**: el elemento de desempeño siempre haría lo que hoy parece mejor; explorar un poco puede descubrir algo mucho mejor a largo plazo.
 
 ## Errores comunes y tips de examen
 
@@ -51,4 +62,4 @@ updated: 2026-10-01
 ## Fuentes
 
 - [Slides 03](../sources/slides-03-intelligent-agents.md), slides 14–17.
-- [AIMA 4e](../sources/book-russell-norvig-aima.md) §2.4.
+- [AIMA 4e](../sources/book-russell-norvig-aima.md) §2.4 (ingestado, incl. §2.4.6 agentes que aprenden).

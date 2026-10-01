@@ -20,9 +20,11 @@ updated: 2026-10-01
 ## Explicación
 
 - **Función de evaluación:** f(n) = h(n).
-- **Propiedades:** completo solo con control de estados repetidos (y espacio finito); **no óptimo**; puede quedar atrapado en caminos subóptimos si la heurística engaña. Peor caso tiempo y espacio O(b^m) (complemento AIMA); con buena heurística, mucho menos.
+- **Propiedades:** la versión *graph search* es completa en espacios finitos, pero no en infinitos; **no óptimo**; puede quedar atrapado en caminos subóptimos si la heurística engaña. Peor caso tiempo y espacio O(|V|) (AIMA §3.5.1); con una buena heurística puede bajar a O(b·m).
+- En Rumania con h\_SLD, greedy **no expande ningún nodo fuera del camino** que encuentra — pero ese camino es 32 millas más largo que el óptimo. "Greediness can lead to worse results than being careful."
+- Es el extremo W = ∞ de weighted A\* (ver [A\*](a-star-search.md)). *Speedy search* es greedy usando como h el número estimado de acciones (ignora costos).
 
-**Ejemplo Rumania (AIMA 3.5.1, complemento).** Desde Arad, greedy con h\_SLD va Arad → Sibiu (253) → Fagaras (176) → Bucarest: costo 140 + 99 + 211 = **450**, mientras el óptimo es **418** por Rimnicu Vilcea y Pitesti. Greedy llega rápido, pero no al mejor.
+**Ejemplo Rumania (AIMA §3.5.1, Fig. 3.17).** Desde Arad, greedy con h\_SLD va Arad → Sibiu (253) → Fagaras (176) → Bucarest: costo 140 + 99 + 211 = **450**, mientras el óptimo es **418** por Rimnicu Vilcea y Pitesti. Greedy llega rápido, pero no al mejor.
 
 ```
 function GREEDY-BEST-FIRST(problem, h):
@@ -55,4 +57,4 @@ function GREEDY-BEST-FIRST(problem, h):
 ## Fuentes
 
 - [Slides 02](../sources/slides-02-problem-solving.md), slides 12–13.
-- [AIMA 4e](../sources/book-russell-norvig-aima.md) §3.5.1.
+- [AIMA 4e](../sources/book-russell-norvig-aima.md) §3.5.1 (ingestado).

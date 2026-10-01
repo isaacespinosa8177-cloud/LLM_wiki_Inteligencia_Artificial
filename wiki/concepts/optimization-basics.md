@@ -26,7 +26,7 @@ updated: 2026-10-01
 
 **Búsqueda de caminos vs. optimización.** En [A\*](a-star-search.md) importa el camino. En optimización solo importa **el estado final**: el punto (x, y) que minimiza f, el tour más corto, los pesos de una red.
 
-**Óptimos locales y globales (slides 04, s3).** Una función puede tener muchos "valles" (mínimos locales) y "picos" (máximos locales). Optimizar es encontrar el global sin confundirlo con un local. Hill climbing (subir siempre a la mejor vecina) se atasca en el primer pico local (complemento, AIMA §4.1.1).
+**Óptimos locales y globales (slides 04, s3).** Una función puede tener muchos "valles" (mínimos locales) y "picos" (máximos locales). Optimizar es encontrar el global sin confundirlo con un local. Hill climbing (subir siempre a la mejor vecina) se atasca en máximos locales, crestas y mesetas — en 8 reinas aleatorias resuelve solo el 14 % (ver [Local Search and Hill Climbing](local-search-hill-climbing.md)). AIMA llama **búsqueda local** a estos métodos: guardan solo el estado actual (o unos pocos), usan una **formulación de estado completo** y no recuerdan caminos.
 
 **Analogía evolutiva.** Cada punto del espacio es un "individuo" con una aptitud; si simulamos evolución, sobreviven los que convergen a los óptimos globales.
 
@@ -61,6 +61,7 @@ Holland lo plantea como el problema de cuánto "hipotecar el presente por el fut
 
 ## Relacionado
 
+- [Local Search and Hill Climbing](local-search-hill-climbing.md)
 - [Gradient Descent](gradient-descent.md) · [Simulated Annealing](simulated-annealing.md)
 - [Evolutionary Computation](evolutionary-computation.md) · [Genetic Algorithms](genetic-algorithms.md)
 - [Swarm Intelligence](swarm-intelligence.md) · [PSO](particle-swarm-optimization.md) · [ACO](ant-colony-optimization.md) · [ABC](artificial-bee-colony.md)
@@ -71,4 +72,4 @@ Holland lo plantea como el problema de cuánto "hipotecar el presente por el fut
 - [Slides 04](../sources/slides-04-optimization.md), slides 3, 10.
 - [Code — class optimization](../sources/code-class-optimization.md) (Rastrigin, Ackley, cuadrática).
 - [Holland 1992](../sources/paper-holland-1992-genetic-algorithms.md); [Kennedy & Eberhart 1995](../sources/paper-kennedy-eberhart-1995-pso.md) §5–6.
-- [AIMA 4e](../sources/book-russell-norvig-aima.md) cap. 4; [Eiben & Smith](../sources/book-eiben-smith-evolutionary-computing.md) cap. 1.
+- [AIMA 4e](../sources/book-russell-norvig-aima.md) §4.1–4.2 (ingestado); [Eiben & Smith](../sources/book-eiben-smith-evolutionary-computing.md) cap. 1.

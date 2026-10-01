@@ -64,6 +64,42 @@ function GRAPH-SEARCH(problem):
                 frontier.add(child)
 ```
 
+### Cómo lo formaliza AIMA 4e (§3.3)
+
+**Best-first search** es el esquema general: siempre expandir el nodo de la frontera con menor valor de una **función de evaluación f(n)**. Cambiando f se obtienen casi todos los algoritmos del capítulo.
+
+```
+function BEST-FIRST-SEARCH(problem, f) returns a solution node or failure
+    node ← NODE(STATE = problem.INITIAL)
+    frontier ← priority queue ordered by f, containing node
+    reached ← lookup table {problem.INITIAL: node}
+    while frontier is not empty:
+        node ← POP(frontier)
+        if problem.IS-GOAL(node.STATE): return node          # late goal test
+        for each child in EXPAND(problem, node):
+            s ← child.STATE
+            if s not in reached or child.PATH-COST < reached[s].PATH-COST:
+                reached[s] ← child
+                add child to frontier                        # re-add if cheaper path
+    return failure
+```
+
+**Un nodo** tiene cuatro campos: `STATE`, `PARENT`, `ACTION` y `PATH-COST` (= g(n)). Siguiendo los `PARENT` desde la meta se reconstruye la solución.
+
+**Tres tipos de cola:** prioridad (best-first, UCS, A\*), FIFO (BFS), LIFO / pila (DFS).
+
+**Caminos redundantes.** Un ciclo (Arad→Sibiu→Arad) es un caso especial de camino redundante (llegar a Sibiu por Arad–Zerind–Oradea–Sibiu, 297 millas, en vez de 140). En una cuadrícula 10×10 con 8 movimientos hay más de 100 millones de caminos de longitud 9 pero solo 100 casillas: eliminar redundancias acelera ~un millón de veces. "Algorithms that cannot remember the past are doomed to repeat it." Tres opciones:
+
+| Opción | Nombre | Cuándo |
+|---|---|---|
+| Recordar todos los estados alcanzados (`reached`) | **Graph search** | Muchos caminos redundantes y la tabla cabe en memoria |
+| No recordar nada | **Tree-like search** | Caminos redundantes raros o imposibles; ahorra memoria |
+| Solo revisar ciclos en el camino actual (siguiendo `PARENT`) | Compromiso | DFS / IDS |
+
+**Reached vs. frontera.** Un estado está *alcanzado* (*reached*) si se generó un nodo para él (esté o no expandido). La frontera **separa** el interior (expandido) del exterior (no alcanzado).
+
+**Prueba de meta temprana vs. tardía.** BFS puede probar la meta al **generar** un nodo (*early goal test*) porque nunca encontrará un camino más corto a ese estado. UCS y A\* deben probarla al **expandir** (*late goal test*), si no pueden devolver un camino más caro (ver el ejemplo Sibiu→Bucarest en [Uninformed Search](uninformed-search.md)).
+
 **Ejemplos del curso.** Mapa de Rumania (Arad → Bucarest), 8-puzzle, 80-puzzle, granjero–lobo–cabra–col, N-Reinas (ver [Deber 1](../assignments/deber-1-search-problems.md)).
 
 ## Errores comunes y tips de examen
@@ -83,4 +119,4 @@ function GRAPH-SEARCH(problem):
 ## Fuentes
 
 - [Slides 02](../sources/slides-02-problem-solving.md), slides 2–5.
-- [AIMA 4e](../sources/book-russell-norvig-aima.md) §3.1–3.3 (pseudocódigo: complemento).
+- [AIMA 4e](../sources/book-russell-norvig-aima.md) §3.1–3.3 (ingestado: best-first genérico, estructura de nodo, colas, caminos redundantes, graph vs. tree-like search).

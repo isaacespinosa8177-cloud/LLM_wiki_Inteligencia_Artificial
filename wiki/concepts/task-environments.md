@@ -29,6 +29,22 @@ updated: 2026-10-01
 - **Discreto vs. continuo.** Número finito de estados/acciones bien definidos (ajedrez) vs. valores reales (conducir; optimizar f(x, y)).
 - **Un agente vs. multiagente.** Con varios agentes pueden ser **competitivos** (juegos → [Minimax](adversarial-search-minimax.md)) o **cooperativos** (enjambres → [Swarm Intelligence](swarm-intelligence.md)).
 
+- **Conocido vs. desconocido** (AIMA §2.3.2). No es una propiedad del entorno sino del **conocimiento del agente** sobre sus "leyes físicas": en uno conocido se saben los resultados (o probabilidades) de cada acción. Es distinto de observable: el solitario es *conocido* pero parcialmente observable; un videojuego nuevo puede ser totalmente observable pero *desconocido* (no sabes qué hace cada botón).
+
+**El caso más difícil** (AIMA): parcialmente observable, multiagente, no determinista, secuencial, dinámico, continuo y desconocido. Conducir un taxi es difícil en todos los sentidos excepto que el entorno es mayormente conocido.
+
+### Ejemplos de AIMA (Fig. 2.6)
+
+| Entorno | Observable | Agentes | Determinista | Episódico | Estático | Discreto |
+|---|---|---|---|---|---|---|
+| Crucigrama | Total | Uno | Determinista | Secuencial | Estático | Discreto |
+| Ajedrez con reloj | Total | Multi | Determinista | Secuencial | Semi | Discreto |
+| Póker | Parcial | Multi | Estocástico | Secuencial | Estático | Discreto |
+| Backgammon | Total | Multi | Estocástico | Secuencial | Estático | Discreto |
+| Conducir un taxi | Parcial | Multi | Estocástico | Secuencial | Dinámico | Continuo |
+| Diagnóstico médico | Parcial | Uno | Estocástico | Secuencial | Dinámico | Continuo |
+| Análisis de imágenes | Total | Uno | Determinista | Episódico | Semi | Continuo |
+
 ### Clasificación de los problemas del curso
 
 | Problema | Observable | Determinista | Episódico | Estático | Discreto | Agentes |
@@ -56,4 +72,4 @@ updated: 2026-10-01
 
 - [Slides 03](../sources/slides-03-intelligent-agents.md), slides 8–12.
 - [Slides 02](../sources/slides-02-problem-solving.md), slide 2.
-- [AIMA 4e](../sources/book-russell-norvig-aima.md) §2.3.
+- [AIMA 4e](../sources/book-russell-norvig-aima.md) §2.3 (ingestado: conocido/desconocido, caso más difícil, Fig. 2.6).

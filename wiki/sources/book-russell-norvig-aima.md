@@ -7,7 +7,7 @@ updated: 2026-10-01
 ---
 # Book — Russell & Norvig, *Artificial Intelligence: A Modern Approach* (4th ed., Global Edition, 2021)
 
-> **Summary (EN):** The main course textbook ("AIMA"). Several lecture slides reproduce its figures (Romania map, A* trace, Horn clauses AND–OR graph, Criminal(West) proof tree). Not yet ingested chapter by chapter; this page maps chapters to wiki topics so that any chapter can be ingested on request.
+> **Summary (EN):** The main course textbook ("AIMA"). Several lecture slides reproduce its figures (Romania map, A* trace, Horn clauses AND–OR graph, Criminal(West) proof tree). Chapters 2–6 (agents, search, local search, CSPs, games) have been ingested into the concept pages; the rest is mapped to wiki topics so any chapter can be ingested on request.
 
 ## Ficha
 
@@ -17,18 +17,18 @@ updated: 2026-10-01
 | Autores | Stuart J. Russell, Peter Norvig |
 | Editorial | Pearson, 2021 (4.ª ed., Global Edition) |
 | Extensión | 1167 páginas del PDF |
-| Estado | 📘 Referencia — **pendiente de ingestar por capítulos** |
+| Estado | ✅ Caps. 2–6 ingestados (2026-10-01). 📘 Resto: referencia, pendiente de ingestar por capítulos |
 
 ## Mapa de capítulos ↔ wiki
 
 | Cap. | Título | Relevancia para el curso | Página(s) de la wiki |
 |---|---|---|---|
 | 1 | Introduction | Alta | [What Is AI?](../concepts/what-is-ai.md), [History of AI](../concepts/history-of-ai.md) |
-| 2 | Intelligent Agents | Alta | [Intelligent Agents](../concepts/intelligent-agents.md), [Task Environments](../concepts/task-environments.md), [Agent Types](../concepts/agent-types.md) |
-| 3 | Solving Problems by Searching | Alta | [Problem Formulation](../concepts/problem-formulation.md), [Uninformed Search](../concepts/uninformed-search.md), [A*](../concepts/a-star-search.md), [Heuristics](../concepts/heuristics.md) |
-| 4 | Search in Complex Environments (local search, SA, GA, continuous) | Alta | [Optimization Basics](../concepts/optimization-basics.md), [Simulated Annealing](../concepts/simulated-annealing.md), [Gradient Descent](../concepts/gradient-descent.md), [Genetic Algorithms](../concepts/genetic-algorithms.md) |
-| 5 | Constraint Satisfaction Problems | Alta | [CSP](../concepts/constraint-satisfaction-problems.md), [N-Queens](../concepts/n-queens.md) |
-| 6 | Adversarial Search and Games | Alta | [Minimax](../concepts/adversarial-search-minimax.md), [Alpha–Beta](../concepts/alpha-beta-pruning.md) |
+| 2 ✅ | Intelligent Agents | Alta | [Intelligent Agents](../concepts/intelligent-agents.md), [Task Environments](../concepts/task-environments.md), [Agent Types](../concepts/agent-types.md) |
+| 3 ✅ | Solving Problems by Searching | Alta | [Problem Formulation](../concepts/problem-formulation.md), [Uninformed Search](../concepts/uninformed-search.md), [A*](../concepts/a-star-search.md), [Heuristics](../concepts/heuristics.md) |
+| 4 ✅ | Search in Complex Environments (local search, SA, GA, continuous) | Alta | [Local Search](../concepts/local-search-hill-climbing.md), [Simulated Annealing](../concepts/simulated-annealing.md), [Gradient Descent](../concepts/gradient-descent.md), [Genetic Algorithms](../concepts/genetic-algorithms.md), [Complex Environments](../concepts/search-in-complex-environments.md) |
+| 5 ✅ | Constraint Satisfaction Problems | Alta | [CSP](../concepts/constraint-satisfaction-problems.md), [N-Queens](../concepts/n-queens.md) |
+| 6 ✅ | Adversarial Search and Games | Alta | [Minimax](../concepts/adversarial-search-minimax.md), [Alpha–Beta](../concepts/alpha-beta-pruning.md), [MCTS](../concepts/monte-carlo-tree-search.md), [Stochastic Games](../concepts/stochastic-and-partially-observable-games.md) |
 | 7 | Logical Agents (§7.5 Horn clauses, chaining) | Alta | [Logic](../concepts/propositional-and-first-order-logic.md), [Horn Clauses](../concepts/horn-clauses-and-backward-chaining.md) |
 | 8 | First-Order Logic | Media | [Logic](../concepts/propositional-and-first-order-logic.md) |
 | 9 | Inference in FOL (§9.2 unification, §9.4 backward chaining & logic programming) | Alta | [Unification](../concepts/unification.md), [Prolog](../concepts/prolog.md) |

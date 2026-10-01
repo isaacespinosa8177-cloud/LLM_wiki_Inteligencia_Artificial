@@ -39,7 +39,21 @@ function REFLEX-VACUUM-AGENT([location, status]) returns action
 
 **Racionalidad.** Un agente racional, en cada momento, elige la acción que maximiza el valor **esperado** de la medida de desempeño, dada su historia de percepciones y su conocimiento incorporado. También debe **explorar** (recolectar información útil) y **aprender** de sus percepciones.
 
-**La medida de desempeño la define el diseñador** — "you get what you ask for". Si premiamos "cantidad de suciedad aspirada", un agente racional podría ensuciar para volver a aspirar. Una medida mal especificada o incompleta produce comportamiento no deseado.
+**Lo racional en cada momento depende de cuatro cosas** (AIMA §2.2.2):
+1. La medida de desempeño (criterio de éxito).
+2. El conocimiento previo del agente sobre el entorno.
+3. Las acciones que puede realizar.
+4. Su secuencia de percepciones hasta ahora.
+
+> *Definición (AIMA):* "For each possible percept sequence, a rational agent should select an action that is expected to maximize its performance measure, given the evidence provided by the percept sequence and whatever built-in knowledge the agent has."
+
+**Racional ≠ omnisciente ≠ perfecto.** La racionalidad maximiza el desempeño *esperado*; la perfección maximizaría el desempeño *real* (haría falta una bola de cristal). Ejemplo del libro: cruzar la calle mirando a ambos lados es racional aunque luego caiga la puerta de un avión. Pero cruzar **sin mirar** no es racional: un agente racional hace acciones de **recolección de información** (*information gathering*) — "mirar" — para mejorar sus percepciones futuras, y debe **aprender** de lo que percibe. Un agente que depende solo del conocimiento de su diseñador y no de sus percepciones carece de **autonomía**.
+
+**¿Es racional la aspiradora reflejo?** Depende de los supuestos: si la medida da 1 punto por cuadro limpio por paso en 1000 pasos, la geografía es conocida y solo hay Left/Right/Suck, **sí**. Si cada movimiento costara 1 punto, no: oscilaría inútilmente cuando todo está limpio.
+
+**Consecuencialismo.** La IA evalúa al agente por las **consecuencias** de sus acciones: la secuencia de estados del entorno que produce.
+
+**La medida de desempeño la define el diseñador** — "you get what you ask for". AIMA recomienda: "design performance measures according to what one actually wants to be achieved in the environment, rather than according to how one thinks the agent should behave" (premiar *suelo limpio*, no *suciedad aspirada*). Si premiamos "cantidad de suciedad aspirada", un agente racional podría ensuciar para volver a aspirar. Una medida mal especificada o incompleta produce comportamiento no deseado.
 
 **PEAS.** Para especificar un entorno de tarea: *Performance* (criterio de éxito), *Environment* (el mundo), *Actuators*, *Sensors*. Ejemplo clásico (AIMA): taxi automático — P: seguridad, rapidez, legalidad, comodidad; E: calles, tráfico, peatones; A: volante, acelerador, freno, bocina; S: cámaras, GPS, velocímetro, sonar.
 
@@ -60,4 +74,4 @@ function REFLEX-VACUUM-AGENT([location, status]) returns action
 ## Fuentes
 
 - [Slides 03](../sources/slides-03-intelligent-agents.md), slides 2–6.
-- [AIMA 4e](../sources/book-russell-norvig-aima.md) §2.1–2.2 (ejemplo del taxi y pseudocódigo: complemento).
+- [AIMA 4e](../sources/book-russell-norvig-aima.md) §2.1–2.2 (ingestado: definición, cuatro factores, omnisciencia, consecuencialismo; ejemplo del taxi y pseudocódigo).

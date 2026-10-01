@@ -50,6 +50,26 @@ Aplicado a Rastrigin 2-D en [−5.12, 5.12]², T₀ = 100, α = 0.8, 100 000 ite
 
 ⚠️ **Enfriamiento demasiado rápido.** Con α = 0.8, T < 10⁻⁸ tras ~105 iteraciones: el 99.9 % de las iteraciones son hill climbing puro (y T llega a 0.0 tras ~3 400, causando divisiones por cero). Valores típicos de α: 0.95–0.9999, o ajustar α para que T llegue a ~10⁻³ al final: α = (T_final/T₀)^(1/max_iter).
 
+### La versión de AIMA (§4.1.2)
+
+AIMA la presenta como un punto medio entre hill climbing (nunca baja → se atasca) y la caminata aleatoria (encuentra el óptimo pero de forma ineficiente). **Analogía:** meter una pelota de ping-pong en la grieta más profunda de una superficie llena de baches: si solo la dejas rodar queda en un mínimo local; si **sacudes** la superficie, salta a otros. Hay que sacudir fuerte al inicio (T alta) y cada vez menos (T baja).
+
+```
+function SIMULATED-ANNEALING(problem, schedule) returns a solution state
+    current ← problem.INITIAL
+    for t = 1 to ∞ do
+        T ← schedule(t)
+        if T = 0 then return current
+        next ← a randomly selected successor of current
+        ΔE ← VALUE(current) – VALUE(next)          # here VALUE is a COST (minimize)
+        if ΔE > 0 then current ← next
+        else current ← next only with probability e^(ΔE/T)
+```
+
+⚠️ **Convención de signos.** En esta figura AIMA 4e cambia al punto de vista de *gradient descent* (minimizar un costo): ΔE = VALUE(current) − VALUE(next) > 0 significa que `next` es **mejor** → se acepta siempre; si ΔE < 0 (empeora), se acepta con probabilidad e^(ΔE/T) < 1. El código de clase usa Δ = f(nuevo) − f(actual) = −ΔE y e^(−Δ/T): **es la misma regla** — siempre aceptar mejoras; aceptar empeoramientos con probabilidad e^(−|empeoramiento|/T).
+
+Propiedad clave: si el esquema baja T **lo suficientemente lento**, por la distribución de Boltzmann toda la probabilidad se concentra en los óptimos globales, que se encuentran con probabilidad → 1. Usos: diseño de circuitos VLSI desde los 80, *scheduling* de fábricas.
+
 ## Errores comunes y tips de examen
 
 - SA mantiene **una** solución (no es poblacional), pero es estocástico.
@@ -58,6 +78,7 @@ Aplicado a Rastrigin 2-D en [−5.12, 5.12]², T₀ = 100, α = 0.8, 100 000 ite
 
 ## Relacionado
 
+- [Local Search and Hill Climbing](local-search-hill-climbing.md)
 - [Optimization Basics](optimization-basics.md)
 - [Gradient Descent](gradient-descent.md)
 - [Ant Colony Optimization](ant-colony-optimization.md) (comparado con SA en el paper)
@@ -67,4 +88,4 @@ Aplicado a Rastrigin 2-D en [−5.12, 5.12]², T₀ = 100, α = 0.8, 100 000 ite
 
 - [Code — class optimization](../sources/code-class-optimization.md) (`sa_functions.py`).
 - [Dorigo et al. 1996](../sources/paper-dorigo-1996-ant-system.md) §VI (comparación).
-- [AIMA 4e](../sources/book-russell-norvig-aima.md) §4.1.2 (complemento).
+- [AIMA 4e](../sources/book-russell-norvig-aima.md) §4.1.2 (ingestado: pseudocódigo, analogía, convergencia).
