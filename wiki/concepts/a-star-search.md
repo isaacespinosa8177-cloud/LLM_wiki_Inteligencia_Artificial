@@ -109,6 +109,23 @@ La primera y la última línea se contradicen → A\* solo devuelve caminos ópt
 | Weighted A\* | g(n) + W·h(n) | 1 < W < ∞ |
 | Greedy best-first | h(n) | ∞ |
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** A\* elige el nodo con menor **costo ya pagado + costo estimado restante**; con una h que no exagera, el primer camino a la meta que *expande* es el óptimo.
+
+```text
+A*:
+1. Priority queue ordered by f = g + h ← [start with g = 0].
+2. Pop the node with the SMALLEST f.
+3. If it is the goal → return the path. (Test when you EXPAND, not when you generate.)
+4. For each neighbor: new_g = g(node) + step cost.
+   If the neighbor is new or new_g is smaller than its old g:
+       update g, f = g + h, parent; push it into the queue.
+5. Go to 2.
+```
+
+**Say it in the exam (EN):** "A* combines UCS (g) and greedy (h): f(n) = g(n) + h(n) estimates the total cost through n. It is complete and optimal if h is admissible (consistent if states are never reopened), and optimally efficient among such algorithms, but it keeps all nodes in memory, O(b^d). On Romania it expands Arad, Sibiu, Rimnicu Vilcea, Fagaras, Pitesti and returns 418."
+
 ## Errores comunes y tips de examen
 
 - **Probar la meta al expandir, no al generar** — si no, se pierde la optimalidad (el 450 vía Fagaras).

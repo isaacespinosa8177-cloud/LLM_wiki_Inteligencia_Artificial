@@ -40,6 +40,20 @@ EXPECTIMINIMAX(s) =
 
 **Límites de la búsqueda en juegos (AIMA §6.7).** (1) Alpha–beta es vulnerable a errores de la evaluación (en un árbol de 2 plies, si cada hoja tiene error σ = 5, la rama "peor" por 100 vs. 99 es en realidad mejor el 71 % de las veces). (2) Gasta tiempo calculando valores aunque una jugada sea obviamente la mejor → **metarazonamiento** (decidir qué vale la pena calcular). (3) Razona jugada a jugada, no con metas abstractas como un humano. (4) Integrar aprendizaje automático (AlphaZero).
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** si hay dados, en los nodos de azar no eliges: **promedias** según la probabilidad de cada resultado.
+
+```text
+EXPECTIMINIMAX(state):
+1. Terminal → utility.
+2. MAX node → maximum over moves.
+3. MIN node → minimum over moves.
+4. CHANCE node → Σ P(outcome) · EXPECTIMINIMAX(result of that outcome).
+```
+
+**Say it in the exam (EN):** "Expectiminimax adds chance nodes that take the probability-weighted average of their children; its cost is O(b^m · n^m). Evaluation functions must be a positive linear transform of the winning probability, because order-preserving changes can flip the decision."
+
 ## Errores comunes y tips de examen
 
 - En un nodo de azar se **promedia** (ponderado), no se maximiza ni minimiza.

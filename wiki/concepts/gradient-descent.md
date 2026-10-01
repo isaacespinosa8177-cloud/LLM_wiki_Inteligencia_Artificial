@@ -67,6 +67,21 @@ Iteración 1: w = (0,0) − 0.1·(−4, 4) = (0.4, −0.4). En general la distan
 
 El dilema de α: muy pequeño → demasiados pasos; muy grande → se pasa del máximo (lo mismo que se ve con η en `gd_functions.py`). Los métodos continuos sufren igual que los discretos con máximos locales, crestas y mesetas; ayudan los reinicios aleatorios y el recocido simulado.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** calcula hacia dónde sube más rápido la función (el gradiente) y da un paso pequeño en la dirección contraria; repite.
+
+```text
+GRADIENT DESCENT (minimizing f):
+1. Start at some point w; choose a learning rate η.
+2. Repeat until the steps become tiny (or a max number of iterations):
+   a. Compute the gradient ∇f(w) (vector of partial derivatives).
+   b. Move against it: w ← w − η · ∇f(w).
+3. Return w.
+```
+
+**Say it in the exam (EN):** "Gradient descent follows the negative gradient. The learning rate matters: too small is slow, too large overshoots or diverges. It finds the global minimum of convex functions such as (x−2)² + (y+2)², but only a local minimum of multimodal ones. Backpropagation computes the gradients that gradient descent uses to train neural networks."
+
 ## Errores comunes y tips de examen
 
 - Es **menos** el gradiente (descenso); más el gradiente es ascenso.

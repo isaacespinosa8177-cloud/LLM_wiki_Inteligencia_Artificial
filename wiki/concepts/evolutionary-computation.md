@@ -69,6 +69,24 @@ Holland (1992) explica por qué los primeros intentos de finales de los 50 falla
 
 **Relación con la inteligencia de enjambre.** [PSO](particle-swarm-optimization.md) también usa una población y una medida de aptitud, pero no hay selección ni reproducción: las mismas partículas se mueven. Kennedy y Eberhart lo ubican "entre los GA y la programación evolutiva".
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** una población de soluciones que, generación tras generación, se reproduce (con cambios) y donde los mejores sobreviven.
+
+```text
+GENERIC EVOLUTIONARY ALGORITHM:
+1. Create a random population and evaluate everyone's fitness.
+2. Repeat until a good-enough solution or the budget runs out:
+   a. SELECT parents (better fitness → more chances).
+   b. RECOMBINE pairs of parents to make children.
+   c. MUTATE the children slightly.
+   d. EVALUATE the children.
+   e. SELECT who survives into the next generation.
+3. Return the best individual found.
+```
+
+**Say it in the exam (EN):** "All evolutionary algorithms share this loop; they differ in representation — bit strings in GAs, real vectors in evolution strategies, finite-state machines in evolutionary programming, trees in genetic programming. Variation creates diversity; selection raises quality."
+
 ## Errores comunes y tips de examen
 
 - Fogel → 1960 (EP); Rechenberg/Schwefel → 1970 (ES); Holland → **1975** (GA).

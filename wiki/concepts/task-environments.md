@@ -56,6 +56,23 @@ updated: 2026-10-01
 | Minimizar f(x,y) con PSO | — (optimización) | Algoritmo estocástico | — | Estático | Continuo | Multi (cooperativo) |
 | Taxi autónomo | Parcial | No | Secuencial | Dinámico | Continuo | Multi |
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** para clasificar un entorno haz siempre las mismas 7 preguntas, en el mismo orden.
+
+```text
+CLASSIFY AN ENVIRONMENT:
+1. Can the sensors see the whole relevant state?        → fully / partially observable
+2. Is the next state fixed by state + action?           → deterministic / nondeterministic
+3. Do current decisions affect future ones?             → episodic / sequential
+4. Does the world change while the agent thinks?        → static / dynamic (semidynamic)
+5. Finite, well-defined states/actions?                 → discrete / continuous
+6. Are there other agents? Do they compete or help?     → single / multi-agent
+7. Does the agent know the rules (outcomes of actions)? → known / unknown
+```
+
+**Say it in the exam (EN):** "The hardest case is partially observable, multi-agent, nondeterministic, sequential, dynamic, continuous and unknown — like taxi driving. Classical search assumes the opposite: observable, deterministic, static, discrete and known."
+
 ## Errores comunes y tips de examen
 
 - El entorno "más difícil": parcialmente observable, estocástico, secuencial, dinámico, continuo y multiagente (el mundo real / el taxi).

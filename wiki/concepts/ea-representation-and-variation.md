@@ -108,6 +108,25 @@ ORDER-CROSSOVER(p1, p2):            copy p1[a..b] into child;
                                     with p2's values in p2's order (from position b+1), skipping used ones
 ```
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** el operador debe respetar la representación: bits → invertir bits y cortar; reales → sumar ruido gaussiano y promediar; permutaciones → intercambiar e invertir, nunca repetir valores.
+
+```text
+ONE-POINT CROSSOVER (bits): pick a cut point; child1 = head of P1 + tail of P2;
+                            child2 = head of P2 + tail of P1.
+UNIFORM CROSSOVER (bits):   for each gene flip a coin to decide which parent it comes from.
+BIT-FLIP MUTATION:          flip each bit with probability p_m.
+GAUSSIAN MUTATION (reals):  x_i ← x_i + N(0, σ), clipped to its bounds.
+ARITHMETIC CROSSOVER:       child = α·P1 + (1 − α)·P2.
+SWAP MUTATION (perms):      exchange two positions.
+INVERSION MUTATION (perms): reverse a random segment (good for TSP).
+ORDER CROSSOVER (perms):    copy a segment from P1; fill the remaining places
+                            with the missing values in the order they appear in P2.
+```
+
+**Say it in the exam (EN):** "The representation decides the operators: the offspring must stay valid. Bit strings use bit-flip and one-point, n-point or uniform crossover; real vectors use Gaussian mutation, possibly self-adaptive, and arithmetic recombination; permutations need special operators such as swap, inversion, PMX or order crossover."
+
 ## Errores comunes y tips de examen
 
 - Aplicar cruce de un punto a **permutaciones** produce hijos inválidos (valores repetidos) → usar PMX, OX, cycle o edge.

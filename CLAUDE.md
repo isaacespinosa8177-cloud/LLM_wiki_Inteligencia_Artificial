@@ -89,12 +89,20 @@ Then this skeleton (drop sections that don't apply, never leave empty headings):
 ## Explicación
 Spanish explanation, built up from intuition to formal definition.
 
+## Pseudocódigo intuitivo (para explicar en el examen)   (see below)
 ## Pseudocódigo / Código        (English code)
 ## Ejemplo                       (worked example, ideally from the course)
 ## Errores comunes y tips de examen
 ## Relacionado                   (links to related wiki pages)
 ## Fuentes                       (links to source pages + exact slide/page/section)
 ```
+
+**Intuitive pseudocode (required on every algorithm/procedure page).** Isaac answers exams
+in **English** and wants to explain algorithms "the intuitive way", without real code. Use
+exactly the heading `## Pseudocódigo intuitivo (para explicar en el examen)` with: a
+`> **Idea (ES):**` one-liner in Spanish; a ```` ```text ```` block of numbered plain-English
+steps; and a `**Say it in the exam (EN):**` 2–4 sentence answer including key properties.
+`tools/build_study.py` compiles these into `wiki/study/intuitive-pseudocode.md`.
 
 **Source pages** (`wiki/sources/`) instead use: Summary (EN) · Ficha (metadata table:
 author, year, file path in `raw/`, type, length) · Resumen por secciones (Spanish) ·
@@ -184,6 +192,9 @@ and this wiki is maintained by an agent. So, for every assignment:
   .pdf (`pdftotext`) → `.cache/text/`. Cached by mtime.
 - `tools/lint_wiki.py` — checks broken relative links, pages unreachable from
   `index.md`, and missing frontmatter keys. Exit code 1 on problems.
+- `tools/build_study.py` — regenerates the generated study files (intuitive-pseudocode
+  cheat sheet, …). Run it after every wiki change, before linting. Never hand-edit
+  files marked "generated".
 
 ## 8. Quality bar
 

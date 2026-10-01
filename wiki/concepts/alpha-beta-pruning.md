@@ -65,6 +65,27 @@ def alphabeta(state, depth, alpha, beta, maximizing):
 
 **Aplicación a la tarea.** El tic-tac-toe 4×4 usa minimax puro con profundidad 4 "because full minimax is too large". Con alpha-beta y buen orden se podría buscar a ~profundidad 8 con el mismo costo.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** deja de mirar una rama en cuanto sabes que el rival nunca te dejaría llegar ahí (o que tú nunca la elegirías).
+
+```text
+ALPHA-BETA(state, α = −∞, β = +∞):
+α = best value MAX can already guarantee ("at least")
+β = best value MIN can already guarantee ("at most")
+1. Terminal or depth limit → return utility / EVAL.
+2. MAX node: v = −∞; for each child:
+       v = max(v, ALPHA-BETA(child, α, β)); α = max(α, v);
+       if α ≥ β → STOP (prune the remaining children).
+   return v
+3. MIN node: v = +∞; for each child:
+       v = min(v, ALPHA-BETA(child, α, β)); β = min(β, v);
+       if α ≥ β → STOP (prune the remaining children).
+   return v
+```
+
+**Say it in the exam (EN):** "Alpha–beta returns exactly the minimax decision while skipping branches that cannot change it. With perfect move ordering it examines O(b^(m/2)) nodes, so it can search about twice as deep; with random ordering about O(b^(3m/4))."
+
 ## Errores comunes y tips de examen
 
 - Alpha–beta **no cambia el resultado** de minimax, solo ahorra trabajo.

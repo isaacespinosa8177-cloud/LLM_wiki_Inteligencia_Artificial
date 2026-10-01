@@ -12,7 +12,7 @@ updated: 2026-10-01
 ## Rutina diaria (≈ 30 min, todos los días)
 
 1. **Flashcards (15 min):** repaso en Anki — primero las tarjetas vencidas.
-2. **Explicar en voz alta (10 min):** elige 2 algoritmos y escribe su pseudocódigo intuitivo **en inglés** de memoria; compáralo con la página del concepto.
+2. **Explicar en voz alta (10 min):** elige 2 algoritmos y escribe su pseudocódigo intuitivo **en inglés** de memoria; compáralo con la [hoja de pseudocódigo intuitivo](intuitive-pseudocode.md).
 3. **Errata (5 min):** releer [Errata](errata.md) — son las "trampas" más probables.
 
 ## Plan por día

@@ -74,6 +74,24 @@ Inferencias para enumerar todas las soluciones (SWI-Prolog 9.2.9):
 
 Misma lógica; la segunda **poda** antes un tablero malo. Es "Algorithm = Logic + Control" en acción.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** coloca una reina por columna; si la nueva choca con alguna anterior, prueba otra fila; si ninguna sirve, retrocede.
+
+```text
+N-QUEENS (backtracking):
+1. Place queens column by column, starting with column 0.
+2. For the current column, try each row:
+   - Safe if no earlier queen has the same row
+     and no earlier queen is on a diagonal (|row difference| = |column difference|).
+   - If safe: place the queen and solve the next column.
+     If that succeeds → done. Otherwise remove the queen and try the next row.
+3. If no row works → return failure to the previous column (backtrack).
+4. When all N columns have a queen → solution.
+```
+
+**Say it in the exam (EN):** "Encoding the board as a permutation guarantees one queen per row and column, so only diagonals must be checked. Testing each queen as it is placed prunes far more than generating full boards and testing them — 77 times fewer inferences for N = 10."
+
 ## Errores comunes y tips de examen
 
 - La prueba de diagonal es `|Δfila| == |Δcolumna|`.

@@ -90,6 +90,7 @@ Catalog of every page. The LLM reads this first when answering a question and up
 
 ## Study
 
+- [Intuitive pseudocode cheat sheet](study/intuitive-pseudocode.md) — every algorithm as plain-English steps + "say it in the exam" answer (generated).
 - [Study plan — test Thu Oct 8](study/study-plan.md) — day-by-day plan with daily routine and priorities.
 - [Search algorithms comparison](study/search-algorithms-comparison.md) — Unit 2 cheat sheet with real numbers.
 - [Metaheuristics comparison](study/metaheuristics-comparison.md) — Unit 4 cheat sheet.

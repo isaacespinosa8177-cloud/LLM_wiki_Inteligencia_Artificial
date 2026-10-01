@@ -57,6 +57,27 @@ function REFLEX-VACUUM-AGENT([location, status]) returns action
 
 **PEAS.** Para especificar un entorno de tarea: *Performance* (criterio de éxito), *Environment* (el mundo), *Actuators*, *Sensors*. Ejemplo clásico (AIMA): taxi automático — P: seguridad, rapidez, legalidad, comodidad; E: calles, tráfico, peatones; A: volante, acelerador, freno, bocina; S: cámaras, GPS, velocímetro, sonar.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** un agente repite siempre el mismo ciclo: percibir → decidir → actuar; lo que cambia entre agentes es *cómo* decide.
+
+```text
+AGENT LOOP (any agent):
+1. Read the current percept from the sensors.
+2. Add it to what I know (percept history or internal state).
+3. Choose the action that maximizes the expected performance measure,
+   given everything I know.
+4. Send the action to the actuators.
+5. Go back to step 1.
+
+REFLEX VACUUM AGENT:
+1. If my square is dirty → Suck.
+2. Else if I am in A → move Right.
+3. Else (I am in B) → move Left.
+```
+
+**Say it in the exam (EN):** "An agent maps its percept history to an action. The agent *function* is the abstract mapping; the agent *program* is the concrete code that implements it. A rational agent picks the action with the highest *expected* performance given its percepts and built-in knowledge — it is not omniscient."
+
 ## Errores comunes y tips de examen
 
 - Racional ≠ omnisciente ≠ exitoso siempre: se evalúa con la información disponible y en **valor esperado**.

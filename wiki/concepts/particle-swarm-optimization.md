@@ -68,6 +68,26 @@ return P[g], f_P[g]
 
 Tarea: N = 20 partículas, D = 2, límites [−10, 10], 100 iteraciones, w = 0.5, a₁ = a₂ = 1, minimizar (x+2)² + (y−2)² + 10. Con `np.random.seed(0)`: mejor x = (−2.00000001, 1.99999998), f = 10.0.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** cada partícula recuerda su mejor lugar y conoce el mejor lugar del enjambre; su velocidad mezcla lo que traía + atracción a su recuerdo + atracción al grupo.
+
+```text
+PSO (minimizing f):
+1. Place N particles at random positions x_i with velocity v_i = 0.
+   p_best_i ← x_i;  g_best ← best of all p_best.
+2. Repeat for T iterations, for every particle i:
+   a. r1, r2 ← random numbers in [0, 1].
+   b. v_i ← w·v_i + c1·r1·(p_best_i − x_i) + c2·r2·(g_best − x_i)
+            (inertia)   (cognitive: own memory)  (social: swarm memory)
+   c. x_i ← x_i + v_i   (keep it inside the bounds).
+   d. If f(x_i) < f(p_best_i) → p_best_i ← x_i.
+   e. If f(x_i) < f(g_best)  → g_best ← x_i.
+3. Return g_best.
+```
+
+**Say it in the exam (EN):** "PSO moves a swarm of candidate solutions through a continuous space. Each velocity combines momentum, attraction to the particle's personal best and attraction to the global best. The original 1995 version had no inertia weight and used coefficients of 2; momentum is essential because overshooting is how the swarm explores."
+
 ## Errores comunes y tips de examen
 
 - PSO **no** tiene selección, cruce ni mutación: las mismas partículas sobreviven y se mueven.

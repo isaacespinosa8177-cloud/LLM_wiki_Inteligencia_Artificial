@@ -47,6 +47,27 @@ Cualquiera de los cuatro tipos puede construirse **como agente que aprende**. Tu
 
 El generador de problemas es la versión "agente" de **exploración vs. explotación**: el elemento de desempeño siempre haría lo que hoy parece mejor; explorar un poco puede descubrir algo mucho mejor a largo plazo.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** cada tipo de agente añade una pieza: memoria (modelo), metas (planificar) y utilidad (comparar opciones).
+
+```text
+SIMPLE REFLEX:   action = rule that matches the CURRENT percept.
+MODEL-BASED:     1. state = UPDATE(state, last action, percept, world model)
+                 2. action = rule that matches STATE.
+GOAL-BASED:      1. update state (as above)
+                 2. search/plan a sequence of actions that reaches a GOAL state
+                 3. do the first action of the plan.
+UTILITY-BASED:   1. update state
+                 2. for each action, estimate the EXPECTED UTILITY of its outcomes
+                 3. do the action with the highest expected utility.
+LEARNING AGENT:  critic compares behaviour with a fixed performance standard →
+                 learning element improves the performance element →
+                 problem generator suggests some exploratory actions.
+```
+
+**Say it in the exam (EN):** "Simple reflex agents only see the current percept, so they fail in partially observable worlds. Model-based agents keep an internal state. Goal-based agents plan, but goals are binary. Utility-based agents rank outcomes and handle trade-offs and uncertainty. Any of them can be made a learning agent."
+
 ## Errores comunes y tips de examen
 
 - La diferencia clave objetivo vs. utilidad: el objetivo es **sí/no**, la utilidad es **un número** que permite comparar.

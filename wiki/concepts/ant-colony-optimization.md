@@ -63,6 +63,25 @@ Complejidad O(NC · n² · m) = O(NC · n³) con m ≈ n.
 
 **Generalidad.** ATSP, Quadratic Assignment, Job-Shop Scheduling; competitivo con tabu search y [simulated annealing](simulated-annealing.md).
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** cada hormiga arma un recorrido eligiendo caminos cortos y con mucha feromona; al final los buenos recorridos reciben más feromona y la vieja se evapora.
+
+```text
+ANT SYSTEM for the TSP:
+1. Put a small amount of pheromone τ on every edge; place m ants on the cities.
+2. Repeat for a number of cycles:
+   a. Each ant builds a full tour. From city i it moves to an unvisited city j
+      with probability ∝ τ_ij^α · (1/d_ij)^β   (pheromone × closeness).
+      A tabu list stops it from revisiting cities.
+   b. Compute each tour length L_k; remember the shortest tour.
+   c. Evaporate: τ_ij ← ρ · τ_ij on every edge.
+   d. Deposit: every ant adds Q / L_k to each edge of its tour.
+3. Return the shortest tour found.
+```
+
+**Say it in the exam (EN):** "ACO uses stigmergy: ants communicate indirectly through pheromone on the graph. Short tours get more pheromone (positive feedback) and evaporation forgets bad choices. α weighs the pheromone, β the distance heuristic; Dorigo found α = 1, β = 5, ρ = 0.5 and one ant per city work best."
+
 ## Errores comunes y tips de examen
 
 - ACO es para problemas **combinatorios** (grafos, permutaciones); PSO para **continuos**.

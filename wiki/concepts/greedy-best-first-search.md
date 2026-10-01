@@ -42,6 +42,20 @@ function GREEDY-BEST-FIRST(problem, h):
 
 **En la tarea** ([Deber 1](../assignments/deber-1-search-problems.md)): `best_fs(start, goal, heuristic)` resolvió el 8-puzzle en 6 movimientos generando 15 estados (Manhattan) vs. 135 de BFS. El 80-puzzle (`resolver_80_tile`) usa la misma idea con Manhattan.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** ve siempre hacia el nodo que *parece* más cerca de la meta, sin importar cuánto te costó llegar.
+
+```text
+GREEDY BEST-FIRST:
+1. Priority queue ordered by h ← [start].
+2. Pop the node with the SMALLEST h (looks closest to the goal).
+3. If it is the goal → return the path.
+4. Add its unexplored children with their h values. Go to 2.
+```
+
+**Say it in the exam (EN):** "Greedy uses f(n) = h(n). It is fast with a good heuristic but not optimal — on Romania it returns Arad–Sibiu–Fagaras–Bucharest (450 km) instead of the optimal 418 km — and it is complete only in finite spaces with repeated-state checking."
+
 ## Errores comunes y tips de examen
 
 - Greedy usa **solo h**; A\* usa **g + h**. Esta diferencia es la que da optimalidad a A\*.

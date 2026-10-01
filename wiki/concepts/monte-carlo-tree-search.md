@@ -82,6 +82,25 @@ function MONTE-CARLO-TREE-SEARCH(state) returns an action
 - **Go:** hasta 2015 los programas eran de nivel amateur. **AlphaGo** (Silver et al., 2016) combinó reconocimiento visual de patrones, aprendizaje por refuerzo, redes neuronales y MCTS para vencer a Lee Sedol 4–1 (marzo de 2016; AIMA dice "2015", ver [errata](../study/errata.md)) y a Ke Jie 3–0 (2017).
 - Kasparov sobre AlphaZero: se acerca al enfoque humano **Type B** soñado por Shannon y Turing, en lugar de la fuerza bruta.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** en vez de evaluar una posición con una fórmula, juega muchas partidas rápidas desde ella y mira cuántas se ganan.
+
+```text
+MCTS (repeat until time runs out):
+1. SELECTION:   from the root, go down choosing the child with the best UCB1
+                (high win rate OR rarely visited) until reaching a leaf.
+2. EXPANSION:   add one new child to that leaf.
+3. SIMULATION:  play a quick game from the new child to the end (playout policy).
+4. BACK-PROPAGATION: walk back to the root adding +1 visit to every node
+                and +1 win to the nodes of the player who won.
+Finally, play the root move with the MOST visits.
+
+UCB1(n) = wins(n)/visits(n) + C · sqrt( ln visits(parent) / visits(n) )
+```
+
+**Say it in the exam (EN):** "MCTS estimates values by averaging playouts instead of using an evaluation function, so it suits games with a huge branching factor or no good evaluation, like Go. UCB1 balances exploitation (average reward) and exploration (rarely tried moves). AlphaGo and AlphaZero combine MCTS with neural networks trained by self-play."
+
 ## Errores comunes y tips de examen
 
 - MCTS **no necesita** función de evaluación (solo las reglas), pero puede combinarse con ella (cortar la simulación y evaluar).

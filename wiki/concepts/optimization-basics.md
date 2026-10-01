@@ -53,6 +53,22 @@ Holland lo plantea como el problema de cuánto "hipotecar el presente por el fut
 | Ackley | −20 e^(−0.2√(½(x²+y²))) − e^(½(cos 2πx + cos 2πy)) + e + 20 | 0, f = 0 | Plana afuera, embudo con ruido |
 | Schaffer f6 | (paper PSO) | 0 | Altamente no lineal, muchos óptimos locales |
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** antes de elegir un algoritmo pregunta: ¿tengo derivadas? ¿el espacio es continuo o combinatorio? ¿hay muchos óptimos locales?
+
+```text
+CHOOSE AN OPTIMIZER:
+1. Is f differentiable and (almost) convex?         → gradient descent.
+2. One solution at a time, many local optima?       → simulated annealing / random-restart hill climbing.
+3. Continuous variables, no gradient?               → PSO, ABC, real-coded GA / evolution strategies.
+4. Combinatorial (permutations, routes, schedules)? → ACO, GA with permutation operators, local search.
+5. Always: run several times (they are stochastic), keep the best, and
+   balance exploration (new regions) vs. exploitation (refine good ones).
+```
+
+**Say it in the exam (EN):** "In optimization only the final state matters. The danger is local optima, so every metaheuristic balances exploration and exploitation: mutation and selection in GAs, inertia and attraction to the bests in PSO, evaporation and reinforcement in ACO, scouts versus employed bees in ABC, temperature in simulated annealing."
+
 ## Errores comunes y tips de examen
 
 - Las metaheurísticas **no garantizan** el óptimo global; son estocásticas: correr varias veces y reportar media/mejor.

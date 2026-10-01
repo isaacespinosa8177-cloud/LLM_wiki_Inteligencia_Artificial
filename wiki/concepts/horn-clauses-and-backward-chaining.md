@@ -52,6 +52,21 @@ Criminal(West)
 
 **Forward vs. backward** (complemento, AIMA §9.3–9.4): forward chaining deriva todo lo derivable (útil para monitoreo, sistemas de producción); backward solo lo necesario para la meta (útil para responder preguntas, es lo que hace Prolog).
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** para probar algo, busca una regla que lo concluya y prueba sus condiciones, una por una, hasta llegar a hechos.
+
+```text
+BACKWARD CHAINING (prove goal G):
+1. If G is a known fact → success.
+2. Find a rule whose head matches G (unify, getting a substitution θ).
+3. Prove each condition in the rule's body, left to right, applying θ.
+4. If a condition fails → try the next matching rule.
+5. If no rule works → G fails.
+```
+
+**Say it in the exam (EN):** "A Horn clause has at most one positive literal, so knowledge reads as rules (A ∧ B ⇒ C), facts and goals. Inference is by chaining: forward from facts, or backward from the query, which is what Prolog does — depth-first, left to right."
+
 ## Errores comunes y tips de examen
 
 - Una cláusula de Horn tiene **a lo sumo** uno positivo (0 o 1), una definida **exactamente** uno.

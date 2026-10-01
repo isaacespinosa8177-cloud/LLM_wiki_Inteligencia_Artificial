@@ -35,6 +35,27 @@ Complemento (conocimiento general): salida `y = step(w·x + b)`; regla de aprend
 
 **Conexión con optimización.** Kennedy y Eberhart entrenaron con [PSO](particle-swarm-optimization.md) una red 2-3-1 para XOR (13 pesos) en ~31 iteraciones, y redes para Iris con resultados similares a backprop: los pesos de una red son solo un punto en un espacio continuo que cualquier optimizador puede buscar.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** el perceptrón suma entradas con pesos; si se equivoca, corrige los pesos en la dirección del error.
+
+```text
+PERCEPTRON TRAINING:
+1. Start with small random weights w and bias b.
+2. For each training example (x, target t):
+   a. output y = 1 if w·x + b > 0 else 0.
+   b. Update: w ← w + η·(t − y)·x ;  b ← b + η·(t − y).
+3. Repeat over the data until no errors (works only if the data are linearly separable).
+
+BACKPROPAGATION (one step):
+1. Forward pass: compute the outputs layer by layer.
+2. Compute the loss (error).
+3. Backward pass: use the chain rule to get ∂loss/∂w for every weight.
+4. Gradient descent: w ← w − η · ∂loss/∂w.
+```
+
+**Say it in the exam (EN):** "A single perceptron learns only linearly separable functions, so it cannot learn XOR. Backpropagation computes the gradient of the loss for every weight in a multilayer network, and gradient descent uses it to train the network."
+
 ## Errores comunes y tips de examen
 
 - Un perceptrón **simple no puede** aprender XOR; hace falta al menos una capa oculta + backprop.

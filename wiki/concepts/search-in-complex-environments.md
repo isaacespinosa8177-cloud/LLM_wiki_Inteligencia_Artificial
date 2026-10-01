@@ -35,6 +35,19 @@ updated: 2026-10-01
 - Es el puente entre [Problem Formulation](problem-formulation.md) (supuestos clásicos) y [Task Environments](task-environments.md) (todas las dimensiones).
 - El árbol AND–OR es el mismo concepto que el **grafo Y–O** de las [cláusulas de Horn](horn-clauses-and-backward-chaining.md) y es primo de los árboles de [Minimax](adversarial-search-minimax.md) (MAX ≈ OR, MIN ≈ AND).
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** si la acción puede salir de varias formas, tu plan necesita una respuesta para **cada** resultado posible.
+
+```text
+AND-OR SEARCH (nondeterministic actions):
+OR node (my choice):     succeed if SOME action leads to a plan that works.
+AND node (nature's choice): succeed only if EVERY possible outcome has a plan.
+The solution is a conditional plan: [action, if outcome A then ... else ...].
+```
+
+**Say it in the exam (EN):** "With nondeterministic actions the solution is a contingency plan found by AND–OR search; with partial observability the agent searches over belief states; in unknown environments it must explore online."
+
 ## Errores comunes y tips de examen
 
 - En un nodo AND hay que tener plan para **cada** resultado; en un nodo OR basta **una** acción.

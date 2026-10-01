@@ -102,6 +102,24 @@ function BEST-FIRST-SEARCH(problem, f) returns a solution node or failure
 
 **Ejemplos del curso.** Mapa de Rumania (Arad → Bucarest), 8-puzzle, 80-puzzle, granjero–lobo–cabra–col, N-Reinas (ver [Deber 1](../assignments/deber-1-search-problems.md)).
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** todos los algoritmos de búsqueda son el mismo bucle; solo cambia **qué nodo sacas primero** de la frontera.
+
+```text
+GENERIC GRAPH SEARCH:
+1. Put the initial state in the frontier.
+2. Loop:
+   a. If the frontier is empty → return failure.
+   b. Take ONE node out of the frontier (the rule for "which one" defines the algorithm).
+   c. If it is a goal → return the path (follow parent pointers back).
+   d. Mark it as explored.
+   e. Expand it: for each action, compute the child state and its path cost;
+      add the child to the frontier if it is new (or reached by a cheaper path).
+```
+
+**Say it in the exam (EN):** "A problem has five parts: initial state, actions, transition model, goal test and action costs. Search builds a tree over the state-space graph; the frontier holds generated-but-unexpanded nodes and the explored set prevents loops. FIFO gives BFS, LIFO gives DFS, lowest g gives UCS, lowest h gives greedy, lowest g + h gives A*."
+
 ## Errores comunes y tips de examen
 
 - Los algoritmos de búsqueda difieren **solo en el orden** en que sacan nodos de la frontera (FIFO → BFS, LIFO → DFS, prioridad g → UCS, h → greedy, g+h → A\*).

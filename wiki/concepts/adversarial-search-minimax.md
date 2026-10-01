@@ -79,6 +79,20 @@ Rendimiento en ajedrez (AIMA): minimax con 10⁶ nodos/s llega a ~5 plies (lo ve
 
 ⚠️ **Regla de oro:** los valores terminales deben **dominar** a cualquier valor heurístico. Si ganar vale +1 pero una posición no terminal puede valer +2, el agente prefiere la posición "prometedora" a ganar. Esto ocurre en la [tarea 4×4](../assignments/tic-tac-toe-4x4-minimax.md) (verificado: la IA no tomó una victoria inmediata en 2 de 54 posiciones de prueba). Solución: ganar = +1000 (o +1000 − profundidad para preferir victorias rápidas).
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** supón que el rival es perfecto: en tus turnos tomas el máximo, en los suyos él toma el mínimo, y esos valores suben desde las hojas.
+
+```text
+MINIMAX(state):
+1. If the game is over → return its utility (or, at the depth limit, EVAL(state)).
+2. If it is MAX's turn → return the MAXIMUM of MINIMAX(child) over all moves.
+3. If it is MIN's turn → return the MINIMUM of MINIMAX(child) over all moves.
+At the root, play the move whose child has the best value.
+```
+
+**Say it in the exam (EN):** "Minimax assumes both players play optimally and backs utilities up the game tree: MAX takes the max, MIN the min. It is a depth-first search: time O(b^m), space O(b·m). Real games cut off at a depth limit and use an evaluation function, whose values must never beat a real win."
+
 ## Errores comunes y tips de examen
 
 - Minimax es **DFS**: por eso el espacio es lineal O(b·m) aunque el tiempo sea exponencial.

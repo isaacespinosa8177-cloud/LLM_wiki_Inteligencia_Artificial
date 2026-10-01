@@ -136,6 +136,37 @@ function MIN-CONFLICTS(csp, max_steps) returns a solution or failure
 
 Lectura con la teoría: MRV es *fail-first*; forward checking detecta dominios vacíos antes de bajar en la recursión. Ver [HW01](../assignments/deber-1-search-problems.md).
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** asigna una variable a la vez, empieza por la más difícil, prueba primero el valor que menos estorba, y después de cada asignación tacha los valores imposibles de los vecinos.
+
+```text
+BACKTRACKING SEARCH for a CSP:
+1. If every variable has a value → return the assignment.
+2. Pick an unassigned variable: the one with the FEWEST legal values (MRV);
+   break ties with the one in the most constraints (degree).
+3. For each value, starting with the one that rules out the fewest
+   options for the neighbors (LCV):
+   a. If it breaks no constraint, assign it.
+   b. Forward checking: remove now-illegal values from each neighbor's domain.
+      If some neighbor has no values left → undo and try the next value.
+   c. Recurse. If the recursion succeeds → return the solution.
+   d. Otherwise undo the assignment (and the removed values).
+4. No value worked → return failure (backtrack).
+
+AC-3 (arc consistency):
+1. Put every arc (X, Y) in a queue.
+2. Take an arc; delete from X every value with no compatible value in Y.
+3. If X lost values → add (Z, X) for every other neighbor Z of X.
+4. If some domain becomes empty → no solution. Repeat until the queue is empty.
+
+MIN-CONFLICTS (local search):
+1. Start with a complete random assignment.
+2. Repeat: pick a variable in conflict; give it the value with the fewest conflicts.
+```
+
+**Say it in the exam (EN):** "A CSP has variables, domains and constraints. Backtracking assigns one variable per level; MRV is fail-first, LCV is fail-last. Forward checking prunes neighbors' domains after each assignment; MAC goes further by running AC-3. Tree-structured CSPs are solvable in O(n·d²) without backtracking."
+
 ## Errores comunes y tips de examen
 
 - MRV elige **variable**; LCV elige **valor**; degree es el desempate de MRV.

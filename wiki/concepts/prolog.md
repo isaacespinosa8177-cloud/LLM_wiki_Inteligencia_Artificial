@@ -95,6 +95,23 @@ max2(X, Y, M) :- ( X >= Y -> M = X ; M = Y ).   % preferred: no cut
 ### Herramientas (s9–11, s28)
 `swipl archivo.pl`, `?- [archivo].` o `consult/1`, `listing/1`, `make/0`, `halt/0`. Depurador de cuatro puertos: `trace/0` muestra **Call, Exit, Redo, Fail**. Pruebas con `plunit`: `:- begin_tests(x). … :- end_tests(x).` y `?- run_tests.` En el navegador: SWISH.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** Prolog toma la primera meta, busca la primera regla que encaje, la reemplaza por su cuerpo, y si algo falla vuelve atrás a la última elección.
+
+```text
+HOW PROLOG ANSWERS A QUERY (SLD resolution):
+1. Goal list ← the query.
+2. Take the LEFTMOST goal.
+3. Scan clauses TOP to BOTTOM for one whose head unifies with it.
+4. Replace the goal with that clause's body (applying the bindings).
+5. If no clause matches → BACKTRACK: undo bindings, try the next clause
+   of the most recent choice point.
+6. When the goal list is empty → success; print the bindings.
+```
+
+**Say it in the exam (EN):** "Prolog = Horn clauses + backward chaining + unification, executed depth-first and left to right. 'Algorithm = Logic + Control': the clauses are the logic, Prolog supplies the control, so clause and goal order matter — left recursion loops forever. Negation is negation as failure under the closed-world assumption."
+
 ## Errores comunes y tips de examen (s28)
 - Olvidar el **punto** final (la cláusula se fusiona con la siguiente).
 - Usar `=` en vez de `is`.

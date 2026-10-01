@@ -89,6 +89,21 @@ insert(N, node(K, L, R), node(K, L, M)) :- N > K, insert(N, R, M).
 
 Sin clases ni constructores: un árbol es el término `node(K, L, R)` y el pattern matching lo desarma. Los términos son **inmutables**: `insert/3` relaciona un árbol viejo con uno nuevo que comparte casi toda su estructura.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** toda recursión en Prolog tiene un caso base (un hecho) y un caso recursivo que achica el problema; las cuentas con `is` van después de tener los valores.
+
+```text
+WRITE A RECURSIVE PREDICATE:
+1. Base case: the smallest input as a fact (factorial(0, 1). / len([], 0).).
+2. Recursive case: split the input (N-1, or [H|T]),
+   call the predicate on the smaller part,
+   then build the answer with 'is' (only after its inputs are bound).
+3. Optional: add an accumulator argument to make it tail-recursive (linear Fibonacci).
+```
+
+**Say it in the exam (EN):** "Prolog has no loops; it uses recursion with a base fact and a recursive rule. Lists are [Head|Tail]. Accumulators avoid exponential recomputation, as in fib/2 versus the naive fibo/2."
+
 ## Errores comunes y tips de examen
 
 - Orden dentro del cuerpo: primero calcular (`is`), luego recursar, luego combinar.

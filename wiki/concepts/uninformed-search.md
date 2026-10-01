@@ -82,6 +82,35 @@ Inicio `(2,4,3,1,0,6,7,5,8)` → meta `(1,2,3,4,5,6,7,8,0)` (ver [Deber 1](../as
 
 BFS garantiza la solución más corta; DFS encontró una más larga; la búsqueda informada generó 9× menos estados.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** BFS = por niveles (cola), DFS = una rama hasta el fondo (pila), UCS = siempre el camino más barato (prioridad por g), IDS = DFS con límite creciente.
+
+```text
+BFS:
+1. Queue ← [start]; reached ← {start}.
+2. While the queue is not empty: take the FIRST node.
+3. For each child: if it is the goal → return it (early goal test);
+   if not reached → mark reached, add it to the END of the queue.
+
+DFS:
+1. Stack ← [start].
+2. While the stack is not empty: take the LAST node added.
+3. If it is the goal → return it.
+4. Push its children (skipping states already on the current path).
+
+UNIFORM-COST SEARCH (Dijkstra):
+1. Priority queue ordered by g (cost so far) ← [start with g = 0].
+2. Pop the node with the SMALLEST g. If it is the goal → return it (test on expansion!).
+3. For each child: if new or reached with a smaller g → update g and push it.
+
+ITERATIVE DEEPENING:
+1. For limit = 0, 1, 2, ...: run DFS that does not go deeper than limit.
+2. Stop when DFS finds the goal.
+```
+
+**Say it in the exam (EN):** "BFS is complete and optimal for equal step costs but needs O(b^d) memory. DFS needs only O(b·m) memory but is neither complete nor optimal. UCS is optimal for any positive costs. IDS combines DFS memory with BFS completeness and optimality, at only ~11% extra time."
+
 ## Errores comunes y tips de examen
 
 - BFS es óptimo en **número de pasos**, no en costo con pesos distintos → para eso UCS/Dijkstra.

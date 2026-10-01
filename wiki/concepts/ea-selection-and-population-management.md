@@ -118,6 +118,26 @@ function SUS(population, a, λ):
         append population[i] to pool;  r ← r + 1/λ
 ```
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** la selección decide quién se reproduce y quién sobrevive; más presión = converge más rápido pero pierde diversidad.
+
+```text
+ROULETTE WHEEL (fitness proportional):
+1. P(i) = f_i / sum of all f.  2. Spin: pick a random r in [0,1] and walk the
+   cumulative probabilities until passing r. Repeat for each parent.
+TOURNAMENT (size k):
+1. Pick k individuals at random.  2. The best one becomes a parent. Repeat.
+ELITISM:
+Always copy the current best individual into the next generation.
+(μ, λ) SURVIVOR SELECTION:
+From λ children keep the best μ; discard all parents.
+(μ + λ) SURVIVOR SELECTION:
+Merge parents and children; keep the best μ.
+```
+
+**Say it in the exam (EN):** "Fitness-proportional selection causes premature convergence early and loses pressure late, and it changes if f is shifted. Ranking and tournament selection fix this; tournament size k controls the pressure. Elitism guarantees the best fitness never decreases. Takeover time measures selection pressure."
+
 ## Errores comunes y tips de examen
 
 - La selección es **independiente de la representación**; los operadores de variación no.

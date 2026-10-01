@@ -49,6 +49,26 @@ Slide 18: "k ∈ {1, 2, …, BN} y j ∈ {1, 2, …, D} son índices elegidos al
 
 **Parámetros (s18).** Número de fuentes de comida (= número de empleadas BN = número de observadoras SN), `limit`, MCN.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** las abejas empleadas y observadoras mejoran las fuentes buenas; si una fuente se agota sin mejorar, una exploradora busca una nueva al azar.
+
+```text
+ARTIFICIAL BEE COLONY:
+1. Create SN random food sources (solutions); trials_i ← 0.
+2. Repeat for MCN cycles:
+   a. EMPLOYED BEES: for each source, try a neighbor that changes one dimension
+      toward/away from a random other source; keep it if better, else trials_i += 1.
+   b. ONLOOKER BEES: choose sources with probability ∝ their quality
+      and do the same local move on them.
+   c. SCOUT BEES: any source with trials_i > limit is abandoned and
+      replaced by a random new source.
+   d. Remember the best source found.
+3. Return the best source.
+```
+
+**Say it in the exam (EN):** "ABC divides the work: employed and onlooker bees exploit good food sources, while scout bees explore by replacing exhausted ones. Its parameters are the number of food sources, the abandonment limit and the maximum number of cycles."
+
 ## Errores comunes y tips de examen
 
 - Solo **una** dimensión j cambia en cada movimiento de una abeja.

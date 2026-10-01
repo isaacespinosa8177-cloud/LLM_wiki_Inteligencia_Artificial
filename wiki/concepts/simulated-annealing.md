@@ -70,6 +70,25 @@ function SIMULATED-ANNEALING(problem, schedule) returns a solution state
 
 Propiedad clave: si el esquema baja T **lo suficientemente lento**, por la distribución de Boltzmann toda la probabilidad se concentra en los óptimos globales, que se encuentran con probabilidad → 1. Usos: diseño de circuitos VLSI desde los 80, *scheduling* de fábricas.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** como hill climbing, pero a veces aceptas empeorar; al principio mucho (temperatura alta) y al final casi nunca.
+
+```text
+SIMULATED ANNEALING (minimizing f):
+1. current ← random solution; best ← current; T ← T0 (high).
+2. Repeat until T is (almost) 0 or the step budget ends:
+   a. next ← a random neighbor of current.
+   b. Δ = f(next) − f(current).
+   c. If Δ < 0 (better) → accept next.
+      Else accept next with probability e^(−Δ / T).
+   d. If current is better than best → best ← current.
+   e. Cool down: T ← α · T (e.g., α = 0.99).
+3. Return best.
+```
+
+**Say it in the exam (EN):** "Simulated annealing escapes local optima by accepting worse moves with probability e^(−Δ/T). High temperature means exploration (almost a random walk); low temperature means exploitation (hill climbing). If T decreases slowly enough, it finds the global optimum with probability approaching 1."
+
 ## Errores comunes y tips de examen
 
 - SA mantiene **una** solución (no es poblacional), pero es estocástico.

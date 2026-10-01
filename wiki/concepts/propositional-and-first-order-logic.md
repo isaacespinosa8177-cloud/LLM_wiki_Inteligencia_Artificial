@@ -49,6 +49,21 @@ updated: 2026-10-01
 
 Ejemplo: `A ∧ B ⇒ C` ≡ `¬(A ∧ B) ∨ C` ≡ `¬A ∨ ¬B ∨ C` (una cláusula).
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** para pasar a CNF: quita ⇔ y ⇒, empuja la negación hacia adentro, y distribuye ∨ sobre ∧.
+
+```text
+CONVERT TO CNF:
+1. Replace A ⇔ B with (A ⇒ B) ∧ (B ⇒ A).
+2. Replace A ⇒ B with ¬A ∨ B.
+3. Move ¬ inward: ¬(A ∧ B) = ¬A ∨ ¬B ; ¬(A ∨ B) = ¬A ∧ ¬B ; ¬¬A = A.
+4. Distribute: A ∨ (B ∧ C) = (A ∨ B) ∧ (A ∨ C).
+Result: a conjunction (AND) of clauses (ORs of literals).
+```
+
+**Say it in the exam (EN):** "Propositional logic is decidable but cannot talk about objects; first-order logic adds objects, predicates and quantifiers but is only semi-decidable. Every sentence has an equivalent CNF, which is what resolution needs."
+
 ## Errores comunes y tips de examen
 
 - `P ⇒ Q` es falsa **solo** cuando P es verdadera y Q falsa.

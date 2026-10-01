@@ -64,6 +64,30 @@ function HILL-CLIMBING(problem) returns a state that is a local maximum
         current ← neighbor
 ```
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** quédate siempre con el mejor vecino; cuando ninguno es mejor, ya estás en una cima (quizá solo local).
+
+```text
+HILL CLIMBING:
+1. current ← a starting state (often random).
+2. Loop:
+   a. Look at all neighbors of current.
+   b. If none is better than current → return current (a local maximum).
+   c. Otherwise move to the best neighbor.
+
+RANDOM-RESTART HILL CLIMBING:
+1. Repeat hill climbing from new random states until a goal (or time limit).
+   Expected number of restarts = 1/p (p = success probability of one run).
+
+LOCAL BEAM SEARCH (k states):
+1. Start with k random states.
+2. Generate ALL successors of all k states; stop if one is a goal.
+3. Keep the k best successors. Go to 2.
+```
+
+**Say it in the exam (EN):** "Hill climbing keeps only the current state, so it uses almost no memory, but it gets stuck on local maxima, ridges and plateaus — it solves only 14% of random 8-queens instances. Sideways moves, random restarts, simulated annealing or beam search fix this."
+
 ## Errores comunes y tips de examen
 
 - Hill climbing **no guarda** frontera ni explorados: memoria O(1).

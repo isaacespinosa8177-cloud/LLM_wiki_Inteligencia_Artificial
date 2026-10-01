@@ -40,6 +40,22 @@ updated: 2026-10-01
 
 **Unificador más general (complemento, AIMA §9.2.2).** `Knows(John, x)` y `Knows(y, z)` unifican con {y/John, x/z} (MGU) o con {y/John, x/John, z/John} (más específico). Se prefiere la MGU.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** compara los dos términos de afuera hacia adentro; una variable puede tomar cualquier valor, pero los nombres y aridades deben coincidir.
+
+```text
+UNIFY(A, B):
+1. If A and B are identical → success (no new bindings).
+2. If A is a variable → bind A = B (and vice versa).
+3. If both are compound terms with the SAME name and number of arguments
+   → unify the arguments pair by pair, applying earlier bindings.
+4. Otherwise → fail.
+(Occurs check: do not bind X to a term that contains X.)
+```
+
+**Say it in the exam (EN):** "Unification finds a substitution that makes two terms identical, e.g. f(a, Y) = f(X, b) gives {X/a, Y/b}. It is two-way pattern matching, which is why Prolog relations can run 'backwards'. '=' unifies; 'is' evaluates arithmetic."
+
 ## Errores comunes y tips de examen
 
 - `=` **no evalúa** aritmética: unifica estructuras. `3 + 4 = 7` es `false`.

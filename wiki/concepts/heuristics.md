@@ -75,6 +75,26 @@ El problema relajado debe poder resolverse **sin búsqueda** (aquí se descompon
 
 **h\_SLD a Bucarest** (usada en la tarea A\* vs Dijkstra): Arad 366, Bucharest 0, Craiova 160, Fagaras 176, Oradea 380, Pitesti 100, Rimnicu Vilcea 193, Sibiu 253, Timisoara 329, Zerind 374.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** una buena heurística es el costo exacto de una versión **más fácil** del problema; así nunca sobreestima.
+
+```text
+DESIGN AN ADMISSIBLE HEURISTIC:
+1. Write the rules of the problem (e.g., "a tile moves to an adjacent blank square").
+2. Remove a restriction to get a relaxed problem
+   (drop "blank" → Manhattan distance; drop both → misplaced tiles).
+3. Use the exact cost of the relaxed problem as h(n).
+
+CHECK A HEURISTIC:
+1. h(goal) = 0 and h(n) ≥ 0?
+2. Admissible: for every n, is h(n) ≤ the real cheapest cost to the goal?
+3. Consistent: for every edge n → n', is h(n) ≤ cost(n, n') + h(n')?
+4. Compare two admissible heuristics: the one that is always ≥ (dominates) is better.
+```
+
+**Say it in the exam (EN):** "h(n) estimates the cost from n to the goal. Admissible means it never overestimates; consistent means it satisfies the triangle inequality, which implies admissible. A dominating admissible heuristic expands fewer nodes; on the 8-puzzle Manhattan distance dominates misplaced tiles."
+
 ## Errores comunes y tips de examen
 
 - Admisible **no implica** consistente (al revés sí).

@@ -151,6 +151,25 @@ Mutación (un bit en dos hijos): `01100 → 11100` y `10000 → 10100`. Correcta
 
 [Tarea GA](../assignments/genetic-algorithm-task.md): población 100, 16 bits, 100 épocas, selección por truncamiento K = 10 + elitismo, cruce de un punto, p_m = 0.1 por bit. Con `random.seed(0)`, el mejor llegó a f = 11 en la época 1 y al óptimo (x, y) = (−2, 2), f = 10, en la época 20.
 
+## Pseudocódigo intuitivo (para explicar en el examen)
+
+> **Idea (ES):** los cromosomas buenos tienen más hijos; los hijos mezclan pedazos de sus padres (cruce) y a veces cambian un bit (mutación).
+
+```text
+GENETIC ALGORITHM:
+1. Create N random bit strings (chromosomes); decode each and compute its fitness.
+2. Repeat for G generations:
+   a. Selection: pick parents with probability proportional to fitness
+      (roulette) or by tournaments; optionally copy the best ones unchanged (elitism).
+   b. Crossover: for each pair, pick a random cut point and swap the tails
+      → two children.
+   c. Mutation: flip each bit of each child with a small probability p_m.
+   d. The children form the new population.
+3. Return the best chromosome found.
+```
+
+**Say it in the exam (EN):** "A GA applies selection, crossover and mutation to a population of encoded solutions. Crossover is the main operator because it combines good building blocks (schemata) from different parents; mutation keeps diversity. Holland explains its power with implicit parallelism: each string samples many schemata at once."
+
 ## Errores comunes y tips de examen
 
 - Selección = **quién** se reproduce; cruce = **cómo** se combinan; mutación = **diversidad**.
