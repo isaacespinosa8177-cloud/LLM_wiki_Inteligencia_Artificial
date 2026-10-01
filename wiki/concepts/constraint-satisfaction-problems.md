@@ -136,6 +136,24 @@ function MIN-CONFLICTS(csp, max_steps) returns a solution or failure
 
 Lectura con la teoría: MRV es *fail-first*; forward checking detecta dominios vacíos antes de bajar en la recursión. Ver [HW01](../assignments/deber-1-search-problems.md).
 
+### Diagrama
+
+Grafo de restricciones del mapa de Australia (AIMA Fig. 5.1): SA tiene grado 5; T está aislada (subproblema independiente).
+
+```mermaid
+flowchart LR
+    WA((WA)) --- NT((NT))
+    WA --- SA((SA))
+    NT --- SA
+    NT --- Q((Q))
+    SA --- Q
+    SA --- NSW((NSW))
+    SA --- V((V))
+    Q --- NSW
+    NSW --- V
+    T((T))
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** asigna una variable a la vez, empieza por la más difícil, prueba primero el valor que menos estorba, y después de cada asignación tacha los valores imposibles de los vecinos.

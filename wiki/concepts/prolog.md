@@ -95,6 +95,22 @@ max2(X, Y, M) :- ( X >= Y -> M = X ; M = Y ).   % preferred: no cut
 ### Herramientas (s9–11, s28)
 `swipl archivo.pl`, `?- [archivo].` o `consult/1`, `listing/1`, `make/0`, `halt/0`. Depurador de cuatro puertos: `trace/0` muestra **Call, Exit, Redo, Fail**. Pruebas con `plunit`: `:- begin_tests(x). … :- end_tests(x).` y `?- run_tests.` En el navegador: SWISH.
 
+### Diagrama
+
+```mermaid
+flowchart TD
+    Q[Goal list = query] --> L{Goal list empty?}
+    L -- yes --> Y[Success: print bindings]
+    L -- no --> T[Take leftmost goal]
+    T --> M{Next clause top-to-bottom<br/>whose head unifies?}
+    M -- yes --> R[Replace goal by clause body<br/>apply bindings, remember choice point]
+    R --> L
+    M -- no --> BT{Any earlier choice point?}
+    BT -- yes --> U[Backtrack: undo bindings,<br/>try next clause there]
+    U --> L
+    BT -- no --> N[false]
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** Prolog toma la primera meta, busca la primera regla que encaje, la reemplaza por su cuerpo, y si algo falla vuelve atrás a la última elección.

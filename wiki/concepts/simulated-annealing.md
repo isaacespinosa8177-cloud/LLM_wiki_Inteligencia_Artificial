@@ -70,6 +70,23 @@ function SIMULATED-ANNEALING(problem, schedule) returns a solution state
 
 Propiedad clave: si el esquema baja T **lo suficientemente lento**, por la distribución de Boltzmann toda la probabilidad se concentra en los óptimos globales, que se encuentran con probabilidad → 1. Usos: diseño de circuitos VLSI desde los 80, *scheduling* de fábricas.
 
+### Diagrama
+
+```mermaid
+flowchart TD
+    I[current = random, T = T0] --> N[next = random neighbor]
+    N --> D{"Δ = f(next) − f(current) < 0 ?"}
+    D -- yes --> A[accept next]
+    D -- no --> P{"rand() < e^(−Δ/T) ?"}
+    P -- yes --> A
+    P -- no --> K[keep current]
+    A --> C[T = α·T]
+    K --> C
+    C --> X{T ≈ 0 or budget over?}
+    X -- no --> N
+    X -- yes --> R[return best]
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** como hill climbing, pero a veces aceptas empeorar; al principio mucho (temperatura alta) y al final casi nunca.

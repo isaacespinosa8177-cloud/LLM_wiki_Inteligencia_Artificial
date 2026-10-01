@@ -52,6 +52,20 @@ Criminal(West)
 
 **Forward vs. backward** (complemento, AIMA §9.3–9.4): forward chaining deriva todo lo derivable (útil para monitoreo, sistemas de producción); backward solo lo necesario para la meta (útil para responder preguntas, es lo que hace Prolog).
 
+### Diagrama
+
+```mermaid
+flowchart TD
+    C["Criminal(West)"] --> Am["American(West) ✓"]
+    C --> W["Weapon(y)"]
+    C --> S["Sells(West, M1, z)"]
+    C --> H["Hostile(Nono)"]
+    W --> M1["Missile(M1) ✓ {y/M1}"]
+    S --> M2["Missile(M1) ✓"]
+    S --> O["Owns(Nono, M1) ✓ {z/Nono}"]
+    H --> En["Enemy(Nono, America) ✓"]
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** para probar algo, busca una regla que lo concluya y prueba sus condiciones, una por una, hasta llegar a hechos.

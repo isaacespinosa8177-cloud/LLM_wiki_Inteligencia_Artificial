@@ -68,6 +68,19 @@ return P[g], f_P[g]
 
 Tarea: N = 20 partículas, D = 2, límites [−10, 10], 100 iteraciones, w = 0.5, a₁ = a₂ = 1, minimizar (x+2)² + (y−2)² + 10. Con `np.random.seed(0)`: mejor x = (−2.00000001, 1.99999998), f = 10.0.
 
+### Diagrama
+
+```mermaid
+flowchart TD
+    I["Random positions x, v = 0<br/>p_best = x, g_best = best p_best"] --> V["v = w·v + c1·r1·(p_best − x) + c2·r2·(g_best − x)"]
+    V --> X["x = x + v"]
+    X --> F["Evaluate f(x)"]
+    F --> U["Update p_best and g_best if improved"]
+    U --> S{More iterations?}
+    S -- yes --> V
+    S -- no --> R[Return g_best]
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** cada partícula recuerda su mejor lugar y conoce el mejor lugar del enjambre; su velocidad mezcla lo que traía + atracción a su recuerdo + atracción al grupo.

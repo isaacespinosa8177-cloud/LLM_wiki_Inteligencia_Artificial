@@ -82,6 +82,16 @@ function MONTE-CARLO-TREE-SEARCH(state) returns an action
 - **Go:** hasta 2015 los programas eran de nivel amateur. **AlphaGo** (Silver et al., 2016) combinó reconocimiento visual de patrones, aprendizaje por refuerzo, redes neuronales y MCTS para vencer a Lee Sedol 4–1 (marzo de 2016; AIMA dice "2015", ver [errata](../study/errata.md)) y a Ke Jie 3–0 (2017).
 - Kasparov sobre AlphaZero: se acerca al enfoque humano **Type B** soñado por Shannon y Turing, en lugar de la fuerza bruta.
 
+### Diagrama
+
+```mermaid
+flowchart LR
+    S["1. Selection<br/>follow UCB1 to a leaf"] --> E["2. Expansion<br/>add a child"]
+    E --> R["3. Simulation<br/>random/policy playout to the end"]
+    R --> B["4. Back-propagation<br/>update wins/visits to the root"]
+    B --> S
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** en vez de evaluar una posición con una fórmula, juega muchas partidas rápidas desde ella y mira cuántas se ganan.

@@ -63,6 +63,19 @@ Complejidad O(NC · n² · m) = O(NC · n³) con m ≈ n.
 
 **Generalidad.** ATSP, Quadratic Assignment, Job-Shop Scheduling; competitivo con tabu search y [simulated annealing](simulated-annealing.md).
 
+### Diagrama
+
+```mermaid
+flowchart TD
+    I[Pheromone τ = c on all edges] --> B["Each ant builds a tour:<br/>P(i→j) ∝ τ^α · (1/d)^β, tabu list"]
+    B --> L[Compute tour lengths L_k, keep best]
+    L --> Ev["Evaporate: τ = ρ·τ"]
+    Ev --> De["Deposit: τ += Q/L_k on each ant's edges"]
+    De --> S{More cycles?}
+    S -- yes --> B
+    S -- no --> R[Return best tour]
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** cada hormiga arma un recorrido eligiendo caminos cortos y con mucha feromona; al final los buenos recorridos reciben más feromona y la vieja se evapora.

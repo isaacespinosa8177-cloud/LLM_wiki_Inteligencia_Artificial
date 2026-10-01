@@ -65,6 +65,26 @@ def alphabeta(state, depth, alpha, beta, maximizing):
 
 **Aplicación a la tarea.** El tic-tac-toe 4×4 usa minimax puro con profundidad 4 "because full minimax is too large". Con alpha-beta y buen orden se podría buscar a ~profundidad 8 con el mismo costo.
 
+### Diagrama
+
+El mismo árbol con alpha–beta: tras ver el 2 bajo C, C ≤ 2 < 3 = α, así que **4 y 6 nunca se evalúan**.
+
+```mermaid
+flowchart TD
+    A["▲ A = 3"] --> B["▼ B = 3 [α=−∞, β=3]"]
+    A --> C["▼ C ≤ 2 → poda"]
+    A --> D["▼ D = 2"]
+    B --> b1[3]
+    B --> b2[12]
+    B --> b3[8]
+    C --> c1[2]
+    C -.-> c2["4 (podado)"]
+    C -.-> c3["6 (podado)"]
+    D --> d1[14]
+    D --> d2[5]
+    D --> d3[2]
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** deja de mirar una rama en cuanto sabes que el rival nunca te dejaría llegar ahí (o que tú nunca la elegirías).

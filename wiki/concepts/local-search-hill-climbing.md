@@ -64,6 +64,25 @@ function HILL-CLIMBING(problem) returns a state that is a local maximum
         current ← neighbor
 ```
 
+### Diagrama
+
+Paisaje de una dimensión (AIMA Fig. 4.1): hill climbing desde la izquierda se queda en el máximo local.
+
+```text
+objective
+  9 |                               * <- global maximum
+  8 |                            *     *
+  7 |                         *
+  6 |       * <- local maximum
+  5 |    *     *           *              *
+  4 | *           * * * <- shoulder (flat, but you can still climb later)
+  2 *
+    +--1--2--3--4--5--6--7--8--9--10--11--12--> state
+Hill climbing that starts at state 1 climbs to state 3 and stops there.
+```
+
+Estados 1–3: subida hasta un **máximo local**; 5–7: **hombro** (zona plana desde la que aún se puede subir); 10: **máximo global**.
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** quédate siempre con el mejor vecino; cuando ninguno es mejor, ya estás en una cima (quizá solo local).

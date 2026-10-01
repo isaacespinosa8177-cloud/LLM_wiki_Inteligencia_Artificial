@@ -82,6 +82,26 @@ Inicio `(2,4,3,1,0,6,7,5,8)` → meta `(1,2,3,4,5,6,7,8,0)` (ver [Deber 1](../as
 
 BFS garantiza la solución más corta; DFS encontró una más larga; la búsqueda informada generó 9× menos estados.
 
+### Diagrama
+
+Mismo árbol binario, distinto orden de expansión (meta = G):
+
+```mermaid
+flowchart TD
+    A((A)) --> B((B))
+    A --> C((C))
+    B --> D((D))
+    B --> E((E))
+    C --> F((F))
+    C --> G(((G)))
+```
+
+| Algoritmo | Orden de expansión hasta encontrar G |
+|---|---|
+| BFS (FIFO) | A, B, C, D, E, F, G |
+| DFS (LIFO, hijos izquierda→derecha) | A, B, D, E, C, F, G |
+| IDS | límite 0: A · límite 1: A, B, C · límite 2: A, B, D, E, C, F, G |
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** BFS = por niveles (cola), DFS = una rama hasta el fondo (pila), UCS = siempre el camino más barato (prioridad por g), IDS = DFS con límite creciente.

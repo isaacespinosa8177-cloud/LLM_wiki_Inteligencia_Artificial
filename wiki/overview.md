@@ -11,26 +11,20 @@ updated: 2026-10-01
 
 ## Mapa
 
+```mermaid
+flowchart TB
+    U1["UNIT 1 · Foundations & Agents<br/>What is AI · History · Agents · Environments · Representations"]
+    U2["UNIT 2 · Search & Games<br/>BFS · DFS · UCS · Greedy · A* · Minimax · Alpha-beta · MCTS · CSP"]
+    U3["UNIT 3 · Logic & Prolog<br/>Propositional/FOL · Horn clauses · Unification · SLD · Prolog"]
+    U4["UNIT 4 · Optimization<br/>Hill climbing · SA · GD · GA/EAs · PSO · ACO · ABC"]
+    U1 -- "atomic states" --> U2
+    U1 -- "structured states" --> U3
+    U1 -- "factored / continuous states" --> U4
+    U2 -- "DFS + backtracking = SLD resolution" --> U3
+    U2 -- "N-Queens: CSP ↔ Prolog" --> U3
+    U2 -- "heuristics ↔ fitness functions; local search" --> U4
 ```
-                      ┌────────────────────────────────────┐
-                      │  UNIT 1 · Foundations & Agents      │
-                      │  What is AI · History · Agents ·    │
-                      │  Environments · Representations     │
-                      └───────────────┬────────────────────┘
-                                      │ "a rational agent must decide what to do"
-        ┌─────────────────────────────┼──────────────────────────────┐
-        ▼                             ▼                              ▼
-┌──────────────────┐        ┌───────────────────┐         ┌─────────────────────┐
-│ UNIT 2 · Search  │        │ UNIT 3 · Logic    │         │ UNIT 4 · Optimization│
-│ atomic states    │        │ structured states │         │ factored / continuous│
-│ BFS DFS UCS      │◄──DFS──┤ Horn clauses      │         │ GD · SA              │
-│ Greedy · A*      │        │ Backward chaining │         │ GA (evolution)       │
-│ Minimax · α–β    │        │ Unification       │         │ PSO · ACO · ABC      │
-│ CSP ─────────────┼─N-Queens─► Prolog          │         │ (swarms)             │
-└──────────────────┘        └───────────────────┘         └─────────────────────┘
-        ▲                                                            │
-        └──────────── heuristics ↔ fitness functions ────────────────┘
-```
+
 
 ## Unidades
 

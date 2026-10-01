@@ -79,6 +79,26 @@ Rendimiento en ajedrez (AIMA): minimax con 10⁶ nodos/s llega a ~5 plies (lo ve
 
 ⚠️ **Regla de oro:** los valores terminales deben **dominar** a cualquier valor heurístico. Si ganar vale +1 pero una posición no terminal puede valer +2, el agente prefiere la posición "prometedora" a ganar. Esto ocurre en la [tarea 4×4](../assignments/tic-tac-toe-4x4-minimax.md) (verificado: la IA no tomó una victoria inmediata en 2 de 54 posiciones de prueba). Solución: ganar = +1000 (o +1000 − profundidad para preferir victorias rápidas).
 
+### Diagrama
+
+Árbol de AIMA Fig. 6.2 con los valores minimax (▲ = MAX, ▼ = MIN):
+
+```mermaid
+flowchart TD
+    A["▲ A = 3"] -- a1 --> B["▼ B = 3"]
+    A -- a2 --> C["▼ C = 2"]
+    A -- a3 --> D["▼ D = 2"]
+    B --> b1[3]
+    B --> b2[12]
+    B --> b3[8]
+    C --> c1[2]
+    C --> c2[4]
+    C --> c3[6]
+    D --> d1[14]
+    D --> d2[5]
+    D --> d3[2]
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** supón que el rival es perfecto: en tus turnos tomas el máximo, en los suyos él toma el mínimo, y esos valores suben desde las hojas.

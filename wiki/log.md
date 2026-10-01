@@ -67,3 +67,9 @@ Recent activity: `grep "^## \[" wiki/log.md | tail -5`
 - Created: ea-representation-and-variation (ch. 4), ea-selection-and-population-management (ch. 5 + §3.1–3.2).
 - Updated: genetic-algorithms (x² cycle by hand, EA behaviour, No Free Lunch, 8-queens EA), evolutionary-computation (components, natural vs. artificial evolution).
 - Found an error in Eiben & Smith Table 3.3 (mutants decoded wrongly) → errata #9, verified against the PDF page.
+
+## [2026-10-01] update | Intuitive pseudocode, diagrams, practice problems
+
+- Added a "Pseudocódigo intuitivo" section (ES idea + EN steps + EN exam answer) to 32 concept pages; `tools/build_study.py` generates study/intuitive-pseudocode.md. Convention added to CLAUDE.md §3.
+- Added 17 Mermaid diagrams (agent loop and architectures, graph search, BFS/DFS order, Romania A*, minimax and alpha–beta trees, MCTS cycle, Australia constraint graph, Criminal(West) proof tree, SLD flow, SA/GA/PSO/ACO/EA loops, course map); all validated with mermaid-cli.
+- Created practice problem pages for units 1–4 with worked solutions; every numeric answer verified with Python and every Prolog answer with SWI-Prolog.

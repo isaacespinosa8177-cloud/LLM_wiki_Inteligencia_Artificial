@@ -94,5 +94,6 @@ Catalog of every page. The LLM reads this first when answering a question and up
 - [Study plan — test Thu Oct 8](study/study-plan.md) — day-by-day plan with daily routine and priorities.
 - [Search algorithms comparison](study/search-algorithms-comparison.md) — Unit 2 cheat sheet with real numbers.
 - [Metaheuristics comparison](study/metaheuristics-comparison.md) — Unit 4 cheat sheet.
+- Practice problems with worked solutions: [Unit 1 — Agents](study/practice-unit-1-agents.md) · [Unit 2 — Search, games, CSP](study/practice-unit-2-search.md) · [Unit 3 — Logic & Prolog](study/practice-unit-3-logic.md) · [Unit 4 — Optimization](study/practice-unit-4-optimization.md)
 - [Exam questions](study/exam-questions.md) — 34 self-test questions with hidden answers.
 - [Errata](study/errata.md) — source contradictions and code bugs to remember.

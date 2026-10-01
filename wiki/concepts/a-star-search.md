@@ -109,6 +109,26 @@ La primera y la última línea se contradicen → A\* solo devuelve caminos ópt
 | Weighted A\* | g(n) + W·h(n) | 1 < W < ∞ |
 | Greedy best-first | h(n) | ∞ |
 
+### Diagrama
+
+Subgrafo de Rumania usado en la tarea (costos en km; h\_SLD entre paréntesis). Camino óptimo en negrita: 140 + 80 + 97 + 101 = **418**.
+
+```mermaid
+flowchart LR
+    Arad["Arad (366)"] -- 140 --> Sibiu["Sibiu (253)"]
+    Arad -- 118 --> Tim["Timisoara (329)"]
+    Arad -- 75 --> Zer["Zerind (374)"]
+    Sibiu -- 99 --> Fag["Fagaras (176)"]
+    Sibiu -- 151 --> Ora["Oradea (380)"]
+    Sibiu -- 80 --> RV["Rimnicu Vilcea (193)"]
+    RV -- 146 --> Cra["Craiova (160)"]
+    RV -- 97 --> Pit["Pitesti (100)"]
+    Cra -- 138 --> Pit
+    Fag -- 211 --> Buc["Bucharest (0)"]
+    Pit -- 101 --> Buc
+    linkStyle 0,5,7,10 stroke-width:4px
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** A\* elige el nodo con menor **costo ya pagado + costo estimado restante**; con una h que no exagera, el primer camino a la meta que *expande* es el óptimo.

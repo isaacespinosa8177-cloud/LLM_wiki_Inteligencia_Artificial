@@ -69,6 +69,20 @@ Holland (1992) explica por qué los primeros intentos de finales de los 50 falla
 
 **Relación con la inteligencia de enjambre.** [PSO](particle-swarm-optimization.md) también usa una población y una medida de aptitud, pero no hay selección ni reproducción: las mismas partículas se mueven. Kennedy y Eberhart lo ubican "entre los GA y la programación evolutiva".
 
+### Diagrama
+
+```mermaid
+flowchart LR
+    I[Initialise population] --> E[Evaluate]
+    E --> PS[Parent selection]
+    PS --> V["Variation:<br/>recombination + mutation"]
+    V --> E2[Evaluate offspring]
+    E2 --> SS[Survivor selection]
+    SS --> T{Termination?}
+    T -- no --> PS
+    T -- yes --> R[Best solution]
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** una población de soluciones que, generación tras generación, se reproduce (con cambios) y donde los mejores sobreviven.

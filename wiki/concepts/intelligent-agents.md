@@ -57,6 +57,16 @@ function REFLEX-VACUUM-AGENT([location, status]) returns action
 
 **PEAS.** Para especificar un entorno de tarea: *Performance* (criterio de éxito), *Environment* (el mundo), *Actuators*, *Sensors*. Ejemplo clásico (AIMA): taxi automático — P: seguridad, rapidez, legalidad, comodidad; E: calles, tráfico, peatones; A: volante, acelerador, freno, bocina; S: cámaras, GPS, velocímetro, sonar.
 
+### Diagrama
+
+```mermaid
+flowchart LR
+    E((Environment)) -- percepts --> S[Sensors]
+    S --> P["Agent program<br/>(approximates the agent function)"]
+    P --> A[Actuators]
+    A -- actions --> E
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** un agente repite siempre el mismo ciclo: percibir → decidir → actuar; lo que cambia entre agentes es *cómo* decide.

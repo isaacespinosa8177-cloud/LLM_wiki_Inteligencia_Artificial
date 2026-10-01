@@ -47,6 +47,24 @@ Cualquiera de los cuatro tipos puede construirse **como agente que aprende**. Tu
 
 El generador de problemas es la versión "agente" de **exploración vs. explotación**: el elemento de desempeño siempre haría lo que hoy parece mejor; explorar un poco puede descubrir algo mucho mejor a largo plazo.
 
+### Diagrama
+
+```mermaid
+flowchart TB
+    subgraph SR["Simple reflex"]
+        p1[Percept] --> r1[Condition-action rules] --> a1[Action]
+    end
+    subgraph MB["Model-based reflex"]
+        p2[Percept] --> s2["Internal state<br/>(world model + transition model)"] --> r2[Rules] --> a2[Action]
+    end
+    subgraph GB["Goal-based"]
+        p3[Percept] --> s3[State] --> g3["What if I do A?<br/>search / planning"] --> q3{Reaches goal?} --> a3[Action]
+    end
+    subgraph UB["Utility-based"]
+        p4[Percept] --> s4[State] --> g4[Predict outcomes] --> u4["Expected utility<br/>of each action"] --> a4[Best action]
+    end
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** cada tipo de agente añade una pieza: memoria (modelo), metas (planificar) y utilidad (comparar opciones).

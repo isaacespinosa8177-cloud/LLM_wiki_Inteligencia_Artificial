@@ -102,6 +102,20 @@ function BEST-FIRST-SEARCH(problem, f) returns a solution node or failure
 
 **Ejemplos del curso.** Mapa de Rumania (Arad → Bucarest), 8-puzzle, 80-puzzle, granjero–lobo–cabra–col, N-Reinas (ver [Deber 1](../assignments/deber-1-search-problems.md)).
 
+### Diagrama
+
+```mermaid
+flowchart TD
+    A[Put initial state in frontier] --> B{Frontier empty?}
+    B -- yes --> F[Return failure]
+    B -- no --> C["Pop a node<br/>(FIFO=BFS, LIFO=DFS, g=UCS, h=greedy, g+h=A*)"]
+    C --> D{Goal?}
+    D -- yes --> G[Return path via parent pointers]
+    D -- no --> E[Mark explored, expand children]
+    E --> H[Add new or cheaper children to frontier]
+    H --> B
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** todos los algoritmos de búsqueda son el mismo bucle; solo cambia **qué nodo sacas primero** de la frontera.

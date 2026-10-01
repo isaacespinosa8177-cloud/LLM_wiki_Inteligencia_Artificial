@@ -151,6 +151,20 @@ Mutación (un bit en dos hijos): `01100 → 11100` y `10000 → 10100`. Correcta
 
 [Tarea GA](../assignments/genetic-algorithm-task.md): población 100, 16 bits, 100 épocas, selección por truncamiento K = 10 + elitismo, cruce de un punto, p_m = 0.1 por bit. Con `random.seed(0)`, el mejor llegó a f = 11 en la época 1 y al óptimo (x, y) = (−2, 2), f = 10, en la época 20.
 
+### Diagrama
+
+```mermaid
+flowchart LR
+    I[Random population] --> E[Evaluate fitness]
+    E --> S[Select parents]
+    S --> X["Crossover<br/>1101|1001 × 0010|0110"]
+    X --> M["Mutation<br/>flip bits with p_m"]
+    M --> N[New generation<br/>+ elitism]
+    N --> T{Stop?}
+    T -- no --> E
+    T -- yes --> B[Best individual]
+```
+
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
 > **Idea (ES):** los cromosomas buenos tienen más hijos; los hijos mezclan pedazos de sus padres (cruce) y a veces cambian un bit (mutación).
