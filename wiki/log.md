@@ -73,3 +73,9 @@ Recent activity: `grep "^## \[" wiki/log.md | tail -5`
 - Added a "Pseudocódigo intuitivo" section (ES idea + EN steps + EN exam answer) to 32 concept pages; `tools/build_study.py` generates study/intuitive-pseudocode.md. Convention added to CLAUDE.md §3.
 - Added 17 Mermaid diagrams (agent loop and architectures, graph search, BFS/DFS order, Romania A*, minimax and alpha–beta trees, MCTS cycle, Australia constraint graph, Criminal(West) proof tree, SLD flow, SA/GA/PSO/ACO/EA loops, course map); all validated with mermaid-cli.
 - Created practice problem pages for units 1–4 with worked solutions; every numeric answer verified with Python and every Prolog answer with SWI-Prolog.
+
+## [2026-10-01] update | Interactive quiz and Algorithm Lab visualizers
+- Created `study-tools/web/visualizer.html` (Algorithm Lab): BFS/DFS/UCS/greedy/A\* on the Romania map with frontier table; minimax and alpha–beta on AIMA Fig. 6.2 and practice problems 5–6; PSO, binary GA, SA and GD on the course function, Rastrigin and Ackley. Verified in headless Chromium: A\* and UCS give 418 km, greedy and BFS 450 km; A\* expands 5 nodes; pruned leaves match practice solutions.
+- Published: quiz https://claude.ai/artifact/9hSKYonRePXtWC6XArdtQU · visualizer https://claude.ai/artifact/UGK26c8fFaBuEY4ADznnvC.
+- Created [study/interactive-tools.md](study/interactive-tools.md); linked it and the (previously orphaned) [quiz bank](study/quiz-bank.md) from `index.md`.
+- Updated `study/study-plan.md` (daily quiz round, Lab exercises on Sat/Mon/Tue), `study/flashcards.md` (`quiz` tag; 239 cards), `CLAUDE.md` §7 and `README.md`.

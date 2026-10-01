@@ -1,6 +1,6 @@
 # Index — Inteligencia Artificial Wiki
 
-Catalog of every page. The LLM reads this first when answering a question and updates it on every ingest. Pages: 60 · Sources ingested: 11 of 14 (books pending) · Last update: 2026-10-01.
+Catalog of every page. The LLM reads this first when answering a question and updates it on every ingest. Pages: 72 · Sources ingested: 11 of 14 in full + book chapters (AIMA 2–6, Eiben & Smith 3–5) · Last update: 2026-10-01.
 
 ## Start here
 
@@ -95,6 +95,8 @@ Catalog of every page. The LLM reads this first when answering a question and up
 - [Search algorithms comparison](study/search-algorithms-comparison.md) — Unit 2 cheat sheet with real numbers.
 - [Metaheuristics comparison](study/metaheuristics-comparison.md) — Unit 4 cheat sheet.
 - Practice problems with worked solutions: [Unit 1 — Agents](study/practice-unit-1-agents.md) · [Unit 2 — Search, games, CSP](study/practice-unit-2-search.md) · [Unit 3 — Logic & Prolog](study/practice-unit-3-logic.md) · [Unit 4 — Optimization](study/practice-unit-4-optimization.md)
-- [Flashcards (Anki deck)](study/flashcards.md) — 178 auto-generated cards (glossary, exam questions, practice, pseudocode) tagged by unit; how to import.
+- [Interactive tools — Exam Drill & Algorithm Lab](study/interactive-tools.md) — browser quiz (61 MCQs, per-unit score, "only my mistakes") and step-through visualizers for search, alpha–beta and PSO/GA/SA/GD.
+- [Quiz bank](study/quiz-bank.md) — the 61 multiple-choice questions behind the quiz and the `quiz` Anki cards (edit here, then rebuild).
+- [Flashcards (Anki deck)](study/flashcards.md) — 239 auto-generated cards (glossary, exam questions, practice, pseudocode, quiz) tagged by unit; how to import.
 - [Exam questions](study/exam-questions.md) — 34 self-test questions with hidden answers.
 - [Errata](study/errata.md) — source contradictions and code bugs to remember.

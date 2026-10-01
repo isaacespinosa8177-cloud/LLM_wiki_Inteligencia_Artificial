@@ -34,6 +34,11 @@ The agent reads [`CLAUDE.md`](CLAUDE.md) for the conventions and records every o
 ```bash
 python3 tools/extract_text.py            # slides/PDFs -> .cache/text/ (needs pdftotext for PDFs)
 python3 tools/lint_wiki.py               # broken links, orphan pages, missing frontmatter
-python3 tools/build_study.py             # regenerate pseudocode cheat sheet + Anki deck
+python3 tools/build_study.py             # regenerate pseudocode cheat sheet, Anki deck and quiz page
 python3 tools/search.py "alpha beta"     # search the wiki and the extracted slides/PDFs
 ```
+
+## Study tools
+
+- **Anki deck:** [`study-tools/anki/ia-wiki-flashcards.txt`](study-tools/anki/ia-wiki-flashcards.txt) — import guide in [wiki/study/flashcards.md](wiki/study/flashcards.md).
+- **Exam Drill quiz** and **Algorithm Lab** visualizers: [`study-tools/web/`](study-tools/web/) — open the `.html` files in a browser, or use the published links in [wiki/study/interactive-tools.md](wiki/study/interactive-tools.md).

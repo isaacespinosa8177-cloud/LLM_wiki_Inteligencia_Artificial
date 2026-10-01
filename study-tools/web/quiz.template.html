@@ -1,0 +1,242 @@
+<title>IA Exam Drill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@600;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one narrow "exam sheet" column — header with unit chips, a progress rail, the question card, then feedback. */
+:root {
+  --bg: #eef2f4;
+  --surface: #ffffff;
+  --surface-2: #f6f8f9;
+  --fg: #142029;
+  --muted: #5a6874;
+  --line: #d3dbe1;
+  --accent: #0e6a6e;
+  --accent-soft: #d8eeee;
+  --ok: #1e7a3c;
+  --ok-soft: #dff2e5;
+  --bad: #b2271d;
+  --bad-soft: #fbe3e0;
+  --font-display: "Chivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1418; --surface: #141d23; --surface-2: #1a252c; --fg: #e2e9ee; --muted: #94a3ae;
+    --line: #27343d; --accent: #53b8ba; --accent-soft: #163538; --ok: #63c47f; --ok-soft: #173322;
+    --bad: #f1786d; --bad-soft: #3a1c1a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1418; --surface: #141d23; --surface-2: #1a252c; --fg: #e2e9ee; --muted: #94a3ae;
+  --line: #27343d; --accent: #53b8ba; --accent-soft: #163538; --ok: #63c47f; --ok-soft: #173322;
+  --bad: #f1786d; --bad-soft: #3a1c1a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 720px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 48px; display: grid; gap: 20px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 6vw, 40px); line-height: 1.05; margin: 0; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); max-width: 60ch; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { font: inherit; font-size: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.chip:focus-visible, .opt:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+select { font: inherit; font-size: 14px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+.rail { height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.rail > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s ease; }
+.meta { display: flex; justify-content: space-between; gap: 8px; font-family: var(--font-mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 16px; min-width: 0; }
+.qtag { font-family: var(--font-mono); font-size: 12px; color: var(--accent); letter-spacing: .04em; }
+.q { font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 1.3; margin: 0; text-wrap: balance; }
+.opts { display: grid; gap: 10px; }
+.opt { font: inherit; text-align: left; width: 100%; border: 1.5px solid var(--line); background: var(--surface-2); color: var(--fg); border-radius: 8px; padding: 12px 14px; cursor: pointer; display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt .k { font-family: var(--font-mono); font-weight: 600; color: var(--muted); }
+.opt.ok { border-color: var(--ok); background: var(--ok-soft); }
+.opt.bad { border-color: var(--bad); background: var(--bad-soft); }
+.opt:disabled { cursor: default; }
+.feedback { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 12px 14px; border-radius: 6px; display: grid; gap: 6px; }
+.feedback.ok { border-color: var(--ok); background: var(--ok-soft); }
+.feedback.bad { border-color: var(--bad); background: var(--bad-soft); }
+.feedback strong { font-family: var(--font-display); }
+.see { font-family: var(--font-mono); font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.btn { font: inherit; font-weight: 700; border: 0; border-radius: 8px; padding: 10px 18px; cursor: pointer; background: var(--accent); color: var(--surface); }
+.btn.ghost { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+.score { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.score div { border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--surface-2); }
+.score b { display: block; font-family: var(--font-display); font-size: 26px; font-variant-numeric: tabular-nums; }
+.score span { font-size: 13px; color: var(--muted); }
+.review { display: grid; gap: 10px; }
+.review article { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; background: var(--surface-2); display: grid; gap: 4px; }
+kbd { font-family: var(--font-mono); font-size: 12px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; background: var(--surface); }
+.hint { font-size: 13px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .rail > i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Inteligencia Artificial · USFQ · test Thu Oct 8</div>
+    <h1>IA Exam Drill</h1>
+    <p class="lede">Multiple-choice questions from your study wiki, in English like the exam. Pick the units, answer, and read the explanation after each question.</p>
+    <div class="controls" id="units" role="group" aria-label="Units"></div>
+    <div class="row">
+      <label class="hint" for="count">Questions per round
+        <select id="count"><option value="10">10</option><option value="20" selected>20</option><option value="all">All</option></select>
+      </label>
+      <div class="controls">
+        <button class="chip" id="missedMode" aria-pressed="false" type="button">Only my mistakes</button>
+        <button class="btn" id="start" type="button">Start round</button>
+      </div>
+    </div>
+  </header>
+
+  <section id="quiz" hidden>
+    <div class="meta"><span id="pos">1 / 20</span><span id="live">0 correct</span></div>
+    <div class="rail" aria-hidden="true"><i id="bar"></i></div>
+    <div class="card" style="margin-top:14px">
+      <div class="qtag" id="qtag"></div>
+      <p class="q" id="qtext"></p>
+      <div class="opts" id="opts"></div>
+      <div class="feedback" id="fb" hidden></div>
+      <div class="row">
+        <span class="hint">Keys: <kbd>1</kbd>–<kbd>4</kbd> answer · <kbd>Enter</kbd> next</span>
+        <button class="btn" id="next" type="button" hidden>Next question</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="card" hidden>
+    <div class="eyebrow">Round finished</div>
+    <p class="q" id="rtitle"></p>
+    <div class="score" id="rscore"></div>
+    <div class="row"><button class="btn" id="again" type="button">New round</button><button class="btn ghost" id="redo" type="button">Retry my mistakes</button></div>
+    <div class="review" id="rlist"></div>
+  </section>
+</div>
+
+<script id="quiz-data" type="application/json">/*QUIZ_DATA*/</script>
+<script>
+(function () {
+  const QUESTIONS = JSON.parse(document.getElementById("quiz-data").textContent);
+  const UNIT_NAMES = { unit1: "Unit 1 · Agents", unit2: "Unit 2 · Search & games", unit3: "Unit 3 · Logic & Prolog", unit4: "Unit 4 · Optimization" };
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem("iaquiz:" + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem("iaquiz:" + k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } }
+  };
+  const $ = (id) => document.getElementById(id);
+  let selected = new Set(store.get("units", Object.keys(UNIT_NAMES)));
+  let missed = new Set(store.get("missed", []));
+  let round = [], idx = 0, correct = 0, wrongs = [], answered = false;
+
+  function renderUnits() {
+    const box = $("units"); box.innerHTML = "";
+    Object.entries(UNIT_NAMES).forEach(([k, name]) => {
+      const n = QUESTIONS.filter(q => q.unit === k).length;
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "chip"; b.textContent = `${name} (${n})`;
+      b.setAttribute("aria-pressed", selected.has(k));
+      b.onclick = () => { selected.has(k) ? selected.delete(k) : selected.add(k); if (!selected.size) selected.add(k); store.set("units", [...selected]); renderUnits(); };
+      box.appendChild(b);
+    });
+    $("missedMode").textContent = `Only my mistakes (${[...missed].filter(id => QUESTIONS.some(q => q.id === id)).length})`;
+  }
+  function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+  function start(onlyMissed) {
+    let pool = QUESTIONS.filter(q => selected.has(q.unit));
+    if (onlyMissed) pool = pool.filter(q => missed.has(q.id));
+    if (!pool.length) { pool = QUESTIONS.filter(q => selected.has(q.unit)); }
+    const n = $("count").value === "all" ? pool.length : Math.min(+$("count").value, pool.length);
+    round = shuffle(pool.slice()).slice(0, n).map(q => ({ ...q, order: shuffle(q.options.map((_, i) => i)) }));
+    idx = 0; correct = 0; wrongs = [];
+    $("result").hidden = true; $("quiz").hidden = false;
+    show();
+  }
+  function show() {
+    const q = round[idx]; answered = false;
+    $("pos").textContent = `${idx + 1} / ${round.length}`;
+    $("live").textContent = `${correct} correct`;
+    $("bar").style.width = `${(idx / round.length) * 100}%`;
+    $("qtag").textContent = UNIT_NAMES[q.unit];
+    $("qtext").textContent = q.question;
+    $("fb").hidden = true; $("next").hidden = true;
+    const box = $("opts"); box.innerHTML = "";
+    q.order.forEach((oi, k) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "opt"; b.dataset.oi = oi;
+      b.innerHTML = `<span class="k">${String.fromCharCode(65 + k)}</span><span></span>`;
+      b.lastChild.textContent = q.options[oi];
+      b.onclick = () => answer(oi);
+      box.appendChild(b);
+    });
+  }
+  function answer(oi) {
+    if (answered) return; answered = true;
+    const q = round[idx], ok = oi === q.correct;
+    if (ok) { correct++; missed.delete(q.id); } else { wrongs.push({ q, oi }); missed.add(q.id); }
+    store.set("missed", [...missed]);
+    [...$("opts").children].forEach(b => {
+      b.disabled = true;
+      if (+b.dataset.oi === q.correct) b.classList.add("ok");
+      else if (+b.dataset.oi === oi) b.classList.add("bad");
+    });
+    const fb = $("fb"); fb.className = "feedback " + (ok ? "ok" : "bad"); fb.hidden = false;
+    fb.innerHTML = `<strong></strong><span></span><span class="see"></span>`;
+    fb.children[0].textContent = ok ? "Correct." : `Not quite. Answer: ${q.options[q.correct]}`;
+    fb.children[1].textContent = q.explanation;
+    fb.children[2].textContent = q.see ? `Wiki → ${q.see}` : "";
+    $("live").textContent = `${correct} correct`;
+    $("next").hidden = false; $("next").textContent = idx + 1 < round.length ? "Next question" : "See results";
+    $("next").focus({ preventScroll: true });
+  }
+  function next() { if (!answered) return; idx++; idx < round.length ? show() : finish(); }
+  function finish() {
+    $("bar").style.width = "100%"; $("quiz").hidden = true; $("result").hidden = false;
+    const pct = Math.round((correct / round.length) * 100);
+    $("rtitle").textContent = `${correct} of ${round.length} correct (${pct}%)`;
+    const byUnit = {};
+    round.forEach(q => { byUnit[q.unit] = byUnit[q.unit] || [0, 0]; byUnit[q.unit][1]++; });
+    round.forEach(q => { if (!wrongs.some(w => w.q.id === q.id)) byUnit[q.unit][0]++; });
+    const best = store.get("best", {});
+    $("rscore").innerHTML = "";
+    Object.entries(byUnit).forEach(([u, [c, t]]) => {
+      const p = Math.round((c / t) * 100); best[u] = Math.max(best[u] || 0, p);
+      const d = document.createElement("div");
+      d.innerHTML = `<span></span><b>${c}/${t}</b><span>best this device: ${best[u]}%</span>`;
+      d.firstChild.textContent = UNIT_NAMES[u]; $("rscore").appendChild(d);
+    });
+    store.set("best", best);
+    const list = $("rlist"); list.innerHTML = "";
+    wrongs.forEach(({ q, oi }) => {
+      const a = document.createElement("article");
+      a.innerHTML = `<div class="qtag"></div><strong></strong><span></span><span></span><span class="see"></span>`;
+      a.children[0].textContent = UNIT_NAMES[q.unit];
+      a.children[1].textContent = q.question;
+      a.children[2].textContent = `You answered: ${q.options[oi]} · Correct: ${q.options[q.correct]}`;
+      a.children[3].textContent = q.explanation;
+      a.children[4].textContent = q.see ? `Wiki → ${q.see}` : "";
+      list.appendChild(a);
+    });
+    $("redo").hidden = !wrongs.length;
+    renderUnits();
+  }
+  $("start").onclick = () => start($("missedMode").getAttribute("aria-pressed") === "true");
+  $("again").onclick = () => start(false);
+  $("redo").onclick = () => start(true);
+  $("next").onclick = next;
+  $("missedMode").onclick = (e) => { const b = e.currentTarget; b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") !== "true"); };
+  document.addEventListener("keydown", (e) => {
+    if ($("quiz").hidden) return;
+    if (/^[1-4]$/.test(e.key) && !answered) { const b = $("opts").children[+e.key - 1]; if (b) b.click(); }
+    else if (e.key === "Enter" && answered) { e.preventDefault(); next(); }
+  });
+  renderUnits();
+  start(false);
+})();
+</script>

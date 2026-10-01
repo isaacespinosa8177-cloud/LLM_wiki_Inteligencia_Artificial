@@ -196,8 +196,13 @@ and this wiki is maintained by an agent. So, for every assignment:
 - `tools/lint_wiki.py` — checks broken relative links, pages unreachable from
   `index.md`, and missing frontmatter keys. Exit code 1 on problems.
 - `tools/build_study.py` — regenerates the generated study files (intuitive-pseudocode
-  cheat sheet, Anki deck `study-tools/anki/ia-wiki-flashcards.txt`, …). Run it after every wiki change, before linting. Never hand-edit
+  cheat sheet, Anki deck `study-tools/anki/ia-wiki-flashcards.txt`, quiz page
+  `study-tools/web/quiz.html` from `wiki/study/quiz-bank.md` + `quiz.template.html`). Run it after every wiki change, before linting. Never hand-edit
   files marked "generated".
+
+- `study-tools/web/` — browser pages published as private claude.ai artifacts (URLs in
+  `wiki/study/interactive-tools.md`): `quiz.html` (generated) and `visualizer.html`
+  (hand-written). After changing one, republish it to the same URL.
 
 ## 8. Quality bar
 

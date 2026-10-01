@@ -19,6 +19,7 @@ updated: 2026-10-01
 | `unit1-agents` … `unit4-optimization` | Preguntas de examen y problemas de práctica de cada unidad |
 | `practice` | Problemas con solución completa |
 | `pseudocode` | "Write the intuitive pseudocode for X" → pasos en inglés + respuesta de examen |
+| `quiz` | Preguntas de opción múltiple del [quiz bank](quiz-bank.md) (las mismas del [Exam Drill](interactive-tools.md)) |
 
 ## Cómo importarlo
 
