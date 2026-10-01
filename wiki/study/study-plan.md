@@ -14,7 +14,8 @@ updated: 2026-10-01
 1. **Flashcards (15 min):** repaso en Anki ([cómo importar el mazo](flashcards.md)) — primero las tarjetas vencidas.
 2. **Explicar en voz alta (10 min):** elige 2 algoritmos y escribe su pseudocódigo intuitivo **en inglés** de memoria; compáralo con la [hoja de pseudocódigo intuitivo](intuitive-pseudocode.md).
 3. **Errata (5 min):** releer [Errata](errata.md) — son las "trampas" más probables.
-4. **Quiz (5–10 min, opcional):** una ronda de 10 preguntas en el [IA Exam Drill](interactive-tools.md) de la unidad del día; al final de la semana, modo *Only my mistakes*.
+4. **Presentación de repaso (10 min, la noche anterior):** la [presentación](review-decks.md) de la unidad del día siguiente.
+5. **Quiz (5–10 min, opcional):** una ronda de 10 preguntas en el [IA Exam Drill](interactive-tools.md) de la unidad del día; al final de la semana, modo *Only my mistakes*.
 
 ## Plan por día
 
@@ -26,7 +27,7 @@ updated: 2026-10-01
 | **Dom 4 oct** | Unidad 3: lógica y Prolog | [Logic](../concepts/propositional-and-first-order-logic.md), [Horn](../concepts/horn-clauses-and-backward-chaining.md), [Unification](../concepts/unification.md), [Prolog](../concepts/prolog.md), [Recursion & Lists](../concepts/prolog-recursion-and-lists.md) | [Práctica U3](practice-unit-3-logic.md) completa; probar las reglas en SWISH | ☐ |
 | **Lun 5 oct** | Unidad 4: optimización | [Optimization Basics](../concepts/optimization-basics.md), [GD](../concepts/gradient-descent.md), [SA](../concepts/simulated-annealing.md), [GA](../concepts/genetic-algorithms.md), [PSO](../concepts/particle-swarm-optimization.md), [ACO](../concepts/ant-colony-optimization.md), [ABC](../concepts/artificial-bee-colony.md) | [Práctica U4](practice-unit-4-optimization.md) completa (GD, SA, GA, PSO, ACO a mano); jugar con w, c₁, c₂ de PSO y α de SA en el [Algorithm Lab](interactive-tools.md) | ☐ |
 | **Mar 6 oct** | Repaso mixto | [Search comparison](search-algorithms-comparison.md), [Metaheuristics comparison](metaheuristics-comparison.md) | Todas las [Exam questions](exam-questions.md) y el quiz completo (*All*) del [Exam Drill](interactive-tools.md); rehacer las que fallaste | ☐ |
-| **Mié 7 oct** | Simulacro | [History of AI](../concepts/history-of-ai.md) (fechas y autores), [People](../people.md) | Simulacro cronometrado (60–90 min) sin apuntes; corregir; repasar solo lo fallado. **Dormir bien.** | ☐ |
+| **Mié 7 oct** | Simulacro | [History of AI](../concepts/history-of-ai.md) (fechas y autores), [People](../people.md) | Repasar las 4 [presentaciones](review-decks.md) y responder sus *self-checks* en voz alta; simulacro cronometrado (60–90 min) sin apuntes; corregir; repasar solo lo fallado. **Dormir bien.** | ☐ |
 | **Jue 8 oct** | 🎯 Test | — | 20 min de flashcards en la mañana; nada nuevo | ☐ |
 
 ## Prioridades si falta tiempo
@@ -40,4 +41,4 @@ updated: 2026-10-01
 ## Notas
 
 - Alcance del test supuesto: unidades 1–4. Si el profesor confirma otro alcance, pídele a la IA que ajuste este plan.
-- Herramientas: [flashcards](flashcards.md) · [quiz y visualizadores](interactive-tools.md) · [pseudocódigo intuitivo](intuitive-pseudocode.md) · problemas de práctica ([U1](practice-unit-1-agents.md), [U2](practice-unit-2-search.md), [U3](practice-unit-3-logic.md), [U4](practice-unit-4-optimization.md)).
+- Herramientas: [flashcards](flashcards.md) · [quiz y visualizadores](interactive-tools.md) · [presentaciones de repaso](review-decks.md) · [pseudocódigo intuitivo](intuitive-pseudocode.md) · problemas de práctica ([U1](practice-unit-1-agents.md), [U2](practice-unit-2-search.md), [U3](practice-unit-3-logic.md), [U4](practice-unit-4-optimization.md)).

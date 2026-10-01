@@ -41,4 +41,5 @@ python3 tools/search.py "alpha beta"     # search the wiki and the extracted sli
 ## Study tools
 
 - **Anki deck:** [`study-tools/anki/ia-wiki-flashcards.txt`](study-tools/anki/ia-wiki-flashcards.txt) — import guide in [wiki/study/flashcards.md](wiki/study/flashcards.md).
+- **Review slide decks** (one per unit, PDF): [`study-tools/slides/pdf/`](study-tools/slides/pdf/) — guide in [wiki/study/review-decks.md](wiki/study/review-decks.md).
 - **Exam Drill quiz** and **Algorithm Lab** visualizers: [`study-tools/web/`](study-tools/web/) — open the `.html` files in a browser, or use the published links in [wiki/study/interactive-tools.md](wiki/study/interactive-tools.md).

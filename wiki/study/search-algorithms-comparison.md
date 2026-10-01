@@ -32,6 +32,7 @@ b = factor de ramificación, d = profundidad de la solución más superficial, m
 |---|---|---|---|
 | Rumania Arad→Bucharest | Dijkstra | 418 | 9 expandidos |
 | Rumania Arad→Bucharest | A\* (h\_SLD) | 418 | **5** expandidos |
+| Rumania completo (20 ciudades) | UCS / A\* / greedy | 418 / 418 / 450 | 12 / 5 / 3 expandidos ([Algorithm Lab](interactive-tools.md)) |
 | 8-puzzle | BFS | 6 mov. | 135 generados |
 | 8-puzzle | DFS (l = 10) | 10 mov. | 484 generados |
 | 8-puzzle | Greedy Manhattan | 6 mov. | **15** generados |

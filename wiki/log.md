@@ -79,3 +79,8 @@ Recent activity: `grep "^## \[" wiki/log.md | tail -5`
 - Published: quiz https://claude.ai/artifact/9hSKYonRePXtWC6XArdtQU · visualizer https://claude.ai/artifact/UGK26c8fFaBuEY4ADznnvC.
 - Created [study/interactive-tools.md](study/interactive-tools.md); linked it and the (previously orphaned) [quiz bank](study/quiz-bank.md) from `index.md`.
 - Updated `study/study-plan.md` (daily quiz round, Lab exercises on Sat/Mon/Tue), `study/flashcards.md` (`quiz` tag; 239 cards), `CLAUDE.md` §7 and `README.md`.
+
+## [2026-10-01] update | Review slide decks per unit
+- Created Marp decks `study-tools/slides/unit-1-agents.md` (13 slides), `unit-2-search.md` (15), `unit-3-logic.md` (13), `unit-4-optimization.md` (13) with theme `ia-review.css`; rendered PDFs to `study-tools/slides/pdf/`. Checked every slide for overflow in headless Chromium.
+- Created [study/review-decks.md](study/review-decks.md); linked from `index.md`, `study/study-plan.md` (night-before review, Wed mock exam), `CLAUDE.md` §1 and §7, `README.md`.
+- Added the full-map UCS/A\*/greedy node counts to [study/search-algorithms-comparison.md](study/search-algorithms-comparison.md) (UCS expands 12 on 20 cities vs. 9 on the assignment's 10-city subgraph).

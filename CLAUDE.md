@@ -36,6 +36,7 @@ wiki/                ← THE WIKI. Owned and written entirely by the LLM.
   concepts/            one page per concept / algorithm / technique
   assignments/         one page per assignment: what was asked, what was done, review
   study/               exam prep: comparisons, question banks, cheat sheets, errata
+study-tools/         ← study outputs: anki/ (deck), web/ (quiz, visualizer), slides/ (Marp decks + PDFs)
 tools/               ← small helper scripts (see §7)
 .cache/              ← extracted text of raw sources (git-ignored, regenerable)
 ```
@@ -203,6 +204,8 @@ and this wiki is maintained by an agent. So, for every assignment:
 - `study-tools/web/` — browser pages published as private claude.ai artifacts (URLs in
   `wiki/study/interactive-tools.md`): `quiz.html` (generated) and `visualizer.html`
   (hand-written). After changing one, republish it to the same URL.
+- `study-tools/slides/` — Marp review decks per unit (theme `ia-review.css`), condensed
+  from the wiki; re-render the PDF in `slides/pdf/` whenever a deck or its source pages change.
 
 ## 8. Quality bar
 
