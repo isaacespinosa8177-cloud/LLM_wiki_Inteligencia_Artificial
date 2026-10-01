@@ -16,6 +16,7 @@ updated: 2026-10-01
 | Archivo | [raw/assignments/tic_tac_toe_4x4_isaac (2).py](../../raw/assignments/tic_tac_toe_4x4_isaac%20%282%29.py) |
 | Lenguaje | Python 3 (export de Colab), identificadores en español |
 | Unidad | 2 — Búsqueda adversarial |
+| ⚠️ Política de IA | Desconocida: el enunciado no está en `raw/`. Revisión añadida tras la entrega (2026-10-01). Si agregas el enunciado, la IA debe verificar su política. |
 
 ## Qué se implementó
 

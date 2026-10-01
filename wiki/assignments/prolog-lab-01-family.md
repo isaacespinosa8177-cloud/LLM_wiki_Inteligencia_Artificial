@@ -17,6 +17,7 @@ updated: 2026-10-01
 | Borrador anterior | [raw/assignments/lab01.pl~](../../raw/assignments/lab01.pl~) (sin `use_module(plunit)`, una prueba distinta) |
 | Base | [family.pl](../../raw/code/prolog_examples/family.pl) |
 | Enunciado | [Slides XX](../sources/slides-xx-logic-programming-prolog.md), slides 29–30 |
+| ⚠️ Política de IA | Permitido un asistente de IA declarándolo en un comentario de cabecera con lo que cambiaste (slide 30). Revisión añadida tras la entrega (2026-10-01). |
 
 ## Enunciado (slides 29–30)
 

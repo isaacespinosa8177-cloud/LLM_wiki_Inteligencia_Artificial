@@ -1,6 +1,6 @@
 # Index — Inteligencia Artificial Wiki
 
-Catalog of every page. The LLM reads this first when answering a question and updates it on every ingest. Pages: 59 · Sources ingested: 10 of 13 (books pending) · Last update: 2026-10-01.
+Catalog of every page. The LLM reads this first when answering a question and updates it on every ingest. Pages: 60 · Sources ingested: 11 of 14 (books pending) · Last update: 2026-10-01.
 
 ## Start here
 
@@ -75,7 +75,7 @@ Catalog of every page. The LLM reads this first when answering a question and up
 
 ## Assignments
 
-- [Deber 1 — Search problems](assignments/deber-1-search-problems.md) — 8-puzzle, 80-puzzle, N-Queens, river crossings, Sudoku (with results).
+- [Homework 01 — Search Methods, Games and Heuristics](assignments/deber-1-search-problems.md) — official statement, Chess vs. Go, 6 exercises; Sudoku on official boards (naive 335,637 vs. FC 309 assignments). ⚠️ AI agents forbidden.
 - [A* vs. Dijkstra](assignments/astar-vs-dijkstra.md) — Romania map: 5 vs. 9 expansions, cost 418.
 - [Tic-tac-toe 4×4 Minimax](assignments/tic-tac-toe-4x4-minimax.md) — depth-4 minimax; win-score bug and fix.
 - [Prolog Lab 01 — Family](assignments/prolog-lab-01-family.md) — 24/24 tests pass; review and analysis answers.
@@ -84,6 +84,7 @@ Catalog of every page. The LLM reads this first when answering a question and up
 
 ## Study
 
+- [Study plan — test Thu Oct 8](study/study-plan.md) — day-by-day plan with daily routine and priorities.
 - [Search algorithms comparison](study/search-algorithms-comparison.md) — Unit 2 cheat sheet with real numbers.
 - [Metaheuristics comparison](study/metaheuristics-comparison.md) — Unit 4 cheat sheet.
 - [Exam questions](study/exam-questions.md) — 34 self-test questions with hidden answers.

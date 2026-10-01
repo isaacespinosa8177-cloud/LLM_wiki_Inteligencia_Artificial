@@ -44,3 +44,14 @@ Recent activity: `grep "^## \[" wiki/log.md | tail -5`
 
 - `python3 tools/lint_wiki.py`: 0 broken links, 0 orphans, all frontmatter present.
 - Suggested next ingests: AIMA ch. 3–6 (deepen search pages), Eiben & Smith ch. 3–5 (selection methods), Karaboga 2007 ABC paper (not in raw/), the Deber 1 statement and Sudoku boards (missing from raw/).
+
+## [2026-10-01] ingest | HW01 statement (Search Methods, Games and Heuristics)
+
+- Merged Isaac's upload from `main`; moved `001-HW01 (1) (1).pdf` to `raw/assignments/`.
+- Found the AI policy: generative AI only in chat mode with transcript; **AI agents forbidden (grade 0)**. Asked Isaac: HW01 is already graded → reviews kept as study material.
+- Rewrote assignments/deber-1-search-problems (official statement, coverage table, Sudoku on official boards: board 2 naive 335,637 / MRV 4,036 / FC 309 assignments; 1 solution each; 9^51 and 9^59 brute-force counts; Chess vs. Go concept summary).
+- Added `⚠️ Política de IA` row to every assignment page; added the AI-policy rule to CLAUDE.md §5.
+
+## [2026-10-01] setup | Study plan for the test on Thu Oct 8
+
+- Created study/study-plan.md (7 days, daily routine, priorities). Isaac's preferences recorded: exams answered in English with Spanish explanations; wants intuitive pseudocode, Anki flashcards, interactive quiz, visualizers, diagrams, practice problems, search tool, Marp decks, textbook chapters (AIMA 2–6, Eiben & Smith 3–5).

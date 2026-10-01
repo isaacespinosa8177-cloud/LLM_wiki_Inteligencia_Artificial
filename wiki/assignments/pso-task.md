@@ -17,6 +17,7 @@ updated: 2026-10-01
 | Autor | Isaac Espinosa (00342611) |
 | Lenguaje | Python 3 + NumPy (export de Colab) |
 | Unidad | 4 — Optimización |
+| ⚠️ Política de IA | Desconocida: el enunciado no está en `raw/`. Revisión añadida tras la entrega (2026-10-01). Si agregas el enunciado, la IA debe verificar su política. |
 
 ## Qué se implementó
 

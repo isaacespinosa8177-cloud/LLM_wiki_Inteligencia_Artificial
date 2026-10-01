@@ -152,10 +152,22 @@ review for: contradictions between pages, stale claims, concepts mentioned witho
 page, missing cross-links, thin pages that a book chapter could fill. Report findings,
 fix the mechanical ones, propose the rest, and log the pass.
 
-### Assignment help
-For a new assignment: create its page from the statement, link the concepts it needs,
-and review the student's code when it is added to `raw/assignments/`. Explain and
-guide; the student's submissions are their own work.
+### Assignment help — check the AI policy FIRST
+Course assignments can restrict AI use. HW01, for example, allows generative AI **only in
+chat mode with a submitted transcript** and **forbids AI agents for any task (grade 0)** —
+and this wiki is maintained by an agent. So, for every assignment:
+
+1. Read its statement and find the AI-use policy. Record it in the assignment page's
+   Ficha as `⚠️ Política de IA`.
+2. If agents are forbidden (or the policy is unclear) **and the assignment is not yet
+   graded**: only record the statement and link the concepts it needs. Do **not** write,
+   run, review or fix its code, draft report text, answer its research questions or
+   produce its result tables. Tell Isaac why and stop.
+3. Only after Isaac confirms the assignment is graded (or the policy allows agents) may
+   the page get reviews, run results and study answers. Note on the page when and why
+   that content was added.
+4. Generic concept pages, practice problems and study tools are always fine — they must
+   not be built from an ungraded assignment's specific exercises.
 
 ## 6. index.md and log.md
 

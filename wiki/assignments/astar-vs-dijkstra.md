@@ -16,6 +16,7 @@ updated: 2026-10-01
 | Archivo | [raw/assignments/deber_1_IA (1).py](../../raw/assignments/deber_1_IA%20%281%29.py) |
 | Lenguaje | Python 3 (export de Colab) |
 | Unidad | 2 — Búsqueda informada |
+| ⚠️ Política de IA | Desconocida: el enunciado no está en `raw/`. Revisión añadida tras la entrega (2026-10-01). Si agregas el enunciado, la IA debe verificar su política. |
 | Datos | Grafo y h\_SLD tomados de AIMA cap. 3.5 (Figs. 3.16 y 3.18), "sin agregar ni cambiar datos" |
 
 ## Enunciado (inferido del código)
