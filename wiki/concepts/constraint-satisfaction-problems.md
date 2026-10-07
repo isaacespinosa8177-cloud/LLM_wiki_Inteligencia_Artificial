@@ -7,80 +7,105 @@ updated: 2026-10-07
 ---
 # Constraint Satisfaction Problems (Problemas de satisfacción de restricciones, CSP)
 
-> **Summary (EN):** A CSP opens up the "black-box" state: variables X₁…Xₙ, domains D₁…Dₙ and constraints C; a solution is a complete and consistent assignment. Because the structure is visible, general (domain-independent) techniques work: constraint propagation (node, arc, path, k-consistency; AC-3), backtracking search with MRV/degree variable ordering and least-constraining-value ordering, forward checking or MAC during search, conflict-directed backjumping, min-conflicts local search, and exploiting graph structure (tree-structured CSPs are solvable in O(nd²)). Examples: map coloring, Sudoku, N-Queens, job-shop scheduling.
+> **Summary (EN):** A CSP describes a problem as variables, the values each can take (domains) and rules between them (constraints); a solution gives every variable a value without breaking any rule. Because the rules are visible, general techniques work for any CSP: constraint propagation (crossing out impossible values, e.g. AC-3), backtracking search with good ordering (MRV and degree for variables, least-constraining value for values), forward checking or MAC during search, smarter backtracking (backjumping), min-conflicts local search, and using the shape of the constraint graph (tree-shaped CSPs are solved in O(n·d²)). Examples: map coloring, Sudoku, N-queens, job scheduling.
 
 > **En palabras simples (ES):** Un CSP es un rompecabezas de "llenar casillas respetando reglas", como colorear un mapa sin que dos vecinos tengan el mismo color, o un Sudoku. Se llena **una casilla a la vez**: empieza por la más difícil (la que tiene menos opciones), prueba primero el valor que menos estorba a los vecinos, y después de cada paso tacha las opciones que ya no sirven. Si te quedas sin opciones, borra el último paso y prueba otra (*backtracking*). *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Variables X / Domains D / Constraints C | Variables / dominios / restricciones | Lo que se asigna / valores posibles / condiciones. |
-| Constraint ⟨scope, rel⟩ | Restricción | Tupla de variables + relación permitida, p. ej. ⟨(X₁, X₂), X₁ > X₂⟩. |
-| Consistent / complete assignment | Asignación consistente / completa | No viola restricciones / todas las variables tienen valor. |
-| Constraint graph | Grafo de restricciones | Nodos = variables, aristas = restricciones binarias. |
-| Unary / binary / global constraint | Restricción unaria / binaria / global | 1 variable / 2 variables / número arbitrario (p. ej. **Alldiff**). |
-| Node / arc / path / k-consistency | Consistencia de nodo / arco / camino / k | Niveles de propagación local. |
-| AC-3 | AC-3 | Algoritmo clásico de consistencia de arcos. |
-| MRV / degree heuristic | Mínimos valores restantes / heurística de grado | Qué variable asignar primero. |
-| Least-constraining value (LCV) | Valor menos restrictivo | Qué valor probar primero. |
-| Forward checking / MAC | Comprobación hacia adelante / mantener consistencia de arcos | Inferencia durante la búsqueda. |
-| Backjumping | Salto atrás | Retroceder a la variable culpable, no a la última. |
-| Min-conflicts | Mínimos conflictos | Búsqueda local para CSP. |
-| Cycle cutset | Conjunto de corte de ciclos | Variables cuya eliminación deja un árbol. |
+| Variables X | Variables | Las "casillas" por llenar (cada región del mapa, cada celda del Sudoku). |
+| Domains D | Dominios | Los valores que puede tomar cada casilla ({rojo, verde, azul}, {1..9}). |
+| Constraints C | Restricciones | Las reglas (dos vecinos no pueden tener el mismo color). |
+| Constraint ⟨scope, rel⟩ | Restricción como pareja | Qué variables toca + qué combinaciones permite, p. ej. ⟨(X₁, X₂), X₁ > X₂⟩. |
+| Assignment | Asignación | Darle un valor a una o varias variables. |
+| Consistent / complete | Consistente / completa | No rompe ninguna regla / todas las variables tienen valor. |
+| Constraint graph | Grafo de restricciones | Dibujo: un punto por variable y una línea por cada regla entre dos variables. |
+| Unary / binary / global constraint | Restricción unaria / binaria / global | Toca 1 variable / 2 variables / muchas (como **Alldiff**: "todas distintas"). |
+| Node / arc / path consistency | Consistencia de nodo / arco / camino | Niveles de "tachar valores imposibles" (ver tabla abajo). |
+| AC-3 | AC-3 | El algoritmo clásico para tachar valores sin pareja válida. |
+| MRV / degree | Menos valores restantes / grado | Reglas para elegir **qué variable** llenar primero. |
+| LCV | Valor menos restrictivo | Regla para elegir **qué valor** probar primero. |
+| Forward checking / MAC | Comprobación hacia adelante / mantener consistencia de arcos | Tachar valores en los vecinos después de cada asignación. |
+| Backjumping | Salto atrás | Al fallar, volver directo a la variable culpable (no solo a la última). |
+| Min-conflicts | Mínimos conflictos | Búsqueda local: llenar todo y luego ir arreglando. |
 
 ## Explicación
 
-**Por qué formular algo como CSP** (AIMA §5.1). En búsqueda atómica solo se puede preguntar "¿es esto la meta?". En un CSP, en cuanto una asignación parcial viola una restricción se descartan **de una vez todas sus extensiones**, y se sabe **qué** variables causan el problema. Ejemplo: tras fijar SA = blue en el mapa de Australia, los 5 vecinos pasan de 3⁵ = 243 combinaciones a 2⁵ = 32 (−87 %). Resolver CSPs es NP-completo en general.
+### 1. ¿Por qué escribir un problema como CSP? (AIMA §5.1)
 
-**Ejemplos.**
-- **Coloreo del mapa de Australia:** X = {WA, NT, Q, NSW, V, SA, T}, D = {red, green, blue}, restricciones SA ≠ WA, SA ≠ NT, … (9 fronteras).
-- **Sudoku:** 81 variables, dominio {1..9}, **27 Alldiff** (9 filas, 9 columnas, 9 cajas).
-- **N-Reinas:** Qᵢ = fila de la reina de la columna i ([N-Queens](n-queens.md)).
-- **Job-shop scheduling:** variable = tiempo de inicio de cada tarea; restricciones de precedencia (`AxleF + 10 ≤ WheelRF`) y disyuntivas (dos tareas no usan la misma herramienta a la vez).
-- **Criptoaritmética:** TWO + TWO = FOUR con Alldiff(F, T, U, W, R, O) y variables auxiliares de acarreo.
+En la búsqueda normal, el estado es una "caja negra": solo puedes preguntar "¿ya es la meta?". En un CSP puedes **ver las partes** del estado. Eso permite dos cosas muy útiles:
 
-**Variantes:** dominios discretos finitos (lo usual), infinitos (enteros: restricciones lineales tienen algoritmos; no lineales son indecidibles), continuos (programación lineal). Restricciones **absolutas** vs. **de preferencia** (→ problema de optimización con restricciones, COP).
+- En cuanto una asignación a medias rompe una regla, descartas **todas** las formas de completarla de una sola vez.
+- Sabes **qué variables** causan el problema.
 
-### 1. Propagación de restricciones (AIMA §5.2)
+Ejemplo: al colorear Australia, si fijas SA (Australia del Sur) = azul, sus 5 vecinos pasan de 3⁵ = 243 combinaciones posibles a 2⁵ = 32 (un 87 % menos), porque ninguno puede ser azul.
 
-| Nivel | Definición | Ejemplo |
+En general, resolver CSPs es difícil (NP-completo), pero estas técnicas ayudan muchísimo en la práctica.
+
+### 2. Ejemplos
+
+- **Colorear el mapa de Australia:** variables {WA, NT, Q, NSW, V, SA, T} (los estados del país); dominio {rojo, verde, azul}; reglas SA ≠ WA, SA ≠ NT, … (9 fronteras).
+- **Sudoku:** 81 variables (las celdas), dominio {1..9}, **27 reglas "todas distintas"** (9 filas, 9 columnas, 9 cajas).
+- **N-reinas:** Qᵢ = fila de la reina de la columna i ([N-Queens](n-queens.md)).
+- **Horarios de una fábrica (*job-shop scheduling*):** cada variable es la hora de inicio de una tarea; reglas de orden (`AxleF + 10 ≤ WheelRF`: la rueda va después del eje, que tarda 10) y de que dos tareas no usen la misma herramienta a la vez.
+- **Criptoaritmética:** TWO + TWO = FOUR, donde cada letra es un dígito distinto (Alldiff(F, T, U, W, R, O)) y se agregan variables para "lo que se lleva" en la suma.
+
+**Variantes:** con dominios finitos (lo normal), infinitos (números enteros) o continuos (números reales, como en programación lineal). Las reglas pueden ser **obligatorias** o **de preferencia** ("prefiero no tener clase el viernes"); con preferencias se vuelve un problema de optimización.
+
+### 3. Tachar valores imposibles: propagación de restricciones (AIMA §5.2)
+
+La idea: antes o durante la búsqueda, **borrar de cada dominio los valores que seguro no pueden funcionar**. Hay varios niveles:
+
+| Nivel | Qué revisa (en simple) | Ejemplo |
 |---|---|---|
-| **Node consistency** | Todo valor cumple las restricciones unarias | Si SA no puede ser verde, D_SA = {red, blue} |
-| **Arc consistency** | Para cada valor de Xᵢ existe un valor de Xⱼ compatible | Y = X² con dígitos: X ∈ {0,1,2,3}, Y ∈ {0,1,4,9} |
-| **Path consistency** | Para cada asignación consistente de {Xᵢ, Xⱼ} existe un valor de Xₘ compatible con ambos | Detecta que Australia con 2 colores es imposible (WA, SA, NT se tocan) — arc consistency no lo detecta |
-| **k-consistency** | Para k−1 variables consistentes siempre hay valor para la k-ésima | 1 = nodo, 2 = arco, 3 = camino (binario). Fuertemente n-consistente → se resuelve sin backtracking en O(n²d), pero establecerlo es exponencial |
+| **Consistencia de nodo** | Cada valor cumple las reglas de **una sola** variable | Si SA no puede ser verde, su dominio queda {rojo, azul} |
+| **Consistencia de arco** | Para cada valor de X existe **al menos un** valor de Y que lo acompañe | Con Y = X² y dígitos 0–9: X ∈ {0,1,2,3}, Y ∈ {0,1,4,9} |
+| **Consistencia de camino** | Para cada pareja válida de dos variables existe un valor válido para una **tercera** | Detecta que Australia con 2 colores es imposible (WA, SA y NT se tocan las tres); la de arco no lo detecta |
+| **k-consistencia** | Lo mismo con k variables | 1 = nodo, 2 = arco, 3 = camino. Si llegas a "n-consistente" se resuelve sin retroceder, pero lograrlo cuesta demasiado |
 
-**AC-3:** cola con todos los arcos (cada restricción binaria da dos). Saca un arco (Xᵢ, Xⱼ) y **REVISE**: borra de Dᵢ los valores sin soporte en Dⱼ. Si Dᵢ cambió, vuelve a encolar los arcos (Xₖ, Xᵢ) de sus vecinos. Si un dominio queda vacío → no hay solución. Complejidad **O(c·d³)** (c arcos, dominio d). AC-3 resuelve Sudokus fáciles por sí solo; los difíciles requieren búsqueda.
+**AC-3, paso a paso:**
+1. Pon en una lista todos los **arcos** (cada regla entre X e Y da dos arcos: (X, Y) e (Y, X)).
+2. Saca un arco (Xᵢ, Xⱼ) y **REVISE**: borra de Xᵢ los valores que no tienen ninguna pareja válida en Xⱼ.
+3. Si Xᵢ perdió valores, vuelve a meter en la lista los arcos (Xₖ, Xᵢ) de sus otros vecinos, porque quizá ellos perdieron su pareja.
+4. Si algún dominio queda vacío → **no hay solución**.
 
-**Restricciones globales:** Alldiff con m variables y n valores disponibles en total es imposible si m > n (detecta que {WA = red, NSW = red} falla). **Atmost / bounds propagation** para recursos: F₁ ∈ [0, 165], F₂ ∈ [0, 385], F₁ + F₂ = 420 → F₁ ∈ [35, 165], F₂ ∈ [255, 385].
+Costo: **O(c·d³)**, con c = número de arcos y d = tamaño del dominio. AC-3 solo ya resuelve los Sudokus fáciles; los difíciles necesitan búsqueda.
 
-### 2. Backtracking search (AIMA §5.3)
+**Reglas globales:** si m variables deben ser todas distintas pero solo hay n valores posibles y m > n, es imposible (por ejemplo, detecta que {WA = rojo, NSW = rojo} falla más adelante). **Propagación de límites**, para recursos: si F₁ ∈ [0, 165], F₂ ∈ [0, 385] y F₁ + F₂ = 420, entonces F₁ ∈ [35, 165] y F₂ ∈ [255, 385].
 
-Una búsqueda en profundidad ingenua tendría n!·dⁿ hojas; como los CSP son **conmutativos** (el orden de asignación no importa), basta asignar **una variable por nivel** → dⁿ hojas.
+### 4. Búsqueda con retroceso: *backtracking* (AIMA §5.3)
 
-**Ordenar variables y valores:**
-- **MRV** (*most constrained variable*, *fail-first*): la variable con menos valores legales. Si alguna tiene 0, el fallo se detecta ya.
-- **Degree heuristic** (desempate): la variable con más restricciones sobre variables no asignadas (SA tiene grado 5 en Australia).
-- **LCV**: el valor que elimina menos opciones de los vecinos (*fail-last*).
-- ¿Por qué variable *fail-first* y valor *fail-last*? Toda variable debe asignarse igual, así que conviene fallar pronto; pero solo necesitamos **una** solución, así que conviene probar primero el valor más prometedor.
+Un DFS ingenuo probaría las variables en cualquier orden y tendría n!·dⁿ hojas. Pero en un CSP **el orden en que llenas las casillas no cambia el resultado** (es conmutativo), así que basta llenar **una variable por nivel**: dⁿ hojas.
 
-**Inferencia durante la búsqueda:**
-- **Forward checking:** al asignar X, establece consistencia de arco *solo para X*: borra de cada vecino no asignado los valores incompatibles. Detecta {WA = red, Q = green, V = blue} como inconsistente (SA se queda sin valores). **No** detecta que NT y SA quedan ambos con solo {blue} siendo vecinos.
-- **MAC (Maintaining Arc Consistency):** tras asignar Xᵢ llama a AC-3 empezando por los arcos (Xⱼ, Xᵢ) y **propaga recursivamente**: estrictamente más fuerte que forward checking.
+**¿Qué variable llenar primero?**
+- **MRV** (*minimum remaining values*, "la más difícil primero"): la que tiene **menos valores posibles**. Si alguna tiene 0, el fallo se detecta enseguida.
+- **Grado** (para desempatar): la que tiene **más reglas con variables aún vacías**. En Australia, SA tiene grado 5.
 
-**Backtracking inteligente:** el *backtracking cronológico* vuelve a la última variable (¡recolorear Tasmania no arregla SA!). **Backjumping** vuelve a la variable más reciente del **conflict set**; **conflict-directed backjumping** usa conjuntos de conflicto más profundos. Todo lo que poda el backjumping simple ya lo poda forward checking. **Constraint learning** guarda los conflictos encontrados (*no-goods*) para no repetirlos.
+**¿Qué valor probar primero?**
+- **LCV** (*least constraining value*): el que **menos opciones les quita a los vecinos**.
 
-### 3. Búsqueda local: min-conflicts (AIMA §5.4)
+¿Por qué la variable "que más falla" pero el valor "que menos falla"? Todas las variables hay que llenarlas igual, así que conviene descubrir pronto si algo no funciona. En cambio, solo necesitamos **una** solución, así que conviene probar primero el valor con más chances.
 
-Empieza con una asignación **completa** (con conflictos); repite: elegir una variable en conflicto al azar y darle el valor que **minimiza el número de conflictos**. Resuelve el problema del **millón de reinas en ~50 pasos** (sin contar la asignación inicial) y redujo la planificación semanal del telescopio Hubble de 3 semanas a ~10 minutos. Mejoras: búsqueda en mesetas, tabu search, **constraint weighting**. Sirve para "reparar" un plan cuando cambia el problema.
+**Tachar mientras buscas:**
+- **Forward checking:** al asignar X, borra de cada **vecino** de X los valores incompatibles. Detecta que {WA = rojo, Q = verde, V = azul} no sirve (SA se queda sin colores). Pero **no** detecta que NT y SA quedaron ambos solo con {azul} siendo vecinos.
+- **MAC** (*Maintaining Arc Consistency*): después de asignar, corre AC-3 desde los vecinos y **sigue propagando**. Es más fuerte que forward checking.
 
-### 4. Estructura del problema (AIMA §5.5)
+**Retroceder mejor:** el retroceso normal vuelve a la **última** variable asignada, aunque no tenga la culpa (¡cambiar el color de Tasmania no arregla SA!). **Backjumping** vuelve directo a la variable que **causó** el conflicto. Además, se pueden **guardar los conflictos encontrados** para no repetirlos (*constraint learning*).
 
-- **Subproblemas independientes** (componentes conexas, como Tasmania): trabajo O(dᶜ·n/c), lineal en n.
-- **CSP con grafo árbol:** ordenar topológicamente, hacer *directional arc consistency* de hojas a raíz y asignar de raíz a hojas **sin backtracking**: **O(n·d²)**.
-- **Cutset conditioning:** asignar un *cycle cutset* S (quitar SA deja un árbol) y resolver el árbol para cada asignación de S: O(d^c·(n−c)·d²).
-- **Tree decomposition:** agrupar variables en nodos que forman un árbol; eficiente si el *tree width* es pequeño.
+### 5. Búsqueda local: min-conflicts (AIMA §5.4)
+
+Otra estrategia: **llenar todo de una vez** (aunque haya conflictos) y luego **ir arreglando**: elige al azar una variable que rompe alguna regla y dale el valor que **menos reglas rompe**. Repite.
+
+Funciona sorprendentemente bien: resuelve el problema del **millón de reinas en unos 50 pasos**, y redujo la planificación semanal del telescopio Hubble de 3 semanas a ~10 minutos. También sirve para **reparar** un plan cuando cambia un poco el problema (por ejemplo, un horario con un cambio).
+
+### 6. Aprovechar la forma del problema (AIMA §5.5) *(extra)*
+
+- **Partes independientes:** Tasmania no toca a nadie → se resuelve aparte. Dividir en partes hace el trabajo mucho menor.
+- **Si el grafo de reglas es un árbol** (sin ciclos): se puede resolver **sin retroceder**, en **O(n·d²)**. Se ordenan las variables de la raíz a las hojas, se tacha de las hojas hacia la raíz y se asigna de la raíz hacia las hojas.
+- **Cortar ciclos (*cutset conditioning*):** si quitas SA, Australia queda como un árbol. Pruebas cada valor de SA y resuelves el árbol que queda.
+- **Descomposición en árbol:** agrupar variables para formar un árbol; funciona bien si los grupos son pequeños.
 
 ## Pseudocódigo
 
@@ -131,16 +156,18 @@ function MIN-CONFLICTS(csp, max_steps) returns a solution or failure
 
 ## Ejemplo — Sudoku de la tarea (HW01, tableros oficiales)
 
+Número de asignaciones que hizo cada versión:
+
 | Tablero | Ingenuo | MRV | Forward checking + MRV |
 |---|---|---|---|
-| 1 (30 dados) | 4 208 asignaciones | 51 | 51 |
-| 2 (22 dados) | 335 637 | 4 036 | **309** |
+| 1 (30 números dados) | 4 208 | 51 | 51 |
+| 2 (22 números dados) | 335 637 | 4 036 | **309** |
 
-Lectura con la teoría: MRV es *fail-first*; forward checking detecta dominios vacíos antes de bajar en la recursión. Ver [HW01](../assignments/deber-1-search-problems.md).
+Por qué: MRV llena primero las celdas con menos opciones (descubre los errores pronto), y forward checking tacha valores en las celdas vecinas, así detecta un callejón sin salida antes de seguir bajando. Ver [HW01](../assignments/deber-1-search-problems.md).
 
 ### Diagrama
 
-Grafo de restricciones del mapa de Australia (AIMA Fig. 5.1): SA tiene grado 5; T está aislada (subproblema independiente).
+Grafo de restricciones del mapa de Australia (AIMA Fig. 5.1): SA tiene grado 5 (toca a 5 estados); T (Tasmania) no toca a nadie, así que se resuelve aparte.
 
 ```mermaid
 flowchart LR
@@ -214,11 +241,11 @@ flowchart LR
 
 ## Errores comunes y tips de examen
 
-- MRV elige **variable**; LCV elige **valor**; degree es el desempate de MRV.
-- Forward checking ≠ arc consistency completa: solo revisa los vecinos de la variable recién asignada, sin propagar.
-- Arc consistency no resuelve "Australia con 2 colores"; path consistency sí.
-- Árbol → O(nd²) sin backtracking. Es una pregunta típica de "¿por qué la estructura importa?".
-- "Generate & test" vs. backtracking: ver la tabla de inferencias en [N-Queens](n-queens.md) y el cálculo 9⁵⁹ del Sudoku en HW01.
+- MRV elige la **variable**; LCV elige el **valor**; el grado sirve para desempatar MRV.
+- Forward checking **no** es lo mismo que consistencia de arco completa: solo revisa los vecinos de la variable que acabas de llenar, sin seguir propagando.
+- La consistencia de arco no detecta que "Australia con 2 colores" es imposible; la de camino sí.
+- Si el grafo es un árbol → se resuelve en O(n·d²) sin retroceder. Es una pregunta típica de "¿por qué importa la estructura?".
+- "Generar todo y luego probar" vs. backtracking: ver la tabla de [N-Queens](n-queens.md) y el cálculo 9⁵⁹ del Sudoku en HW01.
 
 ## Relacionado
 

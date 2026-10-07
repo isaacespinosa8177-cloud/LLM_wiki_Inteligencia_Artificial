@@ -7,53 +7,70 @@ updated: 2026-10-07
 ---
 # Local Search and Hill Climbing (Búsqueda local y ascenso de colinas)
 
-> **Summary (EN):** Local search keeps only the current state (or a few), moves to neighboring states and never remembers paths, so it uses almost no memory and works in huge or infinite spaces where only the final state matters. Hill climbing always moves to the best neighbor and stops at a peak, so it gets stuck on local maxima, ridges and plateaus — on random 8-queens it solves only 14% of instances. Sideways moves, stochastic and first-choice variants, random restarts, local beam search and simulated annealing are the standard fixes; evolutionary algorithms extend stochastic beam search with recombination.
+> **Summary (EN):** Local search keeps only the current solution (or a few), moves to nearby solutions and never remembers paths, so it uses almost no memory and works in huge spaces where only the final answer matters. Hill climbing always moves to the best neighbor and stops when none is better, so it gets stuck on local maxima, ridges and plateaus; on random 8-queens it solves only 14% of cases. Sideways moves, random variants, random restarts, local beam search and simulated annealing fix this; evolutionary algorithms extend beam search by mixing solutions.
 
 > **En palabras simples (ES):** Es como subir una montaña con niebla: no ves la cima, solo lo que está a un paso. Miras alrededor, das el paso que más sube, y repites. Cuando ningún paso sube, paras. El problema: puedes quedarte en una colina pequeña creyendo que es la montaña más alta. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Local search | Búsqueda local | Va de un estado a sus vecinos sin guardar caminos ni estados alcanzados. |
-| State-space landscape | Paisaje del espacio de estados | Cada estado tiene una "elevación" = valor de la función objetivo. |
-| Complete-state formulation | Formulación de estado completo | Cada estado ya es una solución candidata completa (8 reinas en el tablero). |
-| Hill climbing (steepest ascent) | Ascenso de colinas (máxima pendiente) | Moverse siempre al mejor vecino. |
-| Local maximum | Máximo local | Pico más alto que sus vecinos pero no el global. |
-| Ridge | Cresta | Secuencia de máximos locales no conectados directamente. |
-| Plateau / shoulder | Meseta / hombro | Zona plana; el hombro permite seguir avanzando. |
-| Sideways move | Movimiento lateral | Moverse a un vecino de igual valor. |
-| Random-restart | Reinicio aleatorio | Repetir hill climbing desde estados iniciales aleatorios. |
-| Local beam search | Búsqueda local en haz | Mantener k estados y quedarse con los k mejores sucesores. |
+| Local search | Búsqueda local | Ir de una solución a otra parecida, sin guardar caminos. |
+| Neighbor | Vecino | Una solución que se obtiene con un cambio pequeño (mover una reina). |
+| State-space landscape | Paisaje del espacio de estados | Imaginar cada solución como un punto en un terreno; su altura es qué tan buena es. |
+| Complete-state formulation | Formulación de estado completo | Cada estado ya es una solución completa (las 8 reinas ya están en el tablero), aunque sea mala. |
+| Hill climbing (steepest ascent) | Ascenso de colinas | Moverse siempre al mejor vecino. |
+| Local maximum | Máximo local | Una cima pequeña: más alta que sus vecinos, pero no la más alta de todas. |
+| Ridge | Cresta | Una fila de cimas pequeñas difícil de recorrer con pasos simples. |
+| Plateau / shoulder | Meseta / hombro | Zona plana; en un hombro todavía se puede seguir subiendo más adelante. |
+| Sideways move | Movimiento lateral | Moverse a un vecino igual de bueno (para cruzar zonas planas). |
+| Random restart | Reinicio aleatorio | Empezar de nuevo en otro punto al azar. |
+| Local beam search | Búsqueda local en haz | Llevar k soluciones a la vez y quedarse con las k mejores. |
 
 ## Explicación
 
-**¿Cuándo sirve?** Cuando solo importa el **estado final**, no el camino: 8 reinas, diseño de circuitos, distribución de fábricas, *scheduling*, optimización de redes, portafolios. Dos ventajas: (1) memoria mínima; (2) encuentra soluciones razonables en espacios enormes o infinitos. Desventaja: **no es sistemática**, puede no explorar la región donde está la solución.
+### 1. ¿Cuándo sirve la búsqueda local?
 
-Si la elevación es un valor a maximizar, buscamos el **máximo global** (hill climbing); si es un costo, el **mínimo global** ([gradient descent](gradient-descent.md)).
+Cuando **solo importa la respuesta final, no el camino**: colocar 8 reinas, diseñar circuitos, distribuir una fábrica, hacer horarios, optimizar redes o portafolios.
 
-**Hill climbing** ("subir el Everest con niebla espesa y amnesia"): mantiene un estado y se mueve al vecino de mayor valor; se detiene cuando ningún vecino es mejor. También se llama **greedy local search**.
+- **Ventajas:** usa muy poca memoria y encuentra soluciones razonables en espacios gigantes.
+- **Desventaja:** no revisa todo de forma ordenada, así que puede no pasar nunca por la zona donde está la solución.
 
-**Ejemplo de AIMA — 8 reinas (§4.1.1):** estado = 8 reinas, una por columna; sucesores = mover una reina dentro de su columna (8 × 7 = **56 sucesores**); h = número de pares de reinas que se atacan (0 = solución). Desde un estado con h = 17, en 5 pasos llega a h = 1 (casi solución), pero ese estado es un **mínimo local**: cualquier movimiento empeora.
+Imagina un terreno: cada punto es una solución y su **altura** es qué tan buena es. Si la altura es algo a **maximizar**, buscamos la cima más alta (hill climbing). Si es un **costo**, buscamos el valle más profundo ([gradient descent](gradient-descent.md)).
 
-**Por qué se atasca:** máximos locales, crestas (*ridges*) y mesetas (*plateaus*: máximo local plano u *hombro*).
+### 2. Hill climbing (ascenso de colinas)
 
-| Variante (8 reinas aleatorias) | Éxito | Pasos promedio |
+El libro lo describe como "subir el Everest con niebla espesa y amnesia": solo ves a un paso y no recuerdas por dónde viniste. Se queda con una solución y se mueve al **vecino de mayor valor**; para cuando ningún vecino es mejor. También se llama **búsqueda local voraz**.
+
+**Ejemplo de AIMA — 8 reinas (§4.1.1):**
+- **Estado:** las 8 reinas en el tablero, una por columna.
+- **Vecinos:** mover una reina a otra fila **dentro de su columna**: 8 columnas × 7 filas nuevas = **56 vecinos**.
+- **h:** número de pares de reinas que se atacan (h = 0 es una solución).
+- Desde un tablero con h = 17, en 5 pasos llega a h = 1 (casi resuelto), pero ahí **cualquier movimiento empeora**: se quedó atascado en una cima pequeña.
+
+### 3. ¿Por qué se atasca?
+
+- **Máximos locales:** cimas pequeñas; desde ahí todo baja.
+- **Crestas:** filas de cimas pequeñas que no se pueden recorrer con un paso simple.
+- **Mesetas:** zonas planas donde todos los vecinos valen igual y no sabe hacia dónde ir. Si es un **hombro**, más adelante se puede volver a subir.
+
+| Versión (8 reinas al azar) | Lo resuelve… | Pasos promedio |
 |---|---|---|
-| Steepest-ascent hill climbing | **14 %** | 4 al tener éxito, 3 al atascarse |
-| + hasta 100 movimientos laterales seguidos | **94 %** | 21 al tener éxito, 64 al fallar |
-| Random-restart (sin laterales) | ~100 % | ≈ 7 reinicios (1/p, p ≈ 0.14), ≈ 22 pasos |
-| Random-restart (con laterales) | ~100 % | ≈ 1.06 reinicios, ≈ 25 pasos |
+| Hill climbing normal | **14 %** de las veces | 4 cuando lo logra, 3 cuando se atasca |
+| + hasta 100 movimientos laterales seguidos | **94 %** | 21 cuando lo logra, 64 cuando falla |
+| Con reinicios aleatorios (sin laterales) | ~100 % | ≈ 7 reinicios (1/p con p ≈ 0.14), ≈ 22 pasos |
+| Con reinicios aleatorios (con laterales) | ~100 % | ≈ 1.06 reinicios, ≈ 25 pasos |
 
-Con reinicios aleatorios, AIMA resuelve **3 millones de reinas** en segundos. El número esperado de reinicios es **1/p**.
+Con reinicios aleatorios, AIMA resuelve **3 millones de reinas** en segundos. Si un intento sale bien con probabilidad p, en promedio necesitas **1/p** intentos.
 
-**Variantes:**
-- **Stochastic hill climbing:** elige al azar entre los movimientos que suben (probabilidad según la pendiente).
-- **First-choice hill climbing:** genera sucesores al azar hasta encontrar uno mejor (útil con miles de sucesores).
-- **Random-restart:** "If at first you don't succeed, try, try again"; completo con probabilidad 1.
-- **[Simulated annealing](simulated-annealing.md):** combina hill climbing con caminata aleatoria aceptando a veces empeoramientos.
-- **Local beam search:** k estados; genera todos los sucesores de todos y se queda con los k mejores. No es lo mismo que k reinicios en paralelo: la información se comparte ("¡vengan aquí, el pasto es más verde!"). Problema: pérdida de diversidad → **stochastic beam search** elige sucesores con probabilidad proporcional a su valor.
-- **[Evolutionary algorithms](genetic-algorithms.md):** stochastic beam search + **recombinación** de varios padres.
+### 4. Variantes para no atascarse
+
+- **Estocástico:** elige al azar entre los movimientos que suben (los que suben más tienen más probabilidad).
+- **Primera opción (*first-choice*):** genera vecinos al azar hasta encontrar uno mejor; útil cuando hay miles de vecinos.
+- **Reinicio aleatorio:** "si no funciona, inténtalo otra vez desde otro lugar". Termina encontrando la solución con probabilidad 1.
+- **[Recocido simulado](simulated-annealing.md):** a veces acepta bajar para poder salir de una cima pequeña.
+- **Búsqueda en haz (*local beam search*):** lleva **k** soluciones a la vez; genera todos sus vecinos y se queda con las k mejores. No es lo mismo que k intentos separados: las soluciones **comparten información** ("¡vengan aquí, el pasto es más verde!"). Problema: todas pueden terminar en el mismo lugar → la versión **estocástica** elige vecinos con probabilidad proporcional a qué tan buenos son.
+- **[Algoritmos evolutivos](genetic-algorithms.md):** son una búsqueda en haz estocástica que además **mezcla** soluciones (cruce).
 
 ## Pseudocódigo
 
@@ -68,7 +85,7 @@ function HILL-CLIMBING(problem) returns a state that is a local maximum
 
 ### Diagrama
 
-Paisaje de una dimensión (AIMA Fig. 4.1): hill climbing desde la izquierda se queda en el máximo local.
+Terreno de una dimensión (AIMA Fig. 4.1): hill climbing que empieza a la izquierda se queda en la cima pequeña.
 
 ```text
 objective
@@ -83,7 +100,7 @@ objective
 Hill climbing that starts at state 1 climbs to state 3 and stops there.
 ```
 
-Estados 1–3: subida hasta un **máximo local**; 5–7: **hombro** (zona plana desde la que aún se puede subir); 10: **máximo global**.
+Estados 1–3: subida hasta un **máximo local** (cima pequeña); 5–7: **hombro** (zona plana desde la que aún se puede subir); 10: **máximo global** (la cima más alta).
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
@@ -132,10 +149,10 @@ Estados 1–3: subida hasta un **máximo local**; 5–7: **hombro** (zona plana 
 
 ## Errores comunes y tips de examen
 
-- Hill climbing **no guarda** frontera ni explorados: memoria O(1).
-- "Óptimo local" depende del vecindario elegido: cambiar los movimientos cambia los óptimos locales.
-- Local beam search ≠ k reinicios independientes (comparte información).
-- NP-difíciles suelen tener un número exponencial de máximos locales, pero unos pocos reinicios suelen dar uno bueno.
+- Hill climbing **no guarda** frontera ni lista de visitados: memoria casi nula, O(1).
+- Qué es una "cima pequeña" depende de qué cuentas como vecino: si cambias los movimientos permitidos, cambian las cimas.
+- La búsqueda en haz **no** es lo mismo que k reinicios separados: comparte información entre las k soluciones.
+- Los problemas difíciles suelen tener muchísimas cimas pequeñas, pero con unos pocos reinicios normalmente se encuentra una buena.
 
 ## Relacionado
 

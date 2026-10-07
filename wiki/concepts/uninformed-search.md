@@ -7,70 +7,102 @@ updated: 2026-10-07
 ---
 # Uninformed Search (Búsqueda no informada: BFS, DFS, UCS/Dijkstra)
 
-> **Summary (EN):** Blind search knows only the initial state, the actions and the goal test; it explores systematically without preferring any path. Algorithms differ in the order they expand nodes and are judged by completeness, optimality, time and space. BFS (FIFO queue) is complete and optimal for uniform costs but uses O(b^d) memory; DFS (LIFO stack) needs only O(b·m) memory but is neither optimal nor, in general, complete. Uniform-cost search (Dijkstra) expands the lowest path cost g(n) first and is optimal for any non-negative costs.
+> **Summary (EN):** Uninformed (blind) search knows only the start, the actions and the goal test; it has no idea how far the goal is, so it explores in a fixed order. The algorithms differ only in that order and are compared by completeness, optimality, time and memory. BFS (FIFO queue) is complete and finds the fewest-steps path but needs O(b^d) memory. DFS (LIFO stack) needs only O(b·m) memory but is not optimal and not always complete. Uniform-cost search (Dijkstra) always expands the cheapest path g(n) and is optimal for any positive costs. Iterative deepening mixes DFS memory with BFS completeness.
 
 > **En palabras simples (ES):** Búsqueda "a ciegas": no sabes qué tan lejos está la meta, así que revisas en un orden fijo. **BFS** revisa por niveles, como una mancha que se expande (cola: el primero que entra es el primero que sale). **DFS** sigue un solo camino hasta el fondo antes de probar otro (pila: el último que entra es el primero que sale). **UCS** siempre revisa el camino más barato hasta ahora. **IDS** hace DFS con un límite de profundidad que va subiendo. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Uninformed / blind search | Búsqueda no informada / ciega | Sin información extra sobre qué estados son prometedores. |
-| Completeness | Completitud | ¿Encuentra solución si existe? |
-| Optimality | Optimalidad | ¿Encuentra la de menor costo? |
-| Time / space complexity | Complejidad temporal / espacial | ¿Cuánto tarda? ¿Cuánta memoria usa? |
-| FIFO queue / LIFO stack | Cola FIFO / pila LIFO | Estructura de la frontera en BFS / DFS. |
-| Uniform-cost search (UCS) | Búsqueda de costo uniforme | Expande el menor g(n); equivale a Dijkstra. |
-| Depth-limited / Iterative deepening | Profundidad limitada / profundización iterativa | DFS con límite; IDS repite DFS con límite creciente. |
+| Uninformed / blind search | Búsqueda no informada / ciega | Buscar sin ninguna pista de dónde está la meta. |
+| Complete | Completo | Si hay solución, seguro la encuentra. |
+| Optimal | Óptimo | Encuentra la solución **más barata**. |
+| Time / space complexity | Complejidad de tiempo / memoria | Cuánto tarda / cuánta memoria usa, según b, d y m. |
+| FIFO queue | Cola FIFO | Fila del banco: sale primero el que llegó primero. |
+| LIFO stack | Pila LIFO | Pila de platos: sale primero el último que pusiste. |
+| Uniform-cost search (UCS) | Búsqueda de costo uniforme | Siempre revisa el camino más barato hasta ahora; es Dijkstra. |
+| Depth-limited search | Búsqueda con límite de profundidad | DFS que no baja más de *l* pasos. |
+| Iterative deepening (IDS) | Profundización iterativa | Repite DFS con límite 0, 1, 2, … |
+| *b*, *d*, *m* | — | Hijos por nodo / pasos hasta la meta más cercana / camino más largo posible. |
 
 ## Explicación
 
-### BFS — Breadth-First Search (anchura)
-Expande primero los nodos **menos profundos**, nivel por nivel. Frontera = **cola FIFO**.
-- Completo: sí (si *b* es finito).
-- Óptimo: encuentra el camino con **menos pasos**; óptimo en costo **solo si todos los costos son iguales**.
-- Tiempo y espacio: **O(b^d)**. El problema es la memoria: la frontera crece exponencialmente.
+### Cómo se comparan los algoritmos (las 4 preguntas)
 
-### DFS — Depth-First Search (profundidad)
-Expande primero el nodo **más profundo**, siguiendo una rama hasta el final. Frontera = **pila LIFO**.
-- Completo: solo con control de repetidos **y** espacio finito.
-- Óptimo: **no**.
-- Tiempo **O(b^m)**, espacio **O(b·m)** — mucha menos memoria que BFS.
-- Variante **depth-limited**: DFS con profundidad máxima *l* (la tarea usa `max_depth = 10`). **IDS** (complemento, AIMA §3.4.4): repetir con l = 0, 1, 2…; completo, óptimo con costos uniformes, tiempo O(b^d), espacio O(b·d).
+1. **¿Completo?** Si existe solución, ¿la encuentra seguro?
+2. **¿Óptimo?** ¿Encuentra la más barata?
+3. **¿Tiempo?** ¿Cuántos nodos genera?
+4. **¿Memoria?** ¿Cuántos nodos guarda a la vez?
 
-**¿Cuánto es O(b^d) en la práctica?** (AIMA §3.4.1) Con b = 10, 1 millón de nodos/s y 1 KB/nodo: a profundidad d = 10 tarda < 3 horas pero necesita **10 terabytes** de memoria; a d = 14 tardaría 3.5 años. Conclusión: en BFS **la memoria es peor problema que el tiempo**.
+Para el tiempo y la memoria se usan tres letras: **b** = cuántos hijos tiene cada nodo; **d** = cuántos pasos hay hasta la meta más cercana; **m** = cuántos pasos tiene el camino más largo posible. Por ejemplo, O(b^d) significa "crece como b multiplicado por sí mismo d veces": con b = 10 y d = 5 son 100 000 nodos.
 
-BFS puede usar **prueba de meta temprana** (al generar el nodo), porque nunca encontrará un camino más corto a un estado ya alcanzado.
+### BFS — búsqueda en anchura (*Breadth-First Search*)
 
-### UCS / Dijkstra (AIMA §3.4.2)
-Frontera = **cola de prioridad por g(n)** (costo acumulado): best-first con f = PATH-COST. Se expande en "ondas" de costo uniforme (BFS lo hace en ondas de profundidad uniforme).
+**Idea:** revisa todos los lugares a 1 paso, luego todos los que están a 2 pasos, luego a 3… como una gota de tinta que se expande. Usa una **cola FIFO**.
 
-**Ejemplo (AIMA Fig. 3.10), Sibiu → Bucarest:** expande Rimnicu Vilcea (80) → agrega Pitesti (177); expande Fagaras (99) → agrega Bucarest (310) pero **no** se detiene (la meta se prueba al expandir); expande Pitesti (177) → encuentra Bucarest por 278 y reemplaza al de 310; expande Bucarest (278) ✓. Si se probara la meta al generar, devolvería el camino de 310.
+- **Completo:** sí (si cada nodo tiene un número finito de hijos).
+- **Óptimo:** encuentra el camino con **menos pasos**. Eso es lo más barato **solo si todos los pasos cuestan igual**.
+- **Tiempo y memoria:** O(b^d). El problema grave es la **memoria**: tiene que guardar todo un nivel completo.
 
-Completo (costos ≥ ε > 0) y óptimo. Complejidad O(b^(1+⌊C*/ε⌋)), que puede ser **mucho mayor** que b^d porque explora árboles enteros de acciones baratas antes de probar una cara pero útil. Es exactamente `dijkstra()` de la tarea [A\* vs Dijkstra](../assignments/astar-vs-dijkstra.md), y es A\* con h = 0.
+**¿Cuánto es eso en la vida real?** (AIMA §3.4.1) Con b = 10, un millón de nodos por segundo y 1 KB por nodo: llegar a profundidad 10 tarda menos de 3 horas, pero necesita **10 terabytes** de memoria. A profundidad 14 tardaría 3.5 años. En BFS, **la memoria se acaba antes que la paciencia**.
 
-### Backtracking search (AIMA §3.4.3)
-Variante de DFS que genera **un sucesor a la vez** y modifica el estado actual en lugar de copiarlo (deshaciendo la acción al retroceder): memoria O(m) acciones + un solo estado. Es la base de los [CSP](constraint-satisfaction-problems.md) y de [Prolog](prolog.md).
+BFS puede preguntar "¿es la meta?" al **descubrir** el nodo (prueba temprana), porque nunca encontrará un camino con menos pasos.
 
-### Iterative deepening (AIMA §3.4.4)
-Llama a depth-limited search con l = 0, 1, 2, … hasta encontrar solución. Combina lo mejor de DFS (memoria O(b·d)) y BFS (completo, óptimo con costos iguales). Parece derrochador, pero casi todos los nodos están en el último nivel: con b = 10, d = 5, **N(IDS) = 123 450** vs. **N(BFS) = 111 110** (solo ~11 % más). *"Iterative deepening is the preferred uninformed search method when the search state space is larger than can fit in memory and the depth of the solution is not known."*
+### DFS — búsqueda en profundidad (*Depth-First Search*)
 
-Un límite de profundidad bien elegido: el **diámetro** del grafo (en Rumania cualquier ciudad se alcanza en ≤ 9 acciones, mejor límite que 19).
+**Idea:** sigue un solo camino hasta el fondo; cuando ya no puede avanzar, retrocede y prueba la siguiente opción, como recorrer un laberinto siempre con la mano en la misma pared. Usa una **pila LIFO**.
 
-### Bidirectional search (AIMA §3.4.5)
-Busca hacia adelante desde el inicio y hacia atrás desde la meta hasta que las fronteras se encuentran. Motivación: b^(d/2) + b^(d/2) ≪ b^d (50 000 veces menos con b = d = 10). Requiere poder razonar hacia atrás (conocer predecesores).
+- **Completo:** solo si evita repetir estados **y** el espacio es finito; si no, puede bajar para siempre por una rama infinita.
+- **Óptimo:** **no**; devuelve el primer camino que encuentra.
+- **Tiempo:** O(b^m). **Memoria: O(b·m)**, muchísimo menos que BFS, porque solo guarda el camino actual y los hermanos pendientes.
 
-### Comparación (AIMA Fig. 3.15, versiones tree-like)
+**Variante con límite (*depth-limited*):** DFS que no baja más de *l* pasos (la tarea usa `max_depth = 10`).
 
-| Criterio | BFS | UCS | DFS | Depth-limited | IDS | Bidireccional |
+### UCS / Dijkstra — costo uniforme (AIMA §3.4.2)
+
+**Idea:** siempre revisa el camino **más barato hasta ahora**. Usa una lista de prioridad ordenada por **g(n)**, lo que llevo pagado. Avanza en "ondas" de igual costo (BFS avanza en ondas de igual número de pasos).
+
+**Ejemplo (AIMA Fig. 3.10), de Sibiu a Bucarest:**
+
+1. Saca Rimnicu Vilcea (80) → descubre Pitesti (80 + 97 = 177).
+2. Saca Fagaras (99) → descubre Bucarest por 99 + 211 = **310**. ¡No termina! La meta se revisa al **sacarla**, no al descubrirla.
+3. Saca Pitesti (177) → descubre Bucarest por 177 + 101 = **278**, más barato, y reemplaza al de 310.
+4. Saca Bucarest (278) → ahora sí termina, con el camino óptimo.
+
+Si hubiera revisado la meta al descubrirla, habría devuelto el camino de 310.
+
+- **Completo** (si todos los costos son positivos, al menos un mínimo ε) y **óptimo** con cualquier costo positivo.
+- **Complejidad:** O(b^(1+⌊C\*/ε⌋)), donde C\* es el costo de la mejor solución y ε el costo más pequeño de un paso. En simple: si hay muchos pasos baratos, explora mucho antes de probar un paso caro pero útil, y puede costar más que b^d.
+- Es exactamente la función `dijkstra()` de la tarea [A\* vs Dijkstra](../assignments/astar-vs-dijkstra.md), y es A\* con h = 0.
+
+### Backtracking (AIMA §3.4.3)
+
+Es un DFS más ahorrador: genera **un hijo a la vez** y, en vez de copiar el estado, lo **modifica y lo deshace** al retroceder (como escribir con lápiz y borrar). Usa memoria para un solo estado y la lista de acciones. Es la base de los [CSP](constraint-satisfaction-problems.md) y de [Prolog](prolog.md).
+
+### IDS — profundización iterativa (AIMA §3.4.4)
+
+**Idea:** hace DFS con límite 0, luego con límite 1, luego 2… hasta encontrar la meta. Junta lo mejor de los dos: **memoria pequeña como DFS** (O(b·d)) y **completo y óptimo (con pasos iguales) como BFS**.
+
+Parece que repite mucho trabajo, pero casi todos los nodos están en el último nivel, así que repetir los de arriba cuesta poco: con b = 10 y d = 5, IDS genera **123 450** nodos y BFS **111 110** (solo ~11 % más). AIMA: *"Iterative deepening is the preferred uninformed search method when the search state space is larger than can fit in memory and the depth of the solution is not known."*
+
+Un buen límite máximo es el **diámetro** del mapa: en Rumania cualquier ciudad se alcanza en ≤ 9 pasos.
+
+### Búsqueda bidireccional (AIMA §3.4.5) *(extra)*
+
+Busca a la vez desde el inicio hacia adelante y desde la meta hacia atrás, hasta que las dos búsquedas se encuentran. Ventaja: dos búsquedas de la mitad de profundidad cuestan mucho menos (b^(d/2) + b^(d/2) es 50 000 veces menos que b^d con b = d = 10). Necesita poder ir "hacia atrás" (saber de dónde se llega a cada estado).
+
+### Tabla resumen (AIMA Fig. 3.15)
+
+| Criterio | BFS | UCS | DFS | Con límite | IDS | Bidireccional |
 |---|---|---|---|---|---|---|
-| Frontera | FIFO | Prioridad g(n) | LIFO | LIFO | LIFO | 2 fronteras |
-| Completo | Sí¹ | Sí¹˒² | No | No | Sí¹ | Sí¹˒⁴ |
-| Óptimo | Sí³ | Sí | No | No | Sí³ | Sí³˒⁴ |
-| Tiempo | O(b^d) | O(b^(1+⌊C*/ε⌋)) | O(b^m) | O(b^l) | O(b^d) | O(b^(d/2)) |
-| Espacio | O(b^d) | O(b^(1+⌊C*/ε⌋)) | O(b·m) | O(b·l) | O(b·d) | O(b^(d/2)) |
+| Frontera | Cola FIFO | Prioridad por g | Pila LIFO | Pila LIFO | Pila LIFO | 2 fronteras |
+| ¿Completo? | Sí¹ | Sí¹˒² | No | No | Sí¹ | Sí¹˒⁴ |
+| ¿Óptimo? | Sí³ | Sí | No | No | Sí³ | Sí³˒⁴ |
+| Tiempo | O(b^d) | O(b^(1+⌊C\*/ε⌋)) | O(b^m) | O(b^l) | O(b^d) | O(b^(d/2)) |
+| Memoria | O(b^d) | O(b^(1+⌊C\*/ε⌋)) | O(b·m) | O(b·l) | O(b·d) | O(b^(d/2)) |
 
-¹ si *b* es finito y el espacio tiene solución o es finito. ² si los costos son ≥ ε > 0. ³ si todos los costos son iguales. ⁴ si ambas direcciones son BFS. En versiones **graph search**, DFS es completo en espacios finitos y las complejidades quedan acotadas por |V| + |E|.
+¹ si cada nodo tiene un número finito de hijos. ² si todos los costos son al menos ε > 0. ³ si todos los pasos cuestan igual. ⁴ si las dos direcciones usan BFS. Si se guarda una lista de visitados (graph search), DFS sí es completo en espacios finitos.
 
 ## Ejemplo (8-puzzle de la tarea)
 
@@ -78,15 +110,15 @@ Inicio `(2,4,3,1,0,6,7,5,8)` → meta `(1,2,3,4,5,6,7,8,0)` (ver [Deber 1](../as
 
 | Algoritmo | Movimientos | Estados generados |
 |---|---|---|
-| BFS | **6** (óptimo) | 135 |
-| DFS (límite 10) | 10 (no óptimo) | 484 |
+| BFS | **6** (lo mínimo) | 135 |
+| DFS (límite 10) | 10 (no es lo mínimo) | 484 |
 | Greedy best-first (Manhattan) | 6 | **15** |
 
-BFS garantiza la solución más corta; DFS encontró una más larga; la búsqueda informada generó 9× menos estados.
+BFS garantiza la solución más corta; DFS encontró una más larga; la búsqueda con pista (greedy) generó 9 veces menos estados.
 
 ### Diagrama
 
-Mismo árbol binario, distinto orden de expansión (meta = G):
+Mismo árbol, distinto orden de revisión (meta = G):
 
 ```mermaid
 flowchart TD
@@ -98,10 +130,10 @@ flowchart TD
     C --> G(((G)))
 ```
 
-| Algoritmo | Orden de expansión hasta encontrar G |
+| Algoritmo | Orden en que revisa los nodos hasta encontrar G |
 |---|---|
-| BFS (FIFO) | A, B, C, D, E, F, G |
-| DFS (LIFO, hijos izquierda→derecha) | A, B, D, E, C, F, G |
+| BFS (cola) | A, B, C, D, E, F, G — nivel por nivel |
+| DFS (pila, hijos de izquierda a derecha) | A, B, D, E, C, F, G — rama por rama |
 | IDS | límite 0: A · límite 1: A, B, C · límite 2: A, B, D, E, C, F, G |
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
@@ -165,9 +197,9 @@ flowchart TD
 
 ## Errores comunes y tips de examen
 
-- BFS es óptimo en **número de pasos**, no en costo con pesos distintos → para eso UCS/Dijkstra.
-- d = profundidad de la solución más superficial; m = profundidad máxima del árbol (puede ser ∞).
-- "DFS usa poca memoria" solo si se guarda el camino actual (O(b·m)); si se guarda un conjunto global de visitados, la memoria vuelve a crecer.
+- BFS es óptimo en **número de pasos**, no en costo cuando los pasos cuestan distinto. Para eso está UCS/Dijkstra.
+- No confundas **d** (pasos hasta la meta más cercana) con **m** (el camino más largo posible, que puede ser infinito).
+- "DFS usa poca memoria" solo si guarda únicamente el camino actual (O(b·m)). Si guarda una lista global de todos los visitados, la memoria vuelve a crecer.
 
 ## Relacionado
 

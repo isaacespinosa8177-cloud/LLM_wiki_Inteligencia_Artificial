@@ -7,32 +7,40 @@ updated: 2026-10-07
 ---
 # A* Search (Búsqueda A*)
 
-> **Summary (EN):** A* expands the node with the lowest f(n) = g(n) + h(n), where g is the actual cost so far and h the heuristic estimate to the goal; f estimates the total cost of the cheapest solution through n. With an admissible heuristic (tree search) or a consistent one (graph search), A* is complete and optimal. Its weakness is memory: it keeps every generated node, O(b^d). On the Romania map it finds the 418 km route Arad–Sibiu–Rimnicu Vilcea–Pitesti–Bucharest expanding 5 nodes, versus 9 for Dijkstra.
+> **Summary (EN):** A* expands the node with the lowest f(n) = g(n) + h(n), where g is the cost already paid from the start and h the estimated cost to the goal; so f estimates the total cost of the best path through n. With an admissible heuristic (consistent if states are never reopened) A* is complete and optimal. Its weakness is memory: it keeps every generated node, O(b^d). On the Romania map it finds the 418 km route Arad–Sibiu–Rimnicu Vilcea–Pitesti–Bucharest expanding 5 nodes, versus 9 for Dijkstra on the assignment's subgraph.
 
 > **En palabras simples (ES):** A\* elige el lugar que tiene el **mejor total estimado del viaje**: lo que ya caminé (g) + lo que creo que me falta (h). Es como greedy, pero sin olvidar lo que ya pagaste. Si la estimación h nunca exagera, el primer camino a la meta que A\* **saca** de la lista es el más barato. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| g(n) | g(n) | Costo real acumulado desde el inicio hasta n. |
-| h(n) | h(n) | Estimación heurística del menor costo de n a la meta. |
-| f(n) = g(n) + h(n) | f(n) | Costo total estimado de la solución que pasa por n. |
-| Admissible / Consistent | Admisible / Consistente | Ver [Heuristics](heuristics.md). |
-| Optimally efficient | Óptimamente eficiente | Cualquier algoritmo que use la misma h y extienda caminos desde el inicio debe expandir al menos los nodos que A\* expande seguro. |
-| Contour | Contorno | Región con f(n) ≤ c; A\* se expande en bandas de f creciente. |
-| Weighted A\* | A\* ponderado | f = g + W·h, W > 1: más rápido, solución ≤ W·C\*. |
-| IDA\*, RBFS, SMA\* | — | Versiones de A\* con memoria limitada. |
+| g(n) | Costo acumulado | Lo que **ya pagué** desde el inicio hasta n (km recorridos). |
+| h(n) | Heurística | Lo que **creo que falta** desde n hasta la meta. |
+| f(n) = g(n) + h(n) | Costo total estimado | Cuánto costaría el viaje completo si paso por n. |
+| Admissible / Consistent | Admisible / Consistente | h nunca exagera / h no "salta" al avanzar. Ver [Heuristics](heuristics.md). |
+| Optimally efficient | Óptimamente eficiente | Ningún algoritmo parecido, con la misma h, puede revisar menos nodos que A\*. |
+| Contour | Contorno | Zona donde f es menor que cierto valor; A\* avanza "por capas" de f. |
+| Weighted A\* | A\* ponderado | Usa f = g + W·h con W > 1: más rápido, pero el camino puede ser un poco más caro. |
+| IDA\*, RBFS, SMA\* | — | Versiones de A\* que usan poca memoria. |
 
 ## Explicación
 
-**Intuición.** A\* no solo mira qué tan cerca *parece* estar la meta (h, como greedy), sino también cuánto ya costó llegar (g, como Dijkstra). Combina lo mejor de ambos.
+### 1. La idea
 
-**Propiedades (slides 02, s14):**
-- **Completo:** si existe solución y h es admisible (y además *b* finito, costos ≥ ε > 0).
-- **Óptimo:** si h es admisible (AIMA 4e, cuyo best-first reabre estados cuando encuentra un camino más barato). Si la implementación **nunca reabre** estados ya expandidos (como la de la tarea), hace falta h **consistente**. Ver [Heuristics](heuristics.md).
-- **Espacio:** O(b^d) — guarda todos los nodos en memoria. Es su principal limitación.
-- **Tiempo:** depende de la calidad de h.
+A\* junta lo mejor de dos algoritmos:
+
+- de **Dijkstra/UCS** toma g, **lo que ya costó llegar** (para no olvidar lo pagado);
+- de **greedy** toma h, **lo que parece faltar** (para ir hacia la meta).
+
+Siempre revisa el nodo con menor **f = g + h**, el "total estimado del viaje". Es como un viajero que pregunta en cada pueblo: "¿cuánto llevo + cuánto me falta?", y sigue por el pueblo con el menor total.
+
+### 2. Propiedades (slides 02, s14)
+
+- **¿Completo?** Sí, si hay solución y h es admisible (y cada nodo tiene un número finito de hijos y los costos son positivos).
+- **¿Óptimo?** Sí, si h es **admisible** (nunca exagera) en la versión de AIMA 4e, que vuelve a revisar un estado si encuentra un camino más barato. Si la implementación **nunca vuelve a revisar** estados ya expandidos (como la de la tarea), hace falta h **consistente**. Ver [Heuristics](heuristics.md).
+- **Memoria:** O(b^d). Guarda **todos** los nodos: es su mayor problema.
+- **Tiempo:** depende de qué tan buena sea h.
 
 ```
 function A-STAR(problem, h):
@@ -56,23 +64,22 @@ Así está implementado `a_estrella()` en la tarea [A\* vs Dijkstra](../assignme
 
 ## Ejemplo — Arad → Bucarest (AIMA Fig. 3.18)
 
-| Paso | Expande | f = g + h | Nuevos en la frontera (f) |
+| Paso | Saca de la frontera | f = g + h | Lo que entra a la frontera (con su f) |
 |---|---|---|---|
 | 1 | Arad | 0 + 366 = 366 | Sibiu 393, Timisoara 447, Zerind 449 |
-| 2 | Sibiu | 140 + 253 = 393 | Rimnicu V. 413, Fagaras 415, Oradea 671 (Arad ya explorado) |
+| 2 | Sibiu | 140 + 253 = 393 | Rimnicu V. 413, Fagaras 415, Oradea 671 (Arad ya revisado) |
 | 3 | Rimnicu Vilcea | 220 + 193 = 413 | Pitesti 417, Craiova 526 |
-| 4 | Fagaras | 239 + 176 = 415 | Bucharest 450 |
-| 5 | Pitesti | 317 + 100 = 417 | **Bucharest mejora a 418** (Craiova sigue en 526) |
-| 6 | Bucharest | 418 + 0 = 418 | ✅ meta |
+| 4 | Fagaras | 239 + 176 = 415 | Bucarest 450 |
+| 5 | Pitesti | 317 + 100 = 417 | **Bucarest mejora a 418** (Craiova sigue en 526) |
+| 6 | Bucarest | 418 + 0 = 418 | ✅ meta |
 
-Observa el paso 4–5: Bucarest entra con f = 450 vía Fagaras, pero A\* **no** se detiene al *generar* la meta; se detiene al *expandirla*. Antes expande Pitesti (417 < 450) y encuentra el camino de 418. Por eso es óptimo.
+**Lo importante está en los pasos 4 y 5:** Bucarest entra a la frontera con f = 450 (por Fagaras), pero A\* **no se detiene al descubrirlo**; se detiene al **sacarlo**. Antes saca Pitesti (417 < 450) y descubre un camino a Bucarest de 418. Por eso A\* es óptimo.
 
-Resultado real de la tarea: A\* 5 nodos expandidos, Dijkstra 9, ambos con costo 418.
-
+Resultado real de la tarea: A\* revisó 5 nodos y Dijkstra 9, ambos con costo 418.
 
 ## Por qué A\* es óptimo (prueba de AIMA §3.5.2)
 
-Supón que A\* devuelve un camino de costo C > C\*. Entonces hay un nodo n en el camino óptimo que no fue expandido. Con g\*(n) y h\*(n) los costos óptimos desde el inicio y hasta la meta:
+**Idea de la prueba (por contradicción):** supón que A\* devuelve un camino **más caro** que el óptimo (costo C mayor que C\*). Entonces algún nodo n del camino óptimo se quedó sin revisar. Llamemos g\*(n) al costo óptimo desde el inicio hasta n, y h\*(n) al costo óptimo desde n hasta la meta:
 
 ```
 f(n) > C*                 (si no, n se habría expandido antes que la meta de costo C)
@@ -82,38 +89,38 @@ f(n) ≤ g*(n) + h*(n)      (admisibilidad: h(n) ≤ h*(n))
 f(n) ≤ C*                 (C* = g*(n) + h*(n))
 ```
 
-La primera y la última línea se contradicen → A\* solo devuelve caminos óptimos.
+En palabras: la primera línea dice que f(n) es **mayor** que C\*, y la última que es **menor o igual**. Las dos no pueden ser verdad a la vez → la suposición era falsa → A\* solo devuelve caminos óptimos.
 
-## Contornos y eficiencia óptima (AIMA §3.5.3)
+## Contornos y eficiencia (AIMA §3.5.3)
 
-- A\* se expande en **bandas concéntricas de f** (contornos 380, 400, 420 en Rumania). UCS tiene contornos "circulares" de g alrededor del inicio; con una buena h, los contornos de A\* se **estiran hacia la meta**.
-- A\* expande **todos** los nodos con f(n) < C\* (*surely expanded*), quizá algunos con f(n) = C\*, y **ninguno** con f(n) > C\*.
-- Por eso **poda**: Timisoara (447) y Zerind (449) son hijos de Arad pero nunca se expanden, porque la solución de 418 aparece antes.
-- Con h consistente, A\* es **óptimamente eficiente**. Pero el número de nodos aún puede ser exponencial en la longitud de la solución.
+- A\* avanza **por capas de f**, como curvas de nivel en un mapa (contornos de 380, 400, 420 en Rumania). UCS avanza en círculos alrededor del inicio; con una buena h, las capas de A\* se **estiran hacia la meta**.
+- A\* revisa **todos** los nodos con f(n) < C\*, quizá algunos con f(n) = C\*, y **ninguno** con f(n) > C\*.
+- Por eso **se salta** nodos inútiles: Timisoara (447) y Zerind (449) son vecinos de Arad pero nunca se revisan, porque la solución de 418 aparece antes.
+- Con h consistente, A\* es **óptimamente eficiente**: ningún algoritmo parecido con la misma h revisa menos nodos. Aun así, el número de nodos puede ser enorme.
 
-## Variantes (AIMA §3.5.4–3.5.6)
+## Variantes (AIMA §3.5.4–3.5.6) *(para cultura general)*
 
-| Variante | Idea | Garantía |
+| Variante | Idea (en simple) | Qué garantiza |
 |---|---|---|
-| **Weighted A\*** | f = g + W·h, W > 1 | Solución entre C\* y W·C\*; mucho más rápida (Fig. 3.21: 7× menos estados, camino 5 % más caro) |
-| **Beam search** | Mantener solo los k mejores nodos de la frontera | Incompleta y subóptima, pero rápida |
-| **IDA\*** | Iterative deepening con límite de **f** (no de profundidad); el nuevo límite es el menor f que excedió el anterior | Óptima, memoria lineal; ≤ C\* iteraciones con costos enteros (≤ 31 en el 8-puzzle) |
-| **RBFS** | DFS recursiva que recuerda el f de la mejor alternativa y "retrocede" si lo supera, guardando valores *backed-up* | Óptima con h admisible, memoria lineal; cambia de opinión a menudo |
-| **SMA\*** | A\* hasta llenar la memoria; luego borra la hoja con peor f y guarda su valor en el padre | Completa si la solución cabe en memoria; óptima si la óptima es alcanzable |
-| **Bidirectional A\*** | Dos fronteras con f₂(n) = max(2g(n), g(n)+h(n)) | Completa y óptima con h admisible; a veces más eficiente |
+| **Weighted A\*** | f = g + W·h con W > 1: le da más peso a la estimación | Más rápido (Fig. 3.21: 7 veces menos estados) con un camino algo más caro (aquí 5 %), nunca más de W veces el óptimo |
+| **Beam search** | Guardar solo los k mejores nodos de la frontera | Rápido, pero puede no encontrar solución ni la mejor |
+| **IDA\*** | Como IDS, pero el límite es de **f** (no de profundidad); el nuevo límite es el menor f que se pasó del anterior | Óptimo, con poca memoria |
+| **RBFS** | DFS que recuerda el f de la mejor alternativa y regresa si la rama actual se vuelve peor | Óptimo con h admisible, poca memoria; cambia mucho de opinión |
+| **SMA\*** | A\* normal hasta llenar la memoria; luego borra el peor nodo y guarda su valor en el padre | Encuentra la solución si cabe en memoria |
+| **A\* bidireccional** | Dos búsquedas, desde el inicio y desde la meta | Completo y óptimo con h admisible |
 
-**Familia de best-first** según la función de evaluación:
+**La familia "best-first" según qué número usa:**
 
 | Algoritmo | f(n) | W |
 |---|---|---|
-| Uniform-cost search | g(n) | 0 |
-| A\* | g(n) + h(n) | 1 |
-| Weighted A\* | g(n) + W·h(n) | 1 < W < ∞ |
-| Greedy best-first | h(n) | ∞ |
+| Uniform-cost search (Dijkstra) | g(n): solo lo pagado | 0 |
+| A\* | g(n) + h(n): pagado + estimado | 1 |
+| Weighted A\* | g(n) + W·h(n) | entre 1 e ∞ |
+| Greedy best-first | h(n): solo lo estimado | ∞ |
 
 ### Diagrama
 
-Subgrafo de Rumania usado en la tarea (costos en km; h\_SLD entre paréntesis). Camino óptimo en negrita: 140 + 80 + 97 + 101 = **418**.
+Parte del mapa de Rumania usada en la tarea (costos en km; h en línea recta entre paréntesis). El camino óptimo está resaltado: 140 + 80 + 97 + 101 = **418**.
 
 ```mermaid
 flowchart LR
@@ -172,11 +179,11 @@ flowchart LR
 
 ## Errores comunes y tips de examen
 
-- **Probar la meta al expandir, no al generar** — si no, se pierde la optimalidad (el 450 vía Fagaras).
-- Con h = 0, A\* = UCS/Dijkstra. Con f = h, es greedy.
-- Si h sobreestima, A\* puede devolver una solución subóptima (pero a veces más rápido: *weighted A\**).
-- Complejidad espacial exponencial → variantes con memoria limitada: IDA\*, RBFS, SMA\* (tabla arriba).
-- Si te piden *probar* la optimalidad, usa la contradicción de 5 líneas de arriba.
+- **Revisar la meta al sacarla, no al descubrirla.** Si no, A\* devolvería el camino de 450 por Fagaras.
+- Con h = 0, A\* es igual a UCS/Dijkstra. Con f = h, es greedy.
+- Si h exagera (no es admisible), A\* puede devolver un camino más caro (aunque a veces más rápido: *weighted A\**).
+- Usa mucha memoria → para eso existen IDA\*, RBFS y SMA\* (tabla de arriba).
+- Si te piden *demostrar* que es óptimo, usa la prueba por contradicción de 5 líneas.
 
 ## Relacionado
 

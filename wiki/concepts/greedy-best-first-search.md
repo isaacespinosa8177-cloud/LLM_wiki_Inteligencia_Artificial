@@ -7,26 +7,41 @@ updated: 2026-10-07
 ---
 # Greedy Best-First Search (Búsqueda voraz primero el mejor)
 
-> **Summary (EN):** Greedy best-first search always expands the node that looks closest to the goal according to h(n), using a priority queue ordered by h. It makes the locally best choice without considering the cost already paid, so it is fast when the heuristic is good but not optimal, and complete only with repeated-state control in finite spaces. It can be trapped by a misleading heuristic.
+> **Summary (EN):** Greedy best-first search always expands the node that looks closest to the goal, the one with the smallest heuristic h(n), using a priority queue ordered by h. It ignores the cost already paid, so it is often fast with a good heuristic but it is not optimal, and it is complete only in finite spaces when it avoids repeated states. A misleading heuristic can lead it astray.
 
 > **En palabras simples (ES):** Greedy (voraz) va siempre hacia el lugar que **parece** más cerca de la meta, como caminar hacia una torre que ves a lo lejos sin mirar si el camino da vueltas. Ignora cuánto ya caminaste. Es rápido, pero puede no dar el camino más corto. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Best-first search | Búsqueda primero el mejor | Familia: expandir el nodo con mejor valor de una función de evaluación f. |
-| Greedy | Voraz | Aquí f(n) = h(n): solo mira lo que falta. |
-| Priority queue | Cola de prioridad | Frontera ordenada por h(n). |
+| Best-first search | Búsqueda "primero el mejor" | Familia de algoritmos que siempre revisan el nodo con el mejor número f. |
+| Greedy | Voraz / codicioso | Toma lo que parece mejor **ahora**, sin pensar en el costo total. |
+| h(n) | Heurística | Mi estimación de cuánto falta desde n hasta la meta. |
+| f(n) = h(n) | Función de evaluación | El número con el que greedy ordena la frontera: solo la estimación. |
+| Priority queue | Cola de prioridad | Lista donde siempre sale el de menor h. |
 
 ## Explicación
 
-- **Función de evaluación:** f(n) = h(n).
-- **Propiedades:** la versión *graph search* es completa en espacios finitos, pero no en infinitos; **no óptimo**; puede quedar atrapado en caminos subóptimos si la heurística engaña. Peor caso tiempo y espacio O(|V|) (AIMA §3.5.1); con una buena heurística puede bajar a O(b·m).
-- En Rumania con h\_SLD, greedy **no expande ningún nodo fuera del camino** que encuentra — pero ese camino es 32 millas más largo que el óptimo. "Greediness can lead to worse results than being careful."
-- Es el extremo W = ∞ de weighted A\* (ver [A\*](a-star-search.md)). *Speedy search* es greedy usando como h el número estimado de acciones (ignora costos).
+### La idea
 
-**Ejemplo Rumania (AIMA §3.5.1, Fig. 3.17).** Desde Arad, greedy con h\_SLD va Arad → Sibiu (253) → Fagaras (176) → Bucarest: costo 140 + 99 + 211 = **450**, mientras el óptimo es **418** por Rimnicu Vilcea y Pitesti. Greedy llega rápido, pero no al mejor.
+Greedy siempre revisa el nodo que **parece más cerca de la meta** según h(n). Usa f(n) = h(n): **solo mira lo que falta**, nunca lo que ya costó llegar. Es como un turista que siempre camina hacia la torre que ve en el horizonte, aunque la calle lo obligue a dar una vuelta enorme.
+
+### Propiedades
+
+- **¿Completo?** Si recuerda los estados visitados (graph search), sí en espacios finitos; en espacios infinitos, no.
+- **¿Óptimo?** **No.** Puede elegir un camino que parecía bueno pero salió caro.
+- **Tiempo y memoria:** en el peor caso revisa todo el grafo, O(|V|) (AIMA §3.5.1). Con una buena heurística puede bajar mucho, hasta O(b·m).
+
+### Ejemplo: Rumania (AIMA §3.5.1, Fig. 3.17)
+
+Desde Arad, con h = distancia en línea recta a Bucarest:
+
+1. Vecinos de Arad: Sibiu (h = 253), Timisoara (329), Zerind (374) → va a **Sibiu**, que parece más cerca.
+2. Vecinos de Sibiu: Fagaras (176), Rimnicu Vilcea (193), … → va a **Fagaras**.
+3. Vecino de Fagaras: Bucarest (0) → **llega**.
+
+Costo: 140 + 99 + 211 = **450 km**. Pero el mejor camino cuesta **418 km** (por Rimnicu Vilcea y Pitesti). Greedy no revisó ningún nodo de más (fue directo), pero su camino es 32 km más largo que el óptimo. Como dice el libro: "Greediness can lead to worse results than being careful."
 
 ```
 function GREEDY-BEST-FIRST(problem, h):
@@ -42,7 +57,12 @@ function GREEDY-BEST-FIRST(problem, h):
     return failure
 ```
 
-**En la tarea** ([Deber 1](../assignments/deber-1-search-problems.md)): `best_fs(start, goal, heuristic)` resolvió el 8-puzzle en 6 movimientos generando 15 estados (Manhattan) vs. 135 de BFS. El 80-puzzle (`resolver_80_tile`) usa la misma idea con Manhattan.
+### Relación con otros algoritmos
+
+- Greedy es el extremo "W = ∞" de weighted A\*: solo cuenta h (ver [A\*](a-star-search.md)).
+- *Speedy search* es greedy usando como h el número estimado de pasos que faltan (ignora los costos).
+
+**En la tarea** ([Deber 1](../assignments/deber-1-search-problems.md)): `best_fs(start, goal, heuristic)` resolvió el 8-puzzle en 6 movimientos generando solo 15 estados con Manhattan, frente a 135 de BFS. El 80-puzzle (`resolver_80_tile`) usa la misma idea.
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
@@ -75,8 +95,8 @@ function GREEDY-BEST-FIRST(problem, h):
 
 ## Errores comunes y tips de examen
 
-- Greedy usa **solo h**; A\* usa **g + h**. Esta diferencia es la que da optimalidad a A\*.
-- Que greedy encontrara el óptimo en el 8-puzzle de la tarea fue suerte del caso, no una garantía.
+- Greedy usa **solo h**; A\* usa **g + h**. Esa diferencia es la que hace que A\* sea óptimo y greedy no.
+- Que greedy encontrara el óptimo en el 8-puzzle de la tarea fue suerte de ese caso, no una garantía.
 
 ## Relacionado
 

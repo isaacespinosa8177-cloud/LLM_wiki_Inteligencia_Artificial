@@ -7,25 +7,35 @@ updated: 2026-10-07
 ---
 # N-Queens (El problema de las N reinas)
 
-> **Summary (EN):** Place N queens on an N×N board so that no two attack each other. It appears twice in the course — in Prolog (queens.pl, select/3 + threat/2) and in Python (backtracking in Homework 1) — and it is the canonical CSP example. Representing the board as a permutation of 1..N guarantees one queen per row and column, leaving only diagonals to check. Solution counts: N=4→2, 5→10, 6→4, 7→40, 8→92, 9→352, 10→724; N=2 and N=3 have none.
+> **Summary (EN):** Place N queens on an N×N chessboard so that no two attack each other (a queen attacks along its row, column and diagonals). It appears twice in the course, in Prolog (queens.pl with select/3 and threat/2) and in Python (backtracking in Homework 1), and it is the classic CSP example. Storing the board as a permutation of 1..N (one different row per column) already guarantees one queen per row and column, so only diagonals must be checked. Number of solutions: N=4→2, 5→10, 6→4, 7→40, 8→92, 9→352, 10→724; N=2 and N=3 have none.
 
 > **En palabras simples (ES):** Hay que poner N reinas en un tablero de N×N sin que ninguna ataque a otra (una reina ataca en su fila, su columna y sus diagonales). Se colocan **una por columna**: si la nueva reina choca con alguna anterior, pruebas otra fila; si ninguna fila sirve, regresas a la columna anterior y mueves esa reina. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Queen attack | Ataque de reina | Misma fila, columna o diagonal. |
-| Permutation encoding | Codificación por permutación | `Qs[i]` = columna de la reina de la fila i. |
-| Diagonal test | Prueba de diagonal | \|Qᵢ − Qⱼ\| = \|i − j\|. |
-| Generate and test | Generar y probar | Construir el tablero completo y luego verificar. |
-| Test as you go | Probar mientras se construye | Verificar cada reina al colocarla (backtracking). |
+| Queen attack | Ataque de reina | Dos reinas chocan si están en la misma fila, columna o diagonal. |
+| Permutation encoding | Codificación por permutación | Una lista donde la posición i dice dónde está la reina i, y no hay números repetidos. |
+| Diagonal test | Prueba de diagonal | Dos reinas están en diagonal si \|diferencia de filas\| = \|diferencia de columnas\|. |
+| Generate and test | Generar y probar | Armar el tablero completo y recién al final revisar si sirve. |
+| Test as you go | Probar mientras se construye | Revisar cada reina en el momento de ponerla (backtracking). |
 
 ## Explicación
 
-**Como CSP.** Variables: la reina de cada fila (o columna). Dominio: {1..N}. Restricciones: distinta columna y distinta diagonal. Ver [CSP](constraint-satisfaction-problems.md).
+### 1. Como CSP
 
-**La representación hace la mitad del trabajo.** Si `Qs` es una permutación de 1..N, hay una reina por fila (posición en la lista) y una por columna (valores distintos). Solo quedan las diagonales.
+- **Variables:** la posición de la reina de cada columna (o de cada fila).
+- **Dominio:** {1..N}, las filas posibles.
+- **Reglas:** dos reinas no pueden compartir fila ni diagonal. Ver [CSP](constraint-satisfaction-problems.md).
+
+### 2. Una buena representación hace la mitad del trabajo
+
+Si guardas el tablero como una **permutación** de 1..N, por ejemplo `[2, 4, 1, 3]`:
+- la posición en la lista es la columna → **una reina por columna**;
+- todos los números son distintos → **una reina por fila**.
+
+Solo queda revisar las **diagonales**: dos reinas chocan en diagonal si la diferencia de filas es igual a la diferencia de columnas. Ejemplo: reinas en (columna 1, fila 2) y (columna 3, fila 4): diferencia de columnas 2, diferencia de filas 2 → **chocan**.
 
 ### Versión Prolog (`queens.pl`, slides XX s25)
 
@@ -43,7 +53,9 @@ threat(X, N, [Y|_]) :- X is Y + N ; X is Y - N.   % same diagonal
 threat(X, N, [_|Ys]) :- N1 is N + 1, threat(X, N1, Ys).
 ```
 
-`?- queens(8, Qs).` → `Qs = [4,2,7,3,6,8,5,1]`; `findall` cuenta 92 soluciones.
+Cómo leerlo: `select/3` elige una fila Q que todavía no se usó (si después falla, Prolog vuelve y elige otra); `\+ threat(Q, SafeQs)` comprueba que Q no esté en diagonal con las reinas ya puestas; si todo va bien, sigue con las que faltan. `threat` revisa si alguna reina ya puesta está a N columnas de distancia y a N filas de diferencia (X = Y + N o X = Y − N).
+
+`?- queens(8, Qs).` → `Qs = [4,2,7,3,6,8,5,1]`; con `findall` se cuentan las 92 soluciones.
 
 ### Versión Python (Deber 1, backtracking por columnas)
 
@@ -63,18 +75,20 @@ def solve(board, col, n):
     return False
 ```
 
-### Generate & test vs. test as you go (slides XX s27)
+Cómo leerlo: `validate` revisa que ninguna reina anterior esté en la misma fila ni en diagonal. `solve` pone una reina en la columna `col`, prueba cada fila segura y sigue con la siguiente columna; si ninguna fila funciona, devuelve `False` y la columna anterior prueba otra fila.
 
-Inferencias para enumerar todas las soluciones (SWI-Prolog 9.2.9):
+### 3. Generar todo vs. probar mientras construyes (slides XX s27)
 
-| N | Generate & test | Interleaved | Ratio |
+Número de pasos de inferencia de Prolog para encontrar **todas** las soluciones (SWI-Prolog 9.2.9):
+
+| N | Generar y probar | Probar mientras se construye | Cuántas veces más rápido |
 |---|---|---|---|
 | 4 | 425 | 200 | 2.1× |
 | 6 | 15 358 | 3 090 | 5.0× |
 | 8 | 1 058 230 | 61 770 | 17.1× |
 | 10 | 113 230 594 | 1 468 869 | **77.1×** |
 
-Misma lógica; la segunda **poda** antes un tablero malo. Es "Algorithm = Logic + Control" en acción.
+Las dos versiones tienen **la misma lógica**; la segunda descarta antes un tablero malo, sin terminar de armarlo. Es "Algoritmo = Lógica + Control" en acción: cambiar solo el control (el orden) ahorra muchísimo trabajo.
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
@@ -111,9 +125,9 @@ Misma lógica; la segunda **poda** antes un tablero malo. Es "Algorithm = Logic 
 
 ## Errores comunes y tips de examen
 
-- La prueba de diagonal es `|Δfila| == |Δcolumna|`.
-- N = 2 y N = 3 no tienen solución; N = 6 tiene menos (4) que N = 5 (10).
-- En Prolog, `select/3` es el punto de elección: el *backtracking* lo hace el motor, no el programador.
+- La prueba de diagonal es `|diferencia de filas| == |diferencia de columnas|`.
+- N = 2 y N = 3 no tienen solución; N = 6 tiene menos soluciones (4) que N = 5 (10).
+- En Prolog, `select/3` es el punto donde se elige: el *backtracking* lo hace Prolog solo, no el programador.
 
 ## Relacionado
 

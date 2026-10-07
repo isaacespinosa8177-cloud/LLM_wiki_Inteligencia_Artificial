@@ -7,32 +7,41 @@ updated: 2026-10-07
 ---
 # Problem Formulation and State Space (Formulación de problemas y espacio de estados)
 
-> **Summary (EN):** A problem-solving agent is a goal-based agent that formulates a problem, searches for a sequence of actions that reaches the goal, and executes it. A problem is defined by an initial state, actions, a transition model Result(s, a), a goal test and an action-cost function; together they define the state space, a graph explored incrementally. Because the same state can be reached by several paths, search keeps a frontier and an explored set to avoid infinite loops.
+> **Summary (EN):** A problem-solving agent is a goal-based agent: it describes the problem, searches for a sequence of actions that reaches the goal, and then executes it. A problem has five parts: initial state, actions, transition model Result(s, a), goal test and action costs. Together they define the state space, a graph that the search explores step by step. Because the same state can be reached by several paths, search keeps a frontier (pending nodes) and a set of reached states to avoid going in circles.
 
 > **En palabras simples (ES):** Buscar es como planear un viaje en un mapa: sabes dónde empiezas, a dónde quieres llegar y qué caminos hay. Todos los algoritmos de búsqueda hacen el mismo ciclo: tienen una lista de lugares pendientes por revisar y sacan uno a la vez. **Lo único que cambia entre algoritmos es cuál sacan primero.** *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Problem-solving agent | Agente de resolución de problemas | Agente basado en objetivos que planifica una secuencia de acciones. |
-| Initial state | Estado inicial | Donde arranca el agente. |
-| Actions | Acciones | Lo que se puede hacer en cada estado. |
-| Transition model `Result(s, a)` | Modelo de transición | Estado resultante de aplicar `a` en `s`. |
-| Goal test | Prueba de objetivo | ¿Es este estado una meta? |
-| Path / action cost | Costo de camino / acción | Define la calidad de la solución. |
-| State space | Espacio de estados | Todos los estados alcanzables; un grafo. |
-| Search tree | Árbol de búsqueda | Registro del proceso de búsqueda; un estado puede repetirse. |
-| Frontier | Frontera | Nodos generados pero aún no expandidos. |
-| Explored set (closed list) | Conjunto de explorados | Estados ya expandidos; no se vuelven a generar. |
-| Branching factor *b* | Factor de ramificación | Máximo número de sucesores de un nodo. |
-| Depth *d* / max depth *m* | Profundidad de la solución / máxima | Para medir complejidad. |
+| Problem-solving agent | Agente que resuelve problemas | Agente basado en metas que planea una secuencia de acciones antes de actuar. |
+| Initial state | Estado inicial | Dónde empieza (Arad). |
+| Actions | Acciones | Qué puede hacer en cada estado (ir a Sibiu, a Zerind…). |
+| Transition model `Result(s, a)` | Modelo de transición | A qué estado llego si hago la acción `a` en el estado `s`. |
+| Goal test | Prueba de meta | La pregunta "¿ya llegué?". |
+| Action cost / path cost | Costo de acción / de camino | Cuánto cuesta un paso / la suma de todos los pasos (km). |
+| State space | Espacio de estados | Todos los estados posibles y cómo se conectan: un grafo (un mapa de puntos y flechas). |
+| Search tree | Árbol de búsqueda | El registro de lo que el algoritmo fue probando; un mismo estado puede aparecer varias veces. |
+| Node | Nodo | Un estado + de dónde vine + qué acción usé + cuánto llevo pagado. |
+| Frontier | Frontera | La lista de pendientes: descubiertos pero aún no revisados. |
+| Explored / reached set | Explorados / alcanzados | Los estados ya vistos, para no repetirlos. |
+| Branching factor *b* | Factor de ramificación | Cuántos hijos (vecinos) tiene cada nodo como máximo. |
+| Depth *d* / max depth *m* | Profundidad de la solución / máxima | Cuántos pasos hay hasta la meta más cercana / el camino más largo posible. |
 
 ## Explicación
 
-**Ciclo del agente.** (1) ¿Cuál es exactamente el problema? → *formular*. (2) ¿Cuál es la mejor forma de resolverlo? → *buscar* una secuencia de acciones. (3) *Ejecutar* el plan. Supone un entorno **observable, determinista, discreto y estático** ([Task Environments](task-environments.md)). La solución es **una secuencia** de acciones, no una sola.
+### 1. El ciclo del agente: formular → buscar → ejecutar
 
-**Los cinco componentes** definen el espacio de estados:
+1. **Formular:** decidir exactamente cuál es el problema ("ir de Arad a Bucarest gastando lo menos posible").
+2. **Buscar:** encontrar una **secuencia** de acciones que llegue a la meta (no una sola acción).
+3. **Ejecutar:** seguir el plan.
+
+Esto funciona cuando el mundo es **observable, determinista, discreto y estático** ([Task Environments](task-environments.md)): el agente puede planear todo antes y ejecutar "con los ojos cerrados".
+
+### 2. Las cinco partes de un problema
+
+Con el mapa de Rumania:
 
 ```
 Problem:
@@ -43,14 +52,26 @@ Problem:
   action_cost(s, a, s')          e.g. 140 km
 ```
 
-**Espacio de estados = grafo.** Nodos = estados del mundo; aristas = acciones con costo. Casi nunca se construye completo (es enorme: el 8-puzzle tiene 9!/2 = 181 440 estados alcanzables; el 80-puzzle de la tarea, astronómicamente más). El agente lo explora **progresivamente**.
+En español: empiezo en Arad; desde Arad puedo ir a Sibiu, Timisoara o Zerind; si voy a Sibiu llego a Sibiu; termino cuando estoy en Bucarest; ir de Arad a Sibiu cuesta 140 km.
 
-**Grafo vs. árbol.** El grafo de estados representa el *problema* (cada estado una vez). El árbol de búsqueda representa el *proceso*: el mismo estado aparece varias veces si se llega por caminos distintos, lo que puede causar ciclos infinitos. Solución: mantener
+### 3. El espacio de estados es un mapa (grafo)
 
-- **Frontier:** generados, no explorados.
-- **Explored set:** ya expandidos; nunca se vuelven a generar.
+- Cada **punto** es un estado ("estoy en Sibiu").
+- Cada **flecha** es una acción con su costo.
 
-Sin control de estados repetidos, el algoritmo puede no terminar **aunque exista solución**; con control, cada estado se explora a lo sumo una vez.
+Casi nunca se dibuja entero porque es enorme: el 8-puzzle tiene 181 440 estados alcanzables, y el 80-puzzle de la tarea muchísimos más. Por eso el algoritmo lo **va descubriendo poco a poco**.
+
+### 4. Grafo vs. árbol de búsqueda: el problema de dar vueltas
+
+- El **grafo** es el problema: cada estado aparece una vez.
+- El **árbol de búsqueda** es lo que el algoritmo va probando: si llegas a Sibiu por dos caminos distintos, Sibiu aparece dos veces. Incluso puedes ir Arad → Sibiu → Arad → Sibiu… para siempre.
+
+Para no dar vueltas se guardan dos listas:
+
+- **Frontera:** los pendientes (descubiertos pero no revisados).
+- **Explorados:** los ya revisados; no se vuelven a agregar.
+
+Sin esta precaución, el algoritmo puede no terminar **aunque exista solución**. Con ella, cada estado se revisa como mucho una vez.
 
 ```
 function GRAPH-SEARCH(problem):
@@ -66,9 +87,9 @@ function GRAPH-SEARCH(problem):
                 frontier.add(child)
 ```
 
-### Cómo lo formaliza AIMA 4e (§3.3)
+### 5. Cómo lo escribe el libro: *best-first search* (AIMA 4e §3.3)
 
-**Best-first search** es el esquema general: siempre expandir el nodo de la frontera con menor valor de una **función de evaluación f(n)**. Cambiando f se obtienen casi todos los algoritmos del capítulo.
+El libro usa una sola plantilla para casi todos los algoritmos: **siempre saca de la frontera el nodo con el menor valor de un número f(n)**. Cambiando qué es f, obtienes cada algoritmo (f = costo → UCS; f = estimación → greedy; f = costo + estimación → A\*).
 
 ```
 function BEST-FIRST-SEARCH(problem, f) returns a solution node or failure
@@ -86,23 +107,27 @@ function BEST-FIRST-SEARCH(problem, f) returns a solution node or failure
     return failure
 ```
 
-**Un nodo** tiene cuatro campos: `STATE`, `PARENT`, `ACTION` y `PATH-COST` (= g(n)). Siguiendo los `PARENT` desde la meta se reconstruye la solución.
+- **Un nodo** guarda cuatro cosas: el estado (`STATE`), de dónde vine (`PARENT`), qué acción usé (`ACTION`) y cuánto llevo pagado (`PATH-COST`, también llamado g(n)). Para reconstruir la solución, vas de la meta hacia atrás siguiendo los `PARENT`.
+- **Tres tipos de lista para la frontera:** de prioridad (sale el de menor f: UCS, A\*), cola FIFO (sale el más antiguo: BFS) y pila LIFO (sale el más nuevo: DFS).
 
-**Tres tipos de cola:** prioridad (best-first, UCS, A\*), FIFO (BFS), LIFO / pila (DFS).
+### 6. Caminos repetidos (redundantes)
 
-**Caminos redundantes.** Un ciclo (Arad→Sibiu→Arad) es un caso especial de camino redundante (llegar a Sibiu por Arad–Zerind–Oradea–Sibiu, 297 millas, en vez de 140). En una cuadrícula 10×10 con 8 movimientos hay más de 100 millones de caminos de longitud 9 pero solo 100 casillas: eliminar redundancias acelera ~un millón de veces. "Algorithms that cannot remember the past are doomed to repeat it." Tres opciones:
+Un **camino redundante** es una forma más larga de llegar al mismo lugar: ir a Sibiu por Arad–Zerind–Oradea–Sibiu (297) en vez de directo (140). Un ciclo (Arad → Sibiu → Arad) es un caso especial. Pueden ser muchísimos: en una cuadrícula de 10×10 hay más de 100 millones de caminos de 9 pasos, pero solo 100 casillas. Recordar lo visitado acelera la búsqueda ~un millón de veces. "Algorithms that cannot remember the past are doomed to repeat it."
 
-| Opción | Nombre | Cuándo |
+| Opción | Nombre | Cuándo conviene |
 |---|---|---|
-| Recordar todos los estados alcanzados (`reached`) | **Graph search** | Muchos caminos redundantes y la tabla cabe en memoria |
-| No recordar nada | **Tree-like search** | Caminos redundantes raros o imposibles; ahorra memoria |
-| Solo revisar ciclos en el camino actual (siguiendo `PARENT`) | Compromiso | DFS / IDS |
+| Recordar todos los estados alcanzados (`reached`) | **Graph search** | Hay muchos caminos repetidos y cabe en memoria |
+| No recordar nada | **Tree-like search** | Casi no hay caminos repetidos; ahorra memoria |
+| Solo evitar repetir estados del camino actual | Punto medio | DFS e IDS |
 
-**Reached vs. frontera.** Un estado está *alcanzado* (*reached*) si se generó un nodo para él (esté o no expandido). La frontera **separa** el interior (expandido) del exterior (no alcanzado).
+**Alcanzado vs. frontera.** Un estado está *alcanzado* (*reached*) en cuanto se descubre, se haya revisado o no. La frontera es la "orilla" entre lo ya revisado (adentro) y lo no descubierto (afuera).
 
-**Prueba de meta temprana vs. tardía.** BFS puede probar la meta al **generar** un nodo (*early goal test*) porque nunca encontrará un camino más corto a ese estado. UCS y A\* deben probarla al **expandir** (*late goal test*), si no pueden devolver un camino más caro (ver el ejemplo Sibiu→Bucarest en [Uninformed Search](uninformed-search.md)).
+### 7. ¿Cuándo preguntar "¿ya llegué?"? (prueba de meta temprana vs. tardía)
 
-**Ejemplos del curso.** Mapa de Rumania (Arad → Bucarest), 8-puzzle, 80-puzzle, granjero–lobo–cabra–col, N-Reinas (ver [Deber 1](../assignments/deber-1-search-problems.md)).
+- **BFS** puede preguntar al **descubrir** un nodo (*early goal test*): como avanza por niveles, nunca va a encontrar un camino con menos pasos.
+- **UCS y A\*** deben preguntar al **sacarlo** de la frontera (*late goal test*). Si preguntaran al descubrirlo, podrían devolver un camino más caro, porque un camino más barato puede aparecer después (ejemplo Sibiu → Bucarest en [Uninformed Search](uninformed-search.md)).
+
+**Ejemplos del curso:** mapa de Rumania (Arad → Bucarest), 8-puzzle, 80-puzzle, granjero–lobo–cabra–col, N-reinas (ver [Deber 1](../assignments/deber-1-search-problems.md)).
 
 ### Diagrama
 
@@ -157,9 +182,9 @@ flowchart TD
 
 ## Errores comunes y tips de examen
 
-- Los algoritmos de búsqueda difieren **solo en el orden** en que sacan nodos de la frontera (FIFO → BFS, LIFO → DFS, prioridad g → UCS, h → greedy, g+h → A\*).
-- Estado ≠ nodo: un nodo del árbol guarda estado + padre + acción + costo g.
-- Criterios para comparar: **completitud, optimalidad, tiempo, espacio** (ver [Uninformed Search](uninformed-search.md)).
+- Todos los algoritmos de búsqueda son iguales **excepto en el orden** en que sacan nodos de la frontera: FIFO → BFS, LIFO → DFS, menor g → UCS, menor h → greedy, menor g+h → A\*.
+- Estado ≠ nodo: el nodo guarda además padre, acción y costo g.
+- Para comparar algoritmos se usan siempre 4 criterios: **¿es completo? ¿es óptimo? ¿cuánto tiempo? ¿cuánta memoria?** (ver [Uninformed Search](uninformed-search.md)).
 
 ## Relacionado
 
