@@ -7,42 +7,51 @@ updated: 2026-10-07
 ---
 # Particle Swarm Optimization (Optimización por enjambre de partículas, PSO)
 
-> **Summary (EN):** PSO (Kennedy & Eberhart, 1995) keeps a swarm of particles, each with a position x (a candidate solution), a velocity v and a personal best p_best; the swarm shares a global best g_best. Each step, velocity is pulled toward p_best (cognitive term) and g_best (social term) with random weights, and the particle moves: x ← x + v. The original update is v ← v + 2·rand·(p_best − x) + 2·rand·(g_best − x); later versions add an inertia weight w. Momentum causes overshooting (exploration) while the attraction terms exploit good regions.
+> **Summary (EN):** PSO (Kennedy and Eberhart, 1995) moves a swarm of particles through the search space. Each particle has a position x (a candidate solution), a velocity v and its personal best position p_best; the swarm shares its global best g_best. Each step, the velocity is pulled toward p_best (cognitive term) and toward g_best (social term), each scaled by a random number, and the particle moves: x ← x + v. The original version was v ← v + 2·rand·(p_best − x) + 2·rand·(g_best − x); later versions add an inertia weight w. Momentum makes particles overshoot (exploration) while the attractions refine good areas (exploitation).
 
 > **En palabras simples (ES):** Imagina una bandada de pájaros buscando comida. Cada pájaro (partícula) recuerda **el mejor lugar que encontró él** y sabe **el mejor lugar que encontró toda la bandada**. En cada paso, su nueva velocidad mezcla tres cosas: seguir como venía (inercia), volver hacia su mejor lugar, e ir hacia el mejor lugar del grupo. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Particle | Partícula | Solución candidata que se mueve en el espacio. |
-| Position x_t / velocity v_t | Posición / velocidad | Dónde está / cómo se mueve. |
-| Personal best p_best | Mejor personal | Mejor posición que visitó esa partícula ("nostalgia"). |
-| Global best g_best | Mejor global | Mejor posición encontrada por el enjambre ("norma social"). |
-| Cognitive / social term | Término cognitivo / social | Atracción hacia p_best / g_best. |
-| Inertia weight w | Peso de inercia | Cuánto conserva de su velocidad anterior (variante posterior). |
-| φ₁, φ₂ | φ₁, φ₂ | Números aleatorios ~ U[0, 1]. |
+| Particle | Partícula | Una solución candidata que se mueve por el espacio. |
+| Position x | Posición | Dónde está: el punto que representa la solución, p. ej. (x, y). |
+| Velocity v | Velocidad | Hacia dónde y cuánto se va a mover en el próximo paso. |
+| Personal best p_best | Mejor personal | El mejor lugar que **esta** partícula ha visitado ("nostalgia"). |
+| Global best g_best | Mejor global | El mejor lugar que encontró **todo** el enjambre ("norma social"). |
+| Cognitive term | Término cognitivo | La atracción hacia su propio mejor lugar. |
+| Social term | Término social | La atracción hacia el mejor lugar del grupo. |
+| Inertia weight w | Peso de inercia | Qué tanto conserva de su velocidad anterior. |
+| a₁, a₂ (o c₁, c₂) | Coeficientes | Qué tan fuerte es cada atracción. |
+| φ₁, φ₂ (o r₁, r₂) | Números al azar | Números entre 0 y 1, nuevos en cada paso. |
 
 ## Explicación
 
-**Origen (paper §3).** Empezó como simulación de bandadas: *velocity matching* con el vecino + "craziness". Al añadir un "campo de maíz" (*cornfield*), cada agente recordaba su mejor posición (p_best) y conocía la mejor del grupo (g_best). Luego se eliminó lo innecesario (craziness, vecinos) y la bandada se volvió un **enjambre** que encuentra el óptimo.
+### 1. De dónde salió (paper §3)
 
-**Ecuaciones.**
+Empezó como una **simulación de bandadas**: cada pájaro igualaba la velocidad de su vecino, más un poco de movimiento loco al azar (*craziness*). Luego agregaron un "campo de maíz" (*cornfield*, un lugar con comida): cada pájaro recordaba su mejor lugar (p_best) y conocía el mejor del grupo (g_best). Después quitaron lo que no hacía falta (el movimiento loco, los vecinos) y la bandada se convirtió en un **enjambre** que encuentra el óptimo.
 
-Versión original (1995, §3.6):
+### 2. Las ecuaciones
+
+**Versión original (1995, §3.6):**
 ```
 v ← v + 2·rand()·(p_best − x) + 2·rand()·(g_best − x)
 x ← x + v
 ```
-El factor 2 da media 1: las partículas "sobrevuelan" el objetivo la mitad del tiempo.
+En palabras: velocidad nueva = velocidad anterior + 2 × (azar) × (distancia hacia su mejor lugar) + 2 × (azar) × (distancia hacia el mejor del grupo). Luego se mueve sumando la velocidad. Usan 2 porque así, en promedio, el factor vale 1, y las partículas se **pasan del objetivo** la mitad del tiempo (eso las hace explorar).
 
-Versión con inercia (la de la tarea; Shi & Eberhart 1998, complemento):
+**Versión con inercia** (la de la tarea; Shi y Eberhart 1998, complemento):
 ```
 v ← w·v + a₁·φ₁·(p_best − x) + a₂·φ₂·(g_best − x),   φ₁, φ₂ ~ U[0,1]
 x ← x + v
 ```
+Las tres partes de la nueva velocidad:
+1. **w·v (inercia):** sigue un poco como venía.
+2. **a₁·φ₁·(p_best − x) (cognitiva):** se acerca a **su** mejor lugar.
+3. **a₂·φ₂·(g_best − x) (social):** se acerca al mejor lugar **del grupo**.
 
-**Algoritmo (tal como en la [tarea PSO](../assignments/pso-task.md)):**
+### 3. El algoritmo (tal como en la [tarea PSO](../assignments/pso-task.md))
 
 ```python
 S = uniform(lower, upper, (N, D)); V = zeros((N, D)); P = S.copy()
@@ -58,17 +67,22 @@ for t in range(max_iter):
 return P[g], f_P[g]
 ```
 
-**Exploración vs. explotación (slide 10).**
-- p_increment ≫ g_increment → individuos vagan aislados (demasiada exploración).
-- g_increment ≫ p_increment → el enjambre corre prematuramente a un mínimo local.
-- Valores aproximadamente iguales funcionan mejor.
-- **Quitar el momentum** (la velocidad anterior) hace al algoritmo "bastante ineficaz" para óptimos globales: la inercia es lo que explora.
+Cómo leerlo: S son las posiciones de las N partículas (al azar dentro de los límites), V las velocidades (empiezan en 0), P los mejores lugares de cada una (al inicio, donde están) y g el índice del mejor del grupo. En cada vuelta: calcula las velocidades nuevas, mueve las partículas sin salirse de los límites, evalúa, actualiza el mejor lugar de cada partícula si mejoró, y actualiza el mejor del grupo.
 
-**Resultados del paper.** Entrenó una red XOR 2-3-1 (13 pesos) en 30.7 iteraciones con 20 agentes; Iris tan bien como backprop; EEG 92 % vs. 89 %; encontró el óptimo global de Schaffer f6 en cada corrida.
+### 4. Explorar vs. explotar (slide 10)
+
+- Si la atracción a **su propio** mejor lugar es mucho más fuerte → cada partícula anda sola por su lado (demasiada exploración).
+- Si la atracción al **mejor del grupo** es mucho más fuerte → todo el enjambre corre demasiado pronto al mismo lugar, que puede ser un valle pequeño.
+- Lo mejor es que las dos sean **parecidas**.
+- Si se **quita la inercia** (la velocidad anterior), el algoritmo funciona "bastante mal" para encontrar el óptimo global: **la inercia es lo que hace explorar**.
+
+### 5. Resultados del paper
+
+Entrenó una red neuronal para XOR (2 entradas, 3 ocultas, 1 salida: 13 pesos) en unas 30.7 iteraciones con 20 partículas; clasificó flores Iris tan bien como backpropagation; en datos de EEG logró 92 % contra 89 %; y encontró el óptimo global de la función Schaffer f6 en todas las corridas.
 
 ## Ejemplo del curso
 
-Tarea: N = 20 partículas, D = 2, límites [−10, 10], 100 iteraciones, w = 0.5, a₁ = a₂ = 1, minimizar (x+2)² + (y−2)² + 10. Con `np.random.seed(0)`: mejor x = (−2.00000001, 1.99999998), f = 10.0.
+Tarea: N = 20 partículas, D = 2 dimensiones, límites [−10, 10], 100 iteraciones, w = 0.5, a₁ = a₂ = 1, minimizar (x+2)² + (y−2)² + 10. Con `np.random.seed(0)`: mejor x = (−2.00000001, 1.99999998), f = 10.0.
 
 ### Diagrama
 
@@ -129,10 +143,10 @@ flowchart TD
 
 ## Errores comunes y tips de examen
 
-- PSO **no** tiene selección, cruce ni mutación: las mismas partículas sobreviven y se mueven.
-- p_best es por partícula; g_best es uno para todo el enjambre (en la variante *global*; existe *lbest* con vecindarios — complemento).
-- La ecuación original no tiene w; si en el examen aparece w, es la variante con inercia.
-- Relación con GA: el ajuste hacia p_best/g_best es "conceptualmente similar al cruce" (paper §6).
+- PSO **no** tiene selección, cruce ni mutación: las mismas partículas siguen vivas y solo se mueven.
+- p_best es **uno por partícula**; g_best es **uno para todo el enjambre** (en la versión global; también existe *lbest*, donde cada partícula mira solo a sus vecinas — complemento).
+- La ecuación original **no tiene w**; si en el examen aparece w, es la versión con inercia.
+- Relación con los GA: acercarse a p_best y g_best es "parecido en concepto al cruce" (paper §6).
 
 ## Relacionado
 
