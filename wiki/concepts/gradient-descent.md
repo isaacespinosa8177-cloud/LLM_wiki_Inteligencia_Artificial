@@ -7,31 +7,35 @@ updated: 2026-10-07
 ---
 # Gradient Descent (Descenso de gradiente)
 
-> **Summary (EN):** Gradient descent minimizes a differentiable function by repeatedly stepping against the gradient: w ← w − η∇f(w). The learning rate η controls step size — too small is slow, too large overshoots or diverges. It converges to the global minimum on convex functions like the class example f(x,y) = (x−2)² + (y+2)², but only to a local minimum on multimodal ones. It is the engine behind backpropagation.
+> **Summary (EN):** Gradient descent minimizes a function by repeatedly taking a small step in the direction where it goes down fastest, the opposite of the gradient: w ← w − η∇f(w). The learning rate η sets the step size: too small is slow, too large overshoots or diverges. It reaches the global minimum of bowl-shaped (convex) functions like the class example f(x,y) = (x−2)² + (y+2)², but only a local minimum of functions with many valleys. It is the engine behind backpropagation.
 
 > **En palabras simples (ES):** Imagina que estás en una montaña con los ojos vendados y quieres bajar al valle. Tocas el suelo con el pie para sentir hacia dónde sube (eso es el gradiente) y das un paso **hacia el lado contrario**. Repites hasta que el suelo esté plano. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Gradient ∇f | Gradiente | Vector de derivadas parciales; apunta hacia donde f crece más rápido. |
-| Learning rate η | Tasa de aprendizaje | Tamaño del paso. |
-| Convex function | Función convexa | Un solo mínimo (global). |
-| Convergence | Convergencia | Acercarse al mínimo con las iteraciones. |
-| Divergence | Divergencia | Los pasos se alejan cada vez más. |
+| Derivative ∂f/∂x | Derivada parcial | Cuánto cambia f si mueves solo x un poquito. |
+| Gradient ∇f | Gradiente | La lista de derivadas, una por variable: apunta hacia donde f **sube** más rápido. |
+| Learning rate η (eta) | Tasa de aprendizaje | El tamaño de cada paso. |
+| Convex function | Función convexa | Con forma de tazón: un solo valle (el mínimo global). |
+| Convergence / divergence | Convergencia / divergencia | Acercarse al mínimo / alejarse cada vez más. |
 
 ## Explicación
 
-**Regla de actualización:**
+### 1. La regla
 
 ```
 w_{t+1} = w_t − η ∇f(w_t)
 ```
 
-Como ∇f apunta "cuesta arriba", restar el gradiente baja por la pendiente más pronunciada.
+En palabras: **punto nuevo = punto actual − (tamaño del paso) × (gradiente)**. Como el gradiente apunta cuesta **arriba**, restarlo te lleva cuesta **abajo** por la pendiente más inclinada.
 
-**Ejemplo de clase (`gd_functions.py`).** f(x, y) = (x−2)² + (y+2)², ∇f = (2(x−2), 2(y+2)). Desde (0, 0) con η = 0.1:
+### 2. Ejemplo de clase (`gd_functions.py`)
+
+Función: f(x, y) = (x−2)² + (y+2)². Su valle está en (2, −2), donde f = 0.
+
+**Gradiente:** derivando cada variable, ∇f = (2(x−2), 2(y+2)).
 
 ```python
 import numpy as np
@@ -42,32 +46,40 @@ for i in range(1000):
 # w -> [2, -2], f(w) -> 0
 ```
 
-Iteración 1: w = (0,0) − 0.1·(−4, 4) = (0.4, −0.4). En general la distancia al mínimo se multiplica por (1 − 2η) = 0.8 en cada paso → convergencia geométrica. Para esta función:
-- 0 < η < 1 → converge (η = 0.5 llega en un paso).
-- η = 1 → oscila para siempre; η > 1 → diverge.
+**Primer paso a mano**, desde (0, 0) con η = 0.1:
+1. Gradiente en (0, 0): (2·(0−2), 2·(0+2)) = (−4, 4).
+2. Paso: (0, 0) − 0.1·(−4, 4) = (0 + 0.4, 0 − 0.4) = **(0.4, −0.4)**. Se acercó a (2, −2).
 
-`gd_steroids.py` usa η = 0.02 (factor 0.96, más lento) para que la animación 3-D se vea suave. ⚠️ Su superficie dibujada usa (y+1)² en lugar de (y+2)² — ver [bug](../sources/code-class-optimization.md).
+En cada paso la distancia al mínimo se multiplica por (1 − 2η) = 0.8, o sea, se acorta un 20 %. Para esta función:
+- Si 0 < η < 1 → **llega** al mínimo (con η = 0.5 llega en un solo paso).
+- Si η = 1 → **rebota** de un lado al otro para siempre.
+- Si η > 1 → los pasos se pasan cada vez más y se **aleja** (diverge).
 
-**Limitaciones.** Necesita derivadas; en funciones multimodales (Rastrigin) termina en el mínimo local más cercano al punto inicial. Por eso existen [simulated annealing](simulated-annealing.md) y las metaheurísticas poblacionales.
+`gd_steroids.py` usa η = 0.02 (avanza solo un 4 % por paso) para que la animación en 3-D se vea suave. ⚠️ La superficie que dibuja usa (y+1)² en lugar de (y+2)² — ver [bug](../sources/code-class-optimization.md).
 
-**Conexión.** [Backpropagation](neural-networks.md) calcula ∇ de la pérdida respecto a los pesos; el descenso de gradiente los actualiza.
+### 3. Límites
 
-### Búsqueda local en espacios continuos (AIMA §4.2)
+- Necesita poder calcular **derivadas**.
+- Si la función tiene muchos valles (Rastrigin), termina en el valle **más cercano** a donde empezó, que puede no ser el mejor. Por eso existen el [recocido simulado](simulated-annealing.md) y los métodos con poblaciones.
 
-**Ejemplo de AIMA — 3 aeropuertos en Rumania.** Estado = (x₁, y₁, x₂, y₂, x₃, y₃) (6 variables). Objetivo: minimizar la suma de distancias al cuadrado de cada ciudad a su aeropuerto más cercano, f(x) = Σᵢ Σ_{c ∈ Cᵢ} (xᵢ − x_c)² + (yᵢ − y_c)². Un espacio continuo tiene **factor de ramificación infinito**, así que los algoritmos del cap. 3 no sirven directamente.
+**Conexión con redes neuronales:** [backpropagation](neural-networks.md) calcula el gradiente del error respecto a cada peso, y el descenso de gradiente usa ese gradiente para corregir los pesos.
 
-| Técnica | Idea |
+### 4. Optimizar con números reales (AIMA §4.2) *(extra)*
+
+**Ejemplo del libro: 3 aeropuertos en Rumania.** Hay que ubicar 3 aeropuertos, cada uno con coordenadas (x, y): 6 números en total. Queremos que la suma de las distancias (al cuadrado) de cada ciudad a su aeropuerto más cercano sea mínima. Como cada coordenada puede ser cualquier número real, hay **infinitos vecinos**, y los algoritmos del capítulo 3 no sirven directamente.
+
+| Técnica | Idea (en simple) |
 |---|---|
-| **Discretización** | Rejilla de paso δ: cada estado tiene 12 sucesores (±δ en cada variable); luego cualquier búsqueda local |
-| **Empirical gradient** | Medir el cambio de f entre puntos cercanos = hill climbing en la versión discretizada |
-| **Gradiente analítico** | ∇f da dirección y magnitud de la máxima pendiente; a veces se resuelve ∇f = 0 en forma cerrada (1 aeropuerto → la media de las ciudades) |
-| **Paso de gradiente** | x ← x + α∇f(x) para maximizar (x ← x − α∇f(x) para minimizar); α = *step size* |
-| **Line search** | Extender la dirección del gradiente duplicando α hasta que f empiece a empeorar |
-| **Newton–Raphson** | x ← x − H_f(x)⁻¹ ∇f(x), con H la **Hessiana** (2.ª derivadas); ajusta una cuadrática y salta a su mínimo; caro en alta dimensión (n² entradas) |
-| **Optimización con restricciones** | Soluciones deben cumplir restricciones (aeropuertos en tierra firme dentro de Rumania) |
-| **Programación lineal / convexa** | Restricciones lineales (o región convexa) y objetivo lineal (o convexo) → **tiempo polinomial** |
+| **Discretizar** | Usar una cuadrícula: moverse solo ±δ en cada variable (12 vecinos) y aplicar búsqueda local normal |
+| **Gradiente empírico** | Medir cuánto cambia f probando puntos muy cercanos (sin fórmula de derivada) |
+| **Gradiente con fórmula** | Calcular las derivadas; a veces se puede resolver ∇f = 0 directamente (con 1 aeropuerto, el mejor lugar es el promedio de las ciudades) |
+| **Paso de gradiente** | x ← x + α∇f(x) para maximizar, o x ← x − α∇f(x) para minimizar; α es el tamaño del paso |
+| **Búsqueda en línea** (*line search*) | Seguir en la dirección del gradiente duplicando el paso hasta que f empiece a empeorar |
+| **Newton–Raphson** | Usar también las segundas derivadas (la matriz Hessiana) para saltar directo al fondo de una parábola; es caro con muchas variables |
+| **Optimización con restricciones** | Las soluciones deben cumplir reglas (los aeropuertos deben quedar dentro de Rumania) |
+| **Programación lineal / convexa** | Si las reglas y la función son "rectas" (lineales) o con forma de tazón (convexas), se resuelve rápido |
 
-El dilema de α: muy pequeño → demasiados pasos; muy grande → se pasa del máximo (lo mismo que se ve con η en `gd_functions.py`). Los métodos continuos sufren igual que los discretos con máximos locales, crestas y mesetas; ayudan los reinicios aleatorios y el recocido simulado.
+El dilema del tamaño de paso α es el mismo que con η: muy pequeño → demasiados pasos; muy grande → se pasa del objetivo. Los métodos con números reales también se atascan en valles pequeños, crestas y zonas planas; ayudan los reinicios aleatorios y el recocido simulado.
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
@@ -107,9 +119,9 @@ El dilema de α: muy pequeño → demasiados pasos; muy grande → se pasa del m
 
 ## Errores comunes y tips de examen
 
-- Es **menos** el gradiente (descenso); más el gradiente es ascenso.
-- Elegir η: probar en escala logarítmica (0.001, 0.01, 0.1…).
-- GD es determinista dado el punto inicial; SGD (estocástico) usa gradientes de muestras (complemento).
+- Es **menos** el gradiente (para bajar). Más el gradiente sería subir (ascenso de gradiente).
+- Para elegir η, prueba valores en escala de 10: 0.001, 0.01, 0.1…
+- Con el mismo punto de inicio, el descenso de gradiente siempre da el mismo resultado (no usa azar). La versión estocástica (SGD) usa el gradiente de solo algunos datos cada vez (complemento).
 
 ## Relacionado
 

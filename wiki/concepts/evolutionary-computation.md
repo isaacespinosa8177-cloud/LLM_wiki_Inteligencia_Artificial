@@ -7,28 +7,35 @@ updated: 2026-10-07
 ---
 # Evolutionary Computation (Computación evolutiva)
 
-> **Summary (EN):** Evolutionary computation applies the mechanisms of biological evolution — variation, selection and heredity — to optimization. It has several historical dialects: evolutionary programming (Lawrence Fogel, 1960s, evolving finite-state machines), evolution strategies (Rechenberg and Schwefel, 1970s, real-valued parameter optimization) and genetic algorithms (John Holland, 1975, bit strings with crossover). All share the same loop: initialize a population, evaluate fitness, select parents, recombine and mutate, select survivors, repeat.
+> **Summary (EN):** Evolutionary computation copies biological evolution (variation, selection and inheritance) to solve optimization problems. It has several historical families: evolutionary programming (Lawrence Fogel, 1960s, evolving finite-state machines), evolution strategies (Rechenberg and Schwefel, 1970s, real-valued parameters) and genetic algorithms (John Holland, 1975, bit strings with crossover). All share the same loop: create a population, score it, select parents, recombine and mutate them, select who survives, and repeat.
 
 > **En palabras simples (ES):** Imita la evolución de las especies. Tienes una **población** de soluciones. Las mejores tienen más probabilidad de "tener hijos"; los hijos mezclan partes de sus padres y a veces tienen un cambio al azar. Generación tras generación, la población mejora. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Population | Población | Conjunto de soluciones candidatas (individuos). |
-| Individual / chromosome / genotype | Individuo / cromosoma / genotipo | Una solución codificada. |
-| Phenotype | Fenotipo | La solución decodificada (p. ej. (x, y)). |
-| Fitness | Aptitud | Calidad de un individuo. |
-| Parent / survivor selection | Selección de padres / supervivientes | Quién se reproduce / quién pasa a la siguiente generación. |
-| Recombination (crossover) | Recombinación (cruce) | Combinar dos padres. |
-| Mutation | Mutación | Cambio aleatorio pequeño. |
-| Generation / epoch | Generación / época | Una iteración del ciclo. |
+| Population | Población | El grupo de soluciones de una generación. |
+| Individual / chromosome / genotype | Individuo / cromosoma / genotipo | Una solución escrita en "código" (por ejemplo, una cadena de bits). |
+| Phenotype | Fenotipo | La misma solución "traducida" a lo que significa (por ejemplo, el punto (x, y)). |
+| Fitness | Aptitud | La nota de una solución: qué tan buena es. |
+| Parent selection | Selección de padres | Quiénes tienen hijos. |
+| Survivor selection | Selección de supervivientes | Quiénes pasan a la siguiente generación. |
+| Recombination (crossover) | Recombinación (cruce) | Mezclar dos padres para formar hijos. |
+| Mutation | Mutación | Un cambio pequeño al azar. |
+| Generation / epoch | Generación / época | Una vuelta completa del ciclo. |
 
 ## Explicación
 
-**Principios biológicos (slides 04, s3):** *adaptación* (sobrevivir y comportarse bien en el entorno), *herencia* (pasar rasgos a la siguiente generación), *selección natural* (los más aptos tienen más probabilidad de pasar sus rasgos).
+### 1. Las tres ideas de la biología (slides 04, s3)
 
-**Esquema general de un algoritmo evolutivo** (Eiben & Smith Fig. 3.1; componentes y selección en [EA Selection](ea-selection-and-population-management.md), operadores en [EA Representation and Variation](ea-representation-and-variation.md)):
+- **Adaptación:** los seres vivos que se ajustan bien a su entorno sobreviven.
+- **Herencia:** los hijos reciben rasgos de sus padres.
+- **Selección natural:** los más aptos tienen más probabilidad de pasar sus rasgos.
+
+Un algoritmo evolutivo copia esto con soluciones: las "más aptas" (mejor nota) tienen más hijos, y los hijos heredan partes de ellas.
+
+### 2. El ciclo general (Eiben & Smith Fig. 3.1)
 
 ```
 initialize population with random candidates
@@ -41,35 +48,47 @@ repeat until termination:
     select individuals for the next generation
 ```
 
-**Dialectos históricos:**
+En español: crea soluciones al azar y ponles nota; luego repite: elige padres, mézclalos, cambia un poco a los hijos, ponles nota y decide quién sigue. Más detalle de la selección en [EA Selection](ea-selection-and-population-management.md) y de los operadores en [EA Representation and Variation](ea-representation-and-variation.md).
 
-| Dialecto | Origen | Representación típica | Operador principal |
+### 3. Las familias históricas
+
+| Familia | Quién y cuándo | Cómo guarda las soluciones | Operador principal |
 |---|---|---|---|
-| Evolutionary programming | L. J. Fogel, 1960 | Máquinas de estados finitos | Mutación |
-| Evolution strategies | Rechenberg y Schwefel, 1970 | Vectores reales | Mutación gaussiana auto-adaptativa |
-| [Genetic algorithms](genetic-algorithms.md) | J. H. Holland, 1975 | Cadenas de bits | Cruce (+ mutación) |
-| Genetic programming | Koza, ~1990 (complemento) | Árboles (programas) | Cruce de subárboles |
+| Programación evolutiva | L. J. Fogel, 1960 | Máquinas de estados finitos (pequeños autómatas) | Mutación |
+| Estrategias evolutivas | Rechenberg y Schwefel, 1970 | Listas de números reales | Mutación con ruido gaussiano que se ajusta sola |
+| [Algoritmos genéticos](genetic-algorithms.md) | J. H. Holland, 1975 | Cadenas de bits | Cruce (+ mutación) |
+| Programación genética | Koza, ~1990 (complemento) | Árboles (programas) | Cruce de ramas del árbol |
 
-Holland (1992) explica por qué los primeros intentos de finales de los 50 fallaron: dependían solo de la **mutación**; la clave fue añadir **apareamiento (cruce)**.
+Holland (1992) explica por qué fallaron los primeros intentos de finales de los años 50: solo usaban **mutación**. La clave fue agregar el **cruce** (mezclar padres).
 
-**Componentes que hay que especificar (Eiben & Smith §3.2):** representación (genotipo ↔ fenotipo), función de evaluación (aptitud), población (multiconjunto de tamaño fijo), selección de padres, operadores de variación (mutación = aridad 1, recombinación = aridad ≥ 2), selección de supervivientes (reemplazo), inicialización y condición de terminación.
+### 4. Lo que hay que decidir para armar uno (Eiben & Smith §3.2)
 
-**Evolución natural vs. artificial (Tabla 3.6):**
+1. **Representación:** cómo se escribe una solución (genotipo) y cómo se traduce (fenotipo).
+2. **Función de evaluación:** cómo se le pone nota.
+3. **Población:** cuántas soluciones hay (normalmente un número fijo).
+4. **Selección de padres:** cómo se eligen.
+5. **Operadores de variación:** mutación (cambia **un** individuo) y recombinación (mezcla **dos o más**).
+6. **Selección de supervivientes:** quién sigue.
+7. **Inicialización y condición para parar.**
 
-| | Natural | Artificial (EA) |
+### 5. Evolución natural vs. artificial (Tabla 3.6)
+
+| | Natural | Artificial (algoritmo) |
 |---|---|---|
-| Aptitud | Se observa *a posteriori* | Se define *a priori* y guía la selección |
-| Selección | Fuerza compleja (entorno, otras especies) | Operador aleatorio con probabilidades según la aptitud |
-| Genotipo → fenotipo | Proceso bioquímico complejo | Transformación matemática simple |
-| Variación | 1 o 2 padres | 1, 2 o muchos padres |
-| Ejecución | Paralela y descentralizada | Centralizada, nacimientos y muertes sincronizados |
-| Población | Estructurada espacialmente, tamaño variable | Normalmente sin estructura (*panmictic*), tamaño constante |
+| Aptitud | Se ve después (quién sobrevivió) | Se define antes con una fórmula y guía la selección |
+| Selección | Fuerzas complicadas (clima, depredadores) | Un sorteo con probabilidades según la nota |
+| Del código a la solución | Proceso bioquímico complejo | Una conversión matemática simple |
+| Padres por hijo | 1 o 2 | 1, 2 o muchos |
+| Cómo ocurre | En paralelo, sin control central | Controlado: todos nacen y mueren al mismo tiempo |
+| Población | Repartida en el espacio, tamaño variable | Todos con todos, tamaño fijo |
 
-"*If you have variation, heredity, and selection, then you must get evolution*" (Dennett).
+"*If you have variation, heredity, and selection, then you must get evolution*" (Dennett): si hay variación, herencia y selección, necesariamente hay evolución.
 
-**¿Por qué usar EAs? (§3.7):** muchos problemas reales se reducen a problemas cuyo número de soluciones crece exponencialmente (TSP: n!/2 tours); los métodos exactos no escalan y los EA dan buenas soluciones aproximadas sin requisitos fuertes sobre la función (no necesitan derivadas ni convexidad).
+### 6. ¿Por qué usarlos? (§3.7)
 
-**Relación con la inteligencia de enjambre.** [PSO](particle-swarm-optimization.md) también usa una población y una medida de aptitud, pero no hay selección ni reproducción: las mismas partículas se mueven. Kennedy y Eberhart lo ubican "entre los GA y la programación evolutiva".
+Muchos problemas reales tienen una cantidad de soluciones que crece muchísimo: en el problema del viajante (TSP) con n ciudades hay n!/2 recorridos. Los métodos exactos no alcanzan, y los algoritmos evolutivos dan **buenas soluciones aproximadas** sin pedir nada especial a la función (no necesitan derivadas ni que tenga un solo valle).
+
+**Relación con los enjambres.** [PSO](particle-swarm-optimization.md) también usa una población y una nota, pero no hay selección ni hijos: las mismas partículas se mueven. Kennedy y Eberhart lo ubican "entre los GA y la programación evolutiva".
 
 ### Diagrama
 
@@ -124,8 +143,8 @@ flowchart LR
 
 ## Errores comunes y tips de examen
 
-- Fogel → 1960 (EP); Rechenberg/Schwefel → 1970 (ES); Holland → **1975** (GA).
-- Genotipo (código) ≠ fenotipo (solución decodificada).
+- Fogel → 1960 (programación evolutiva); Rechenberg y Schwefel → 1970 (estrategias evolutivas); Holland → **1975** (algoritmos genéticos).
+- Genotipo (el código, p. ej. bits) ≠ fenotipo (lo que significa, p. ej. el punto (x, y)).
 
 ## Relacionado
 

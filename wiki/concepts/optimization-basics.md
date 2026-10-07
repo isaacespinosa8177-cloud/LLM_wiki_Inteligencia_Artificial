@@ -7,53 +7,69 @@ updated: 2026-10-07
 ---
 # Optimization Basics (Fundamentos de optimización)
 
-> **Summary (EN):** Optimization looks for the input that maximizes or minimizes an objective (fitness) function, aiming for the global optimum without getting stuck in local optima. Unlike path search, only the final state matters. The course covers a gradient-based method (gradient descent), a single-solution stochastic method (simulated annealing) and population-based metaheuristics (GA, PSO, ACO, ABC). All of them balance exploration (trying new regions) against exploitation (refining good ones). Benchmark functions such as Rastrigin, Ackley and Schaffer f6 test that balance.
+> **Summary (EN):** Optimization looks for the input that makes a function as small (or as large) as possible, for example the lowest point of a valley; only the final answer matters, not the path. The danger is getting stuck in a local optimum (a small valley) instead of the global one (the deepest). The course covers gradient descent (uses derivatives), simulated annealing (one solution, with randomness) and population methods (GA, PSO, ACO, ABC). All of them balance exploration (trying new regions) and exploitation (improving good ones). Test functions like Rastrigin, Ackley and Schaffer f6 check that balance.
 
 > **En palabras simples (ES):** Optimizar es buscar **el mejor valor posible** de una función, por ejemplo el punto más bajo de un valle. No importa el camino, solo el punto final. El peligro es quedarse en un "valle pequeño" (óptimo local) creyendo que es el más profundo (óptimo global). Para elegir algoritmo, haz estas preguntas. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Objective / fitness function | Función objetivo / de aptitud | Lo que se quiere minimizar o maximizar. |
-| Search space | Espacio de búsqueda | Conjunto de soluciones candidatas. |
-| Global / local optimum | Óptimo global / local | Mejor punto de todo el espacio / mejor solo en su vecindad. |
-| Local search | Búsqueda local | Mantiene una solución y la mueve a vecinas (hill climbing, SA). |
-| Metaheuristic | Metaheurística | Estrategia general de búsqueda aplicable a muchos problemas (GA, PSO, ACO…). |
-| Exploration / exploitation | Exploración / explotación | Probar regiones nuevas / refinar las buenas. |
-| Premature convergence | Convergencia prematura | La población colapsa en un óptimo local. |
-| Continuous / combinatorial | Continua / combinatoria | Variables reales / discretas (permutaciones, rutas). |
+| Objective / fitness function | Función objetivo / de aptitud | La "nota" de una solución: lo que queremos hacer lo más pequeño (o grande) posible. |
+| Search space | Espacio de búsqueda | Todas las soluciones posibles. |
+| Global optimum | Óptimo global | La mejor solución de **todas**. |
+| Local optimum | Óptimo local | La mejor solución **de su zona**, pero no de todas (un valle pequeño). |
+| Local search | Búsqueda local | Mejorar una solución haciéndole cambios pequeños (hill climbing, recocido simulado). |
+| Metaheuristic | Metaheurística | Una estrategia general de búsqueda que sirve para muchos problemas (GA, PSO, ACO…). |
+| Exploration / exploitation | Exploración / explotación | Probar zonas nuevas / mejorar alrededor de lo bueno que ya tengo. |
+| Premature convergence | Convergencia prematura | Todas las soluciones se juntan demasiado pronto en un valle pequeño. |
+| Continuous / combinatorial | Continuo / combinatorio | Los valores son números reales / son elecciones que se pueden contar (rutas, órdenes). |
 
 ## Explicación
 
-**Búsqueda de caminos vs. optimización.** En [A\*](a-star-search.md) importa el camino. En optimización solo importa **el estado final**: el punto (x, y) que minimiza f, el tour más corto, los pesos de una red.
+### 1. Buscar un camino vs. optimizar
 
-**Óptimos locales y globales (slides 04, s3).** Una función puede tener muchos "valles" (mínimos locales) y "picos" (máximos locales). Optimizar es encontrar el global sin confundirlo con un local. Hill climbing (subir siempre a la mejor vecina) se atasca en máximos locales, crestas y mesetas — en 8 reinas aleatorias resuelve solo el 14 % (ver [Local Search and Hill Climbing](local-search-hill-climbing.md)). AIMA llama **búsqueda local** a estos métodos: guardan solo el estado actual (o unos pocos), usan una **formulación de estado completo** y no recuerdan caminos.
+En [A\*](a-star-search.md) importa el **camino** (por dónde vas a Bucarest). En optimización solo importa **la respuesta final**: el punto (x, y) donde f es mínima, la ruta más corta o los pesos de una red neuronal.
 
-**Analogía evolutiva.** Cada punto del espacio es un "individuo" con una aptitud; si simulamos evolución, sobreviven los que convergen a los óptimos globales.
+### 2. Óptimos locales y globales (slides 04, s3)
 
-**Exploración vs. explotación** — el hilo conductor de la unidad:
+Imagina el gráfico de f como un terreno con muchos **valles** (mínimos locales) y **picos** (máximos locales). Optimizar es encontrar el valle **más profundo** sin confundirlo con uno pequeño.
+
+- **Hill climbing** (ir siempre al mejor vecino) se atasca en cimas pequeñas, crestas y zonas planas. En 8 reinas al azar solo resuelve el 14 % (ver [Local Search and Hill Climbing](local-search-hill-climbing.md)).
+- El libro llama **búsqueda local** a estos métodos: guardan solo la solución actual (o unas pocas), cada estado ya es una solución completa y no recuerdan el camino.
+
+**Analogía de la evolución:** cada punto del terreno es un "individuo" con su nota (aptitud). Si simulamos la evolución, sobreviven los que llegan a los mejores valles.
+
+### 3. Explorar vs. explotar: la idea que une toda la unidad
+
+Todo algoritmo de optimización tiene que equilibrar dos cosas:
+- **Explorar:** buscar en zonas nuevas, por si hay un valle mejor en otro lado.
+- **Explotar:** mejorar alrededor de lo bueno que ya encontré.
+
+Si solo explotas, te quedas en el primer valle. Si solo exploras, nunca afinas la respuesta.
 
 | Algoritmo | Explora con… | Explota con… |
 |---|---|---|
-| [Gradient Descent](gradient-descent.md) | (casi nada; depende del punto inicial) | Seguir −∇f |
-| [Simulated Annealing](simulated-annealing.md) | Aceptar empeoramientos cuando T es alta | Enfriar: T baja → solo mejoras |
-| [Genetic Algorithms](genetic-algorithms.md) | Mutación, cruce entre regiones distintas | Selección de los más aptos, elitismo |
-| [PSO](particle-swarm-optimization.md) | Inercia (sobrepasar), términos aleatorios | Atracción a p_best y g_best |
-| [ACO](ant-colony-optimization.md) | Elección probabilística, evaporación | Refuerzo de feromona en buenos tours |
-| [ABC](artificial-bee-colony.md) | Abejas exploradoras (*scouts*) | Abejas empleadas y observadoras |
+| [Gradient Descent](gradient-descent.md) | casi nada (depende de dónde empiezas) | ir siempre cuesta abajo (−∇f) |
+| [Simulated Annealing](simulated-annealing.md) | aceptar empeorar cuando la temperatura T es alta | enfriar: con T baja solo acepta mejoras |
+| [Genetic Algorithms](genetic-algorithms.md) | mutación y cruce entre soluciones distintas | elegir a los mejores como padres, elitismo |
+| [PSO](particle-swarm-optimization.md) | la inercia (pasarse de largo) y los números al azar | la atracción a su mejor lugar y al mejor del grupo |
+| [ACO](ant-colony-optimization.md) | elegir caminos al azar, evaporación de feromona | reforzar con feromona los buenos recorridos |
+| [ABC](artificial-bee-colony.md) | abejas exploradoras (*scouts*) | abejas empleadas y observadoras |
 
-Holland lo plantea como el problema de cuánto "hipotecar el presente por el futuro"; Kennedy y Eberhart citan su "asignación óptima de pruebas".
+Holland lo describe como decidir cuánto "hipotecar el presente por el futuro" (gastar intentos explorando para ganar después). Kennedy y Eberhart citan esa misma idea.
 
-### Funciones de prueba del curso
+### 4. Funciones de prueba del curso
 
-| Función | Fórmula | Óptimo | Dificultad |
+| Función | Fórmula | Dónde está el mínimo | ¿Qué tan difícil? |
 |---|---|---|---|
-| Cuadrática (GD) | (x−2)² + (y+2)² | (2, −2), f = 0 | Convexa, un solo mínimo |
-| Tareas GA/PSO | (x+2)² + (y−2)² + 10 | (−2, 2), f = 10 | Convexa |
-| Rastrigin | 10n + Σ(xᵢ² − 10 cos 2πxᵢ) | 0, f = 0 | Muchísimos mínimos locales en rejilla |
-| Ackley | −20 e^(−0.2√(½(x²+y²))) − e^(½(cos 2πx + cos 2πy)) + e + 20 | 0, f = 0 | Plana afuera, embudo con ruido |
-| Schaffer f6 | (paper PSO) | 0 | Altamente no lineal, muchos óptimos locales |
+| Cuadrática (descenso de gradiente) | (x−2)² + (y+2)² | (2, −2), f = 0 | Fácil: un solo valle |
+| Tareas GA/PSO | (x+2)² + (y−2)² + 10 | (−2, 2), f = 10 | Fácil: un solo valle |
+| Rastrigin | 10n + Σ(xᵢ² − 10 cos 2πxᵢ) | en 0, f = 0 | Difícil: muchísimos valles pequeños en cuadrícula |
+| Ackley | −20 e^(−0.2√(½(x²+y²))) − e^(½(cos 2πx + cos 2πy)) + e + 20 | en 0, f = 0 | Plana por fuera y un embudo con "ruido" en el centro |
+| Schaffer f6 | (en el paper de PSO) | en 0 | Muy irregular, con muchos valles |
+
+¿Por qué la de las tareas vale 10 en (−2, 2)? Porque ahí (x+2)² = 0 y (y−2)² = 0, y solo queda el +10.
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
@@ -92,9 +108,9 @@ Holland lo plantea como el problema de cuánto "hipotecar el presente por el fut
 
 ## Errores comunes y tips de examen
 
-- Las metaheurísticas **no garantizan** el óptimo global; son estocásticas: correr varias veces y reportar media/mejor.
-- Una función convexa (como las de las tareas) se resuelve trivialmente con GD; las metaheurísticas brillan en funciones multimodales, discontinuas o combinatorias.
-- Minimizar f equivale a maximizar −f (o 1/(1+f) para aptitudes positivas).
+- Las metaheurísticas **no garantizan** encontrar el óptimo global y usan azar: hay que correrlas varias veces y reportar el promedio y el mejor resultado.
+- Una función con un solo valle (como las de las tareas) se resuelve fácil con descenso de gradiente; las metaheurísticas sirven más en funciones con muchos valles, con saltos o en problemas combinatorios.
+- Minimizar f es lo mismo que maximizar −f (o 1/(1+f) si se necesita una aptitud positiva).
 
 ## Relacionado
 
