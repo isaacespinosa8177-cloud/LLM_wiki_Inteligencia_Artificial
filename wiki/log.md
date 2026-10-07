@@ -91,3 +91,13 @@ Recent activity: `grep "^## \[" wiki/log.md | tail -5`
 - Added a `> **En palabras simples (ES):**` callout under the Summary of all 37 concept pages (hand-written for the 5 pages without pseudocode).
 - Updated `tools/build_study.py` (new cheat-sheet intro; Anki pseudocode cards now carry the bilingual steps), `CLAUDE.md` §2 (plain-language rule) and §3 (new pseudocode format), `study/flashcards.md`.
 - Regenerated `study/intuitive-pseudocode.md` and the Anki deck.
+
+## [2026-10-07] update | Plain-language rewrite of the whole wiki
+- Isaac asked for everything to be rewritten in simple language, with Spanish beside the English, assuming no prior knowledge.
+- Rewrote the Summary, key-terms table, explanation and exam-tips sections of all 37 concept pages: every symbol defined before use, everyday analogies, formulas read out in words, small numeric examples, advanced AIMA material marked *(extra)*. All facts, numbers, code, diagrams, links and citations kept.
+- `glossary.md` (plain explanations for all terms) and `overview.md` (plain summary and cross-unit threads) rewritten.
+- `study/practice-unit-1..4`: Spanish version under every English problem statement (36).
+- `study/exam-questions.md`: English question and model English answer added to all 34 questions; fixed the vacuum PEAS answer (rewarded "dirt vacuumed", which contradicted *you get what you ask for*).
+- `study/quiz-bank.md`: `> ES:` explanation for all 61 questions; `tools/build_study.py` and `quiz.template.html` show it in the quiz and the Anki cards; quiz republished to the same URL.
+- `study/search-algorithms-comparison.md`, `study/metaheuristics-comparison.md`: "how to read the table" guides.
+- Review decks: Spanish note on every content slide; PDFs re-rendered, overflow-checked.

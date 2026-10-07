@@ -29,6 +29,8 @@ footer: "Unit 3 · Logic & Prolog · IA review"
 
 **CNF** (conjunctive normal form) = AND of ORs of literals; every propositional sentence can be converted. It is the input format for resolution.
 
+> ES: la proposicional solo dice verdadero/falso; la de primer orden habla de objetos y puede decir "todos" y "existe".
+
 ---
 
 ## CNF conversion recipe
@@ -43,8 +45,10 @@ Practice 1:
 - (A ⇒ B) ⇒ C → (A ∧ ¬B) ∨ C → **(A ∨ C) ∧ (¬B ∨ C)**
 - ¬(A ∧ (B ∨ C)) → **(¬A ∨ ¬B) ∧ (¬A ∨ ¬C)**
 
----
+> ES: cuatro pasos fijos: quitar ⇔, quitar ⇒, meter la negación, repartir el "o" sobre el "y".
 
+---
+<!-- _class: small -->
 ## Horn clauses
 
 A **Horn clause** has **at most one positive literal**.
@@ -58,6 +62,8 @@ A **Horn clause** has **at most one positive literal**.
 
 Why it matters: inference by **forward / backward chaining**; propositional entailment is **linear** in the size of the KB.
 
+> ES: Horn = como mucho un literal sin negar: una regla, un hecho o una pregunta.
+
 ---
 
 ## Prolog = logic + control
@@ -68,8 +74,10 @@ Why it matters: inference by **forward / backward chaining**; propositional enta
 
 Four syntax conventions: implication written backwards (`c :- a, b.`) · **Uppercase = variable** · variables implicitly ∀ · `,` = and, `;` = or, every clause ends with `.`
 
----
+> ES: tú escribes qué es verdad; Prolog decide en qué orden buscar la prueba. Por eso el orden de las reglas importa.
 
+---
+<!-- _class: small -->
 ## family.pl (lecture example)
 
 ```prolog
@@ -87,6 +95,8 @@ ancestor(X, Y)    :- parent(X, Z), ancestor(Z, Y).
 | `?- parent(hector, X).` | `X = ana ; X = luis.` |
 | `?- findall(Z, grandparent(hector, Z), L).` | `L = [sofia, diego].` |
 | `?- findall(D, ancestor(hector, D), L).` | `L = [ana, luis, sofia, diego].` |
+
+> ES: abuelo = padre de un padre; ancestro = padre, o padre de un ancestro.
 
 ---
 
@@ -120,7 +130,7 @@ Find a substitution that makes two terms identical, or **fail**. Two-way pattern
 > ES: en una regla recursiva, `S is S0 + H` va **después** de la llamada que liga S0.
 
 ---
-
+<!-- _class: small -->
 ## SLD trace: factorial(2, X)
 
 ```text
@@ -135,8 +145,10 @@ X is 2 * 1 = 2         → X = 2 ;
 backtrack: factorial(0, D2) via clause 2 fails (0 > 0 false) → false.
 ```
 
----
+> ES: baja hasta factorial(0) = 1 y luego multiplica de regreso: 1·1 = 1 y 2·1 = 2.
 
+---
+<!-- _class: small -->
 ## Negation as failure & the cut
 
 - `\+ G` succeeds if G **cannot be proved** → logical negation only under the **closed-world assumption**.
@@ -154,8 +166,10 @@ max(_, Y, Y).
 max(X, Y, M) :- ( X >= Y -> M = X ; M = Y ).
 ```
 
----
+> ES: `\+ G` es verdad si no se puede probar G; el ! impide probar otras opciones.
 
+---
+<!-- _class: small -->
 ## Recursion, lists and left recursion
 
 ```prolog
@@ -170,6 +184,8 @@ sum_list([H|T], S) :- sum_list(T, S0), S is S0 + H.
 - **Accumulators** turn exponential/stack-heavy recursion into linear tail recursion (Fibonacci).
 - **Left recursion loops:** `path(X,Z) :- path(X,Y), link(Y,Z).` → stack overflow.
   Fix: `path(X,Z) :- link(X,Y), path(Y,Z).` or `:- table path/2.`
+
+> ES: caso base primero; la llamada recursiva a la derecha; las cuentas con is después de tener los valores.
 
 ---
 

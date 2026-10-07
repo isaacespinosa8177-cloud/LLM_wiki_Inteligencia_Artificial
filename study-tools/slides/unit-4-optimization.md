@@ -26,6 +26,8 @@ footer: "Unit 4 · Optimization & Metaheuristics · IA review"
 - Course function: **f(x, y) = (x + 2)² + (y − 2)² + 10** → minimum **f = 10 at (−2, 2)** (convex, one minimum).
 - Benchmarks with many local minima: **Rastrigin, Ackley, Schaffer f6**.
 
+> ES: buscamos el valle más profundo de la función sin quedarnos en uno pequeño.
+
 ---
 
 <!-- _class: small -->
@@ -41,6 +43,8 @@ footer: "Unit 4 · Optimization & Metaheuristics · IA review"
 | Key operator | w ← w − η∇f | accept e^(−Δ/T) | selection, crossover, mutation | v ← w·v + c₁r₁(p−x) + c₂r₂(g−x) | p ∝ τ^α η^β | v = x + φ(x − x_k) |
 | Typical problems | continuous, differentiable | both | both | continuous | **combinatorial** (TSP) | continuous |
 | Global optimum guaranteed | only if convex | asymptotically (slow cooling) | no | no | no | no |
+
+> ES: solo GD necesita derivadas; ACO es para rutas (combinatorio).
 
 ---
 
@@ -72,7 +76,7 @@ High T → random walk (exploration) · T → 0 → hill climbing (exploitation)
 > ES: bug B2 del script de clase: α = 0.8 con 100 000 iteraciones → T ≈ 0 en ~100 iteraciones. Usar α ≈ 0.9999.
 
 ---
-
+<!-- _class: small -->
 ## The evolutionary loop
 
 ```text
@@ -88,6 +92,8 @@ repeat until a stop condition:
 
 Dialects: **evolutionary programming** (L. Fogel, 1960s) · **evolution strategies** (Rechenberg & Schwefel, 1970s, real-valued) · **genetic algorithms** (Holland, 1975, bit strings).
 
+> ES: elegir padres → mezclarlos → cambiar un poco a los hijos → quedarse con los mejores → repetir.
+
 ---
 
 ## GA: encoding and operators
@@ -97,6 +103,8 @@ Dialects: **evolutionary programming** (L. Fogel, 1960s) · **evolution strategi
 - Bit-flip mutation: expected flips = L·p_m (typical p_m ≈ 1/L).
 - **Representation must match the operators:** permutations need swap / insert / scramble / inversion mutation and PMX / order / cycle / edge crossover — one-point crossover breaks permutations.
 - Holland: **schemata** (e.g., `1**0*`) and **implicit parallelism** — short, fit building blocks multiply.
+
+> ES: el cruce corta a dos padres en el mismo punto e intercambia los finales; la mutación cambia bits al azar.
 
 ---
 
@@ -108,6 +116,8 @@ Dialects: **evolutionary programming** (L. Fogel, 1960s) · **evolution strategi
 - **Tournament (size k):** pick k at random, keep the best — simple, no global fitness needed.
 - **SUS:** one spin with λ equally spaced arms (less variance than roulette).
 - **Survivors:** generational, steady-state, **elitism**, (μ+λ) parents + offspring, (μ,λ) offspring only.
+
+> ES: ruleta = probabilidad según la nota; torneo = el mejor de k al azar; elitismo = el mejor siempre sigue.
 
 ---
 
@@ -149,6 +159,8 @@ Practice 8 (α = 1, β = 2): weights B 0.25, C 0.125, D 1 → **P = 0.18, 0.09, 
 - Parameters: number of sources (SN), limit, MCN.
 
 **Swarm intelligence:** simple agents + local rules + information sharing → collective behavior. Millonas' 5 principles: proximity, quality, diverse response, stability, adaptability.
+
+> ES: empleadas y observadoras mejoran las fuentes buenas; las exploradoras buscan fuentes nuevas al azar.
 
 ---
 
