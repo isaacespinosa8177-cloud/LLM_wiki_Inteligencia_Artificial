@@ -108,6 +108,7 @@ def md_to_html(text):
             out.append("<pre>" + html.escape(code.rstrip()) + "</pre>")
             continue
         b = html.escape(block)
+        b = re.sub(r"(?m)^&gt; ?", "", b)                   # drop blockquote markers
         b = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", b)
         b = re.sub(r"(?<![\w*])\*(?!\s)(.+?)\*(?!\w)", r"<i>\1</i>", b)
         b = re.sub(r"`([^`]+)`", r"<code>\1</code>", b)

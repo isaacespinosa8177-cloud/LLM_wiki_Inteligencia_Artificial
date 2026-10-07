@@ -3,11 +3,21 @@ title: Search algorithms comparison
 type: study
 tags: [study, search, comparison, cheat-sheet]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Search algorithms comparison (Comparación de algoritmos de búsqueda)
 
 > **Summary (EN):** One-page cheat sheet for Unit 2: what each search algorithm puts first in the frontier, whether it is complete and optimal, its time and space complexity, and when to use it — including adversarial search and CSP backtracking.
+
+> **En palabras simples (ES):** Todos los algoritmos de búsqueda hacen lo mismo: tienen una lista de lugares pendientes y sacan uno a la vez. **Lo que los distingue es cuál sacan primero.** Esta hoja los pone lado a lado para que compares rápido.
+
+### Cómo leer la tabla
+
+- **Frontera / orden:** de qué forma se elige el siguiente nodo. Cola FIFO = el más antiguo (como una fila). Pila LIFO = el más nuevo (como una pila de platos). Prioridad = el de menor número (g, h o g + h).
+- **Completo:** si hay solución, ¿seguro la encuentra?
+- **Óptimo:** ¿encuentra la solución más barata?
+- **Tiempo / Espacio:** cuánto tarda / cuánta memoria usa. Las letras: **b** = cuántos hijos tiene cada nodo; **d** = cuántos pasos hay hasta la meta más cercana; **m** = el camino más largo posible; **l** = el límite de profundidad. O(b^d) significa "crece como b multiplicado por sí mismo d veces" (con b = 10 y d = 5: 100 000).
+- **g(n)** = lo que ya pagué hasta n; **h(n)** = lo que creo que falta desde n.
 
 ## Tabla maestra
 
