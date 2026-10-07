@@ -178,19 +178,21 @@ def cards_from_pseudocode():
 
 
 def parse_quiz_bank():
-    """### unitN | question / - [ ] / - [x] / > explanation / see: page"""
+    """### unitN | question / - [ ] / - [x] / > explanation / > ES: Spanish explanation / see: page"""
     text = (WIKI / "study" / "quiz-bank.md").read_text(encoding="utf-8")
     questions = []
     for block in re.split(r"(?m)^### ", text)[1:]:
         lines = block.strip().splitlines()
         unit, question = [x.strip() for x in lines[0].split("|", 1)]
-        options, correct, explanation, see = [], None, "", ""
+        options, correct, explanation, explanation_es, see = [], None, "", "", ""
         for line in lines[1:]:
             m = re.match(r"- \[( |x)\] (.+)", line.strip())
             if m:
                 if m.group(1) == "x":
                     correct = len(options)
                 options.append(m.group(2).strip())
+            elif line.startswith("> ES:"):
+                explanation_es += line[len("> ES:"):].strip() + " "
             elif line.startswith(">"):
                 explanation += line.lstrip("> ").strip() + " "
             elif line.startswith("see:"):
@@ -202,7 +204,8 @@ def parse_quiz_bank():
         clean = lambda t: t.replace("\\*", "*").replace("`", "")
         questions.append({"id": f"{unit}-{len(questions)}", "unit": unit, "question": clean(question),
                           "options": [clean(o) for o in options], "correct": correct,
-                          "explanation": clean(explanation.strip()), "see": see})
+                          "explanation": clean(explanation.strip()),
+                          "explanation_es": clean(explanation_es.strip()), "see": see})
     return questions
 
 
@@ -222,6 +225,8 @@ def cards_from_quiz(questions):
         front = html.escape(q["question"]) + "<br>" + "<br>".join(
             f"{chr(65 + i)}. {html.escape(o)}" for i, o in enumerate(q["options"]))
         back = f"<b>{chr(65 + q['correct'])}. {html.escape(q['options'][q['correct']])}</b><br>{html.escape(q['explanation'])}"
+        if q.get("explanation_es"):
+            back += f"<br><i>ES: {html.escape(q['explanation_es'])}</i>"
         yield front, back, UNIT_TAGS.get(q["unit"][-1], q["unit"]) + " quiz"
 
 
