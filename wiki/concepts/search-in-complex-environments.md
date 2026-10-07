@@ -3,11 +3,13 @@ title: Search in Complex Environments
 type: concept
 tags: [search, nondeterminism, partial-observability, online-search]
 sources: [book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Search in Complex Environments (Búsqueda en entornos complejos)
 
 > **Summary (EN):** Classical search assumes a fully observable, deterministic, known environment, so the agent can plan a fixed action sequence and execute it "with its eyes closed". AIMA chapter 4 relaxes each assumption: with nondeterministic actions the solution becomes a conditional (contingency) plan found by AND–OR search; with partial observability the agent searches over belief states (sets of possible states); and in unknown environments online search agents must act to explore, learning heuristic estimates as they go (LRTA*).
+
+> **En palabras simples (ES):** Cuando una acción puede salir de varias formas (no es segura), un plan simple como "haz A, luego B" no sirve. Necesitas un plan con **"si pasa esto, haz aquello"** para cada resultado posible, como un plan con respuestas para cada caso. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -37,16 +39,34 @@ updated: 2026-10-01
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** si la acción puede salir de varias formas, tu plan necesita una respuesta para **cada** resultado posible.
+> **Idea (ES):** Cuando una acción puede salir de varias formas (no es segura), un plan simple como "haz A, luego B" no sirve. Necesitas un plan con **"si pasa esto, haz aquello"** para cada resultado posible, como un plan con respuestas para cada caso.
 
-```text
-AND-OR SEARCH (nondeterministic actions):
-OR node (my choice):     succeed if SOME action leads to a plan that works.
-AND node (nature's choice): succeed only if EVERY possible outcome has a plan.
-The solution is a conditional plan: [action, if outcome A then ... else ...].
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "With nondeterministic actions the solution is a contingency plan found by AND–OR search; with partial observability the agent searches over belief states; in unknown environments it must explore online."
+| Palabra | Qué es (en simple) | English |
+|---|---|---|
+| Acción no determinista | la misma acción puede dar resultados distintos | nondeterministic action |
+| Nodo OR | donde **yo** elijo: basta que **alguna** acción funcione | OR node |
+| Nodo AND | donde **la naturaleza** elige el resultado: deben funcionar **todos** los resultados | AND node |
+| Plan condicional | plan con "si… entonces…" | conditional (contingency) plan |
+| Estado de creencia | el conjunto de estados en los que **podría** estar cuando no veo todo | belief state |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. At an OR node (my choice): succeed if SOME action leads to a working plan.
+   - *ES:* Cuando me toca elegir, me basta encontrar una acción que funcione.
+2. At an AND node (nature's choice): succeed only if EVERY possible outcome has a working plan.
+   - *ES:* Cuando el resultado no depende de mí, necesito un plan para cada resultado posible.
+3. The solution is a conditional plan: [action, if outcome A then … else …].
+   - *ES:* La respuesta es un plan con casos: "haz esto; si sale así, haz aquello; si no, lo otro".
+4. If I cannot see everything, search over belief states (sets of possible states) instead of single states.
+   - *ES:* Si no veo todo, trabajo con "todos los estados en los que podría estar".
+
+**Ejemplo con números:** aspiradora "torpe": a veces, al aspirar, el cuadro queda limpio y a veces no. Plan condicional: "Aspira; **si** el cuadro quedó limpio → muévete; **si no** → vuelve a aspirar".
+
+**Say it in the exam (EN):** "When actions are nondeterministic, the solution is a conditional plan found by AND–OR search: at OR nodes the agent chooses one action, at AND nodes the plan must handle every possible outcome. With partial observability the agent searches over belief states, the sets of states it might be in. In unknown environments it must act and explore online."
+
+**Dilo así (ES):** "Si las acciones no son seguras, la solución es un plan condicional que se encuentra con búsqueda AND–OR: en los nodos OR el agente elige una acción y en los AND el plan debe cubrir todos los resultados. Si el agente no ve todo, busca sobre estados de creencia. En entornos desconocidos debe actuar y explorar a la vez."
 
 ## Errores comunes y tips de examen
 

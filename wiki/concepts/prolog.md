@@ -3,11 +3,13 @@ title: Prolog
 type: concept
 tags: [logic, prolog, logic-programming]
 sources: [slides-xx-logic-programming-prolog, code-prolog-examples, slides-01-introduction-to-ai, book-luger-ai]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Prolog (Programación lógica con Prolog)
 
 > **Summary (EN):** Prolog ("programmation en logique", Marseille 1972, Colmerauer & Roussel, on Kowalski's theory) is first-order definite clauses in a different syntax plus an execution strategy: SLD resolution — depth-first, left-to-right backward chaining with unification and backtracking. You state what holds; the interpreter searches for a proof and returns the substitution. "Algorithm = Logic + Control": your clauses are the logic, Prolog supplies the control — so clause and goal order matter. The course uses SWI-Prolog 9.2+.
+
+> **En palabras simples (ES):** En Prolog no le dices a la computadora **cómo** hacer algo, sino **qué es verdad** (hechos y reglas). Cuando le preguntas algo, Prolog toma la primera pregunta pendiente, busca de arriba hacia abajo la primera regla que encaje, la reemplaza por las condiciones de esa regla, y si algo falla **vuelve a la última elección** y prueba la siguiente opción. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -113,20 +115,44 @@ flowchart TD
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** Prolog toma la primera meta, busca la primera regla que encaje, la reemplaza por su cuerpo, y si algo falla vuelve atrás a la última elección.
+> **Idea (ES):** En Prolog no le dices a la computadora **cómo** hacer algo, sino **qué es verdad** (hechos y reglas). Cuando le preguntas algo, Prolog toma la primera pregunta pendiente, busca de arriba hacia abajo la primera regla que encaje, la reemplaza por las condiciones de esa regla, y si algo falla **vuelve a la última elección** y prueba la siguiente opción.
 
-```text
-HOW PROLOG ANSWERS A QUERY (SLD resolution):
-1. Goal list ← the query.
+**Antes de empezar: qué significa cada cosa**
+
+| Palabra | Qué es (en simple) | English |
+|---|---|---|
+| Consulta / meta | la pregunta: `?- grandparent(hector, Z).` | query / goal |
+| Lista de metas | lo que falta probar, en orden | goal list |
+| Cláusula | un hecho o una regla del programa | clause |
+| Unificar | hacer coincidir la pregunta con la cabeza de una regla dando valores a variables | unify |
+| Punto de elección | un lugar donde había otra opción que no se probó todavía | choice point |
+| Backtracking | volver al último punto de elección y probar la siguiente opción | backtracking |
+| SLD resolution | el nombre técnico de este método | SLD resolution |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. The goal list starts as the query.
+   - *ES:* Lo que falta probar es la pregunta.
 2. Take the LEFTMOST goal.
-3. Scan clauses TOP to BOTTOM for one whose head unifies with it.
-4. Replace the goal with that clause's body (applying the bindings).
-5. If no clause matches → BACKTRACK: undo bindings, try the next clause
-   of the most recent choice point.
-6. When the goal list is empty → success; print the bindings.
-```
+   - *ES:* Toma la primera meta de la izquierda.
+3. Search the clauses from TOP to BOTTOM for one whose head unifies with it.
+   - *ES:* Busca en el programa, de arriba hacia abajo, la primera cláusula que encaje.
+4. Replace the goal with that clause's body (applying the variable values found).
+   - *ES:* Cambia esa meta por las condiciones de la regla (si es un hecho, simplemente desaparece).
+5. If no clause matches → BACKTRACK: undo the last choice and try the next clause there.
+   - *ES:* Si nada encaja, retrocede a la última decisión y prueba la siguiente opción.
+6. When the goal list is empty → success: print the variable values. Typing ";" asks for more answers (more backtracking).
+   - *ES:* Si ya no falta nada, responde con los valores. Si escribes ";" busca otra respuesta.
 
-**Say it in the exam (EN):** "Prolog = Horn clauses + backward chaining + unification, executed depth-first and left to right. 'Algorithm = Logic + Control': the clauses are the logic, Prolog supplies the control, so clause and goal order matter — left recursion loops forever. Negation is negation as failure under the closed-world assumption."
+**Ejemplo con números:** con `parent(hector, ana). parent(hector, luis). parent(ana, sofia). parent(luis, diego).` y la regla `grandparent(X, Z) :- parent(X, Y), parent(Y, Z).`
+Pregunta `?- grandparent(hector, Z).`
+1. La regla encaja: metas = `parent(hector, Y), parent(Y, Z)`.
+2. Primer hecho que encaja: Y = ana. Quedan: `parent(ana, Z)` → Z = **sofia**. ✓ Primera respuesta.
+3. Escribo ";" → retrocede: Y = luis → `parent(luis, Z)` → Z = **diego**. ✓ Segunda respuesta.
+
+**Say it in the exam (EN):** "Prolog is Horn clauses plus backward chaining plus unification, executed depth-first and left to right with backtracking (SLD resolution). 'Algorithm = Logic + Control': the programmer writes the logic and Prolog supplies the control, so the order of clauses and goals matters — for example, left recursion loops forever. Negation is negation as failure: `\+ G` succeeds if G cannot be proved, under the closed-world assumption."
+
+**Dilo así (ES):** "Prolog es cláusulas de Horn + encadenamiento hacia atrás + unificación, ejecutado en profundidad, de izquierda a derecha y con backtracking. 'Algoritmo = Lógica + Control': el programador escribe la lógica y Prolog pone el control, por eso el orden de las reglas importa (la recursión por la izquierda se queda en un bucle infinito). La negación es negación por fallo: `\+ G` es verdad si no se puede probar G."
 
 ## Errores comunes y tips de examen (s28)
 - Olvidar el **punto** final (la cláusula se fusiona con la siguiente).

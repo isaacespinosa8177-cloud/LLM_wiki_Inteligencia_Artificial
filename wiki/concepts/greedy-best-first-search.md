@@ -3,11 +3,13 @@ title: Greedy Best-First Search
 type: concept
 tags: [search, informed-search]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Greedy Best-First Search (Búsqueda voraz primero el mejor)
 
 > **Summary (EN):** Greedy best-first search always expands the node that looks closest to the goal according to h(n), using a priority queue ordered by h. It makes the locally best choice without considering the cost already paid, so it is fast when the heuristic is good but not optimal, and complete only with repeated-state control in finite spaces. It can be trapped by a misleading heuristic.
+
+> **En palabras simples (ES):** Greedy (voraz) va siempre hacia el lugar que **parece** más cerca de la meta, como caminar hacia una torre que ves a lo lejos sin mirar si el camino da vueltas. Ignora cuánto ya caminaste. Es rápido, pero puede no dar el camino más corto. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -44,17 +46,32 @@ function GREEDY-BEST-FIRST(problem, h):
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** ve siempre hacia el nodo que *parece* más cerca de la meta, sin importar cuánto te costó llegar.
+> **Idea (ES):** Greedy (voraz) va siempre hacia el lugar que **parece** más cerca de la meta, como caminar hacia una torre que ves a lo lejos sin mirar si el camino da vueltas. Ignora cuánto ya caminaste. Es rápido, pero puede no dar el camino más corto.
 
-```text
-GREEDY BEST-FIRST:
-1. Priority queue ordered by h ← [start].
-2. Pop the node with the SMALLEST h (looks closest to the goal).
+**Antes de empezar: qué significa cada cosa**
+
+| Símbolo | Qué es (en simple) | English |
+|---|---|---|
+| h(n) | cuánto creo que falta desde n hasta la meta (p. ej. línea recta) | heuristic |
+| f(n) = h(n) | el número con el que greedy ordena la frontera: solo la estimación | evaluation function |
+| Frontera | lista de lugares pendientes por revisar | frontier |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Put the start in a priority queue ordered by h.
+   - *ES:* Pon el inicio en una lista ordenada por la estimación h.
+2. Take the node with the SMALLEST h (the one that looks closest to the goal).
+   - *ES:* Saca el que parece estar más cerca de la meta.
 3. If it is the goal → return the path.
-4. Add its unexplored children with their h values. Go to 2.
-```
+   - *ES:* Si es la meta, termina.
+4. Add its unexplored children with their h values, and go back to step 2.
+   - *ES:* Agrega sus vecinos no revisados con su h y repite.
 
-**Say it in the exam (EN):** "Greedy uses f(n) = h(n). It is fast with a good heuristic but not optimal — on Romania it returns Arad–Sibiu–Fagaras–Bucharest (450 km) instead of the optimal 418 km — and it is complete only in finite spaces with repeated-state checking."
+**Ejemplo con números:** de Arad a Bucarest. Vecinos de Arad: Sibiu h=253, Timisoara h=329, Zerind h=374 → va a **Sibiu** (menor h). Vecinos de Sibiu: Fagaras h=176, Rimnicu Vilcea h=193, … → va a **Fagaras**. Vecino de Fagaras: Bucarest h=0 → llega. Camino Arad–Sibiu–Fagaras–Bucarest = 140 + 99 + 211 = **450 km**. Pero existe uno de **418 km** por Rimnicu Vilcea y Pitesti: greedy no es óptimo.
+
+**Say it in the exam (EN):** "Greedy best-first search expands the node with the lowest h(n), the one that looks closest to the goal, and ignores the cost already paid. It is often fast, but it is not optimal — on Romania it returns 450 km instead of 418 km — and it is complete only in finite spaces when it avoids repeated states."
+
+**Dilo así (ES):** "Greedy expande el nodo con menor h(n), el que parece más cerca de la meta, e ignora lo que ya costó llegar. Suele ser rápido, pero no es óptimo (en Rumania da 450 km en vez de 418) y solo es completo en espacios finitos si evita repetir estados."
 
 ## Errores comunes y tips de examen
 

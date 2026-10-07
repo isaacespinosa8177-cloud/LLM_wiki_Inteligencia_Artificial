@@ -3,11 +3,13 @@ title: Statistical vs. Causal Models
 type: concept
 tags: [foundations, models, causality]
 sources: [slides-01-introduction-to-ai, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Statistical vs. Causal Models (Modelos estadísticos vs. causales)
 
 > **Summary (EN):** A model is a mathematical description of a system or a hypothesis that explains a phenomenon. Models are built with formal methods (first-order calculus, lambda calculus, temporal logic, rewriting systems, causal calculus) or statistical methods (regression, classification, Bayesian and Markov networks). Statistical models capture correlation; causal models — Judea Pearl's causal calculus — encode cause→effect in a directed acyclic graph, which the lecture presents as a bridge between ML and AI.
+
+> **En palabras simples (ES):** Un modelo es una descripción matemática de cómo funciona algo. Un modelo **estadístico** encuentra cosas que suelen ocurrir juntas (correlación): "cuando hay paraguas, llueve". Un modelo **causal** dice qué causa qué ("la lluvia causa los paraguas, no al revés") y lo dibuja como un grafo de flechas. Solo el causal responde "¿qué pasa si yo cambio algo?".
 
 ## Términos clave
 

@@ -3,11 +3,13 @@ title: Stochastic and Partially Observable Games
 type: concept
 tags: [games, adversarial-search, expectiminimax, uncertainty]
 sources: [book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Stochastic and Partially Observable Games (Juegos estocásticos y parcialmente observables)
 
 > **Summary (EN):** Games of chance such as backgammon add chance nodes to the game tree; their value is the probability-weighted average of their children, giving expectiminimax, which costs O(bᵐ·nᵐ) for n distinct chance outcomes. Evaluation functions must then be a positive linear transformation of the probability of winning, because order-preserving changes can flip the decision. In partially observable games such as Kriegspiel, players reason over belief states; strategies map percept sequences to moves, and optimal play may require randomness.
+
+> **En palabras simples (ES):** Cuando hay dados (azar), en los turnos del azar nadie elige: se calcula el **promedio** de lo que puede pasar, pesado por su probabilidad. Es minimax con un tercer tipo de nodo: el nodo de azar. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -42,17 +44,36 @@ EXPECTIMINIMAX(s) =
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** si hay dados, en los nodos de azar no eliges: **promedias** según la probabilidad de cada resultado.
+> **Idea (ES):** Cuando hay dados (azar), en los turnos del azar nadie elige: se calcula el **promedio** de lo que puede pasar, pesado por su probabilidad. Es minimax con un tercer tipo de nodo: el nodo de azar.
 
-```text
-EXPECTIMINIMAX(state):
-1. Terminal → utility.
-2. MAX node → maximum over moves.
-3. MIN node → minimum over moves.
-4. CHANCE node → Σ P(outcome) · EXPECTIMINIMAX(result of that outcome).
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "Expectiminimax adds chance nodes that take the probability-weighted average of their children; its cost is O(b^m · n^m). Evaluation functions must be a positive linear transform of the winning probability, because order-preserving changes can flip the decision."
+| Símbolo | Qué es (en simple) | English |
+|---|---|---|
+| Nodo de azar | el momento en que se tiran los dados | chance node |
+| P(resultado) | la probabilidad de cada resultado (p. ej. 0.5 cada uno) | probability |
+| Σ | "suma todo" | sum |
+| Valor esperado | el promedio pesado: Σ P(resultado) × valor(resultado) | expected value |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Terminal state → return its utility.
+   - *ES:* Si terminó, devuelve el puntaje.
+2. MAX node → maximum over its children.
+   - *ES:* Mi turno: el mayor.
+3. MIN node → minimum over its children.
+   - *ES:* Turno del rival: el menor.
+4. CHANCE node → Σ P(outcome) × value(outcome).
+   - *ES:* Turno del azar: multiplica cada resultado por su probabilidad y suma todo (promedio pesado).
+
+**Ejemplo con números:** elijo a₁ o a₂; luego hay una moneda (50/50) y después juega el rival (MIN).
+- a₁: moneda → MIN[2, 4] = 2 o MIN[7, 4] = 4 → 0.5·2 + 0.5·4 = **3**.
+- a₂: moneda → MIN[10, 1] = 1 o MIN[8, 9] = 8 → 0.5·1 + 0.5·8 = **4.5**.
+Elijo **a₂**. (Si tratara la moneda como un rival y tomara el mínimo, elegiría mal: a₁.)
+
+**Say it in the exam (EN):** "Expectiminimax extends minimax with chance nodes, whose value is the probability-weighted average of their children. Its cost grows to O(b^m · n^m), where n is the number of chance outcomes. The evaluation function must be a positive linear transformation of the probability of winning, because with averages the size of the values matters, not just their order."
+
+**Dilo así (ES):** "Expectiminimax agrega nodos de azar a minimax; su valor es el promedio pesado por la probabilidad. El costo sube a O(b^m · n^m), con n resultados del azar. La función de evaluación debe ser proporcional a la probabilidad de ganar, porque al promediar importa el tamaño de los valores, no solo su orden."
 
 ## Errores comunes y tips de examen
 

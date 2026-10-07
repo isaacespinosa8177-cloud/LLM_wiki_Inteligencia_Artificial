@@ -3,11 +3,13 @@ title: Alpha–Beta Pruning
 type: concept
 tags: [search, games, adversarial-search]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Alpha–Beta Pruning (Poda alfa–beta)
 
 > **Summary (EN):** Alpha–beta pruning returns exactly the same decision as Minimax while skipping branches that cannot influence it. α is the best value found so far for MAX (a lower bound) and β the best for MIN (an upper bound); a branch is pruned when its value can no longer fall inside (α, β). With perfect move ordering the time drops from O(b^m) to O(b^(m/2)), effectively doubling the searchable depth.
+
+> **En palabras simples (ES):** Es minimax, pero deja de mirar una rama en cuanto se da cuenta de que **no puede cambiar la decisión**. Ejemplo: si ya tengo una jugada que me asegura 3, y en otra rama el rival puede dejarme en 2 o menos, no necesito ver el resto de esa rama: nunca la elegiría. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -87,24 +89,40 @@ flowchart TD
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** deja de mirar una rama en cuanto sabes que el rival nunca te dejaría llegar ahí (o que tú nunca la elegirías).
+> **Idea (ES):** Es minimax, pero deja de mirar una rama en cuanto se da cuenta de que **no puede cambiar la decisión**. Ejemplo: si ya tengo una jugada que me asegura 3, y en otra rama el rival puede dejarme en 2 o menos, no necesito ver el resto de esa rama: nunca la elegiría.
 
-```text
-ALPHA-BETA(state, α = −∞, β = +∞):
-α = best value MAX can already guarantee ("at least")
-β = best value MIN can already guarantee ("at most")
-1. Terminal or depth limit → return utility / EVAL.
-2. MAX node: v = −∞; for each child:
-       v = max(v, ALPHA-BETA(child, α, β)); α = max(α, v);
-       if α ≥ β → STOP (prune the remaining children).
-   return v
-3. MIN node: v = +∞; for each child:
-       v = min(v, ALPHA-BETA(child, α, β)); β = min(β, v);
-       if α ≥ β → STOP (prune the remaining children).
-   return v
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "Alpha–beta returns exactly the minimax decision while skipping branches that cannot change it. With perfect move ordering it examines O(b^(m/2)) nodes, so it can search about twice as deep; with random ordering about O(b^(3m/4))."
+| Símbolo | Qué es (en simple) | English |
+|---|---|---|
+| α (alfa) | lo mínimo que **yo (MAX) ya tengo asegurado** en otra rama. Empieza en −∞ | best value for MAX so far |
+| β (beta) | lo máximo que **el rival (MIN) ya me tiene limitado** en otra rama. Empieza en +∞ | best value for MIN so far |
+| v | el valor que va acumulando el nodo actual | current value |
+| Podar | no mirar los hijos que faltan, porque no cambian nada | prune |
+| −∞ / +∞ | "todavía no hay nada asegurado" | minus / plus infinity |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Start at the root with α = −∞ and β = +∞.
+   - *ES:* Al inicio no hay nada asegurado.
+2. Leaf (or depth limit) → return its utility (or EVAL).
+   - *ES:* En una hoja, devuelve su puntaje.
+3. MAX node: v = −∞. For each child: v = max(v, value of child); α = max(α, v); if α ≥ β → stop, prune the remaining children. Return v.
+   - *ES:* En mi turno, voy guardando el mejor valor visto y subo α. Si α llega a ser ≥ β, el rival nunca me dejaría llegar aquí: dejo de mirar.
+4. MIN node: v = +∞. For each child: v = min(v, value of child); β = min(β, v); if α ≥ β → stop, prune the remaining children. Return v.
+   - *ES:* En el turno del rival, guardo el menor valor visto y bajo β. Si α ≥ β, yo nunca elegiría esta rama: dejo de mirar.
+5. Pass α and β down to the children when you visit them.
+   - *ES:* Cada hijo recibe los α y β actuales de su padre.
+
+**Ejemplo con números:** mismo árbol que minimax: [3, 12, 8], [2, 4, 6], [14, 5, 2].
+1. Primera rama: el rival elige min(3, 12, 8) = 3. Ahora yo tengo asegurado α = 3.
+2. Segunda rama: la primera hoja es 2. El rival podrá dejarme en **2 o menos**, y yo ya tengo 3 → α = 3 ≥ β = 2 → **podo** 4 y 6 sin mirarlas.
+3. Tercera rama: 14 → 5 → 2; el rival elige 2. No hay poda porque la hoja peor llega al final.
+4. Resultado: **3**, igual que minimax, pero sin revisar 2 hojas.
+
+**Say it in the exam (EN):** "Alpha–beta returns exactly the same decision as minimax but skips branches that cannot change it. α is the value MAX can already guarantee and β the value MIN can already guarantee; when α ≥ β the remaining children are pruned. With the best move ordering it examines O(b^(m/2)) nodes, so it can search about twice as deep in the same time."
+
+**Dilo así (ES):** "Alfa–beta da la misma decisión que minimax pero se salta ramas que no pueden cambiarla. α es lo que MAX ya tiene asegurado y β lo que MIN ya tiene asegurado; cuando α ≥ β se podan los hijos restantes. Con el mejor orden revisa O(b^(m/2)) nodos, así que puede mirar el doble de profundo en el mismo tiempo."
 
 ## Errores comunes y tips de examen
 

@@ -3,11 +3,13 @@ title: Intelligent Agents
 type: concept
 tags: [agents, rationality, peas]
 sources: [slides-03-intelligent-agents, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Intelligent Agents (Agentes inteligentes)
 
 > **Summary (EN):** An agent perceives its environment through sensors and acts on it through actuators. Its behavior is described by an agent function (percept history → action) and implemented by an agent program that approximates that function compactly. A rational agent chooses, at each moment, the action that maximizes the expected value of a performance measure given its percepts and built-in knowledge. Task environments are specified with PEAS.
+
+> **En palabras simples (ES):** Un agente es cualquier cosa que **percibe** su entorno y **actúa** sobre él, como un robot aspiradora: mira si hay suciedad (percibe) y decide aspirar o moverse (actúa). Repite ese ciclo para siempre; lo que cambia entre agentes es *cómo* decide. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -69,24 +71,45 @@ flowchart LR
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** un agente repite siempre el mismo ciclo: percibir → decidir → actuar; lo que cambia entre agentes es *cómo* decide.
+> **Idea (ES):** Un agente es cualquier cosa que **percibe** su entorno y **actúa** sobre él, como un robot aspiradora: mira si hay suciedad (percibe) y decide aspirar o moverse (actúa). Repite ese ciclo para siempre; lo que cambia entre agentes es *cómo* decide.
 
-```text
-AGENT LOOP (any agent):
+**Antes de empezar: qué significa cada cosa**
+
+| Palabra | Qué es (en simple) | English |
+|---|---|---|
+| Percepción | lo que el agente "ve" en este momento con sus sensores, p. ej. [A, Sucio] | percept |
+| Historial de percepciones | todo lo que ha visto desde que empezó | percept history |
+| Sensores / actuadores | por dónde recibe información / con qué actúa (cámara / ruedas) | sensors / actuators |
+| Medida de desempeño | la "nota" con la que juzgamos si el agente lo hace bien | performance measure |
+| Racional | elige la acción con la mejor nota **esperada** según lo que sabe | rational |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+*The loop of every agent*
+
 1. Read the current percept from the sensors.
-2. Add it to what I know (percept history or internal state).
-3. Choose the action that maximizes the expected performance measure,
-   given everything I know.
-4. Send the action to the actuators.
-5. Go back to step 1.
+   - *ES:* Mira qué está pasando ahora.
+2. Add it to what the agent knows (percept history or internal state).
+   - *ES:* Guárdalo junto con lo que ya sabías.
+3. Choose the action with the best expected performance, given what it knows.
+   - *ES:* Elige la acción que, según lo que sabes, debería dar la mejor nota.
+4. Send the action to the actuators, and go back to step 1.
+   - *ES:* Haz la acción y vuelve a empezar.
 
-REFLEX VACUUM AGENT:
+*Example: reflex vacuum agent (two squares, A and B)*
+
 1. If my square is dirty → Suck.
-2. Else if I am in A → move Right.
+   - *ES:* Si mi cuadro está sucio, aspiro.
+2. Else, if I am in A → move Right.
+   - *ES:* Si está limpio y estoy en A, me muevo a la derecha (a B).
 3. Else (I am in B) → move Left.
-```
+   - *ES:* Si está limpio y estoy en B, me muevo a la izquierda (a A).
 
-**Say it in the exam (EN):** "An agent maps its percept history to an action. The agent *function* is the abstract mapping; the agent *program* is the concrete code that implements it. A rational agent picks the action with the highest *expected* performance given its percepts and built-in knowledge — it is not omniscient."
+**Ejemplo con números:** el agente percibe [A, Sucio] → aspira. Luego percibe [A, Limpio] → se mueve a B. Percibe [B, Sucio] → aspira. Si la nota es +1 por cada cuadro limpio en cada momento, este agente es racional: nadie lo haría mejor sabiendo lo mismo.
+
+**Say it in the exam (EN):** "An agent perceives its environment through sensors and acts through actuators. The agent function maps the whole percept history to an action; the agent program is the code that implements it. A rational agent chooses the action with the highest expected performance given what it has perceived — it is not omniscient, so it can still have bad luck."
+
+**Dilo así (ES):** "Un agente percibe con sensores y actúa con actuadores. La función del agente dice qué acción tomar para cada historial de percepciones; el programa del agente es el código que la implementa. Un agente racional elige la acción con mejor desempeño esperado según lo que sabe; no es omnisciente, así que puede tener mala suerte y seguir siendo racional."
 
 ## Errores comunes y tips de examen
 

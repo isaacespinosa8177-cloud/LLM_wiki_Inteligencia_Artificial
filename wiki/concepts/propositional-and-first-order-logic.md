@@ -3,11 +3,13 @@ title: Propositional and First-Order Logic
 type: concept
 tags: [logic, knowledge-representation]
 sources: [slides-xx-logic-programming-prolog, slides-03-intelligent-agents, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Propositional and First-Order Logic (Lógica proposicional y de primer orden)
 
 > **Summary (EN):** Propositional logic uses symbols that are true or false, combined with connectives; it is decidable but cannot talk about objects or say "every". First-order logic (FOL) adds constants, variables, predicates, functions and quantifiers (∀, ∃); it is far more expressive but undecidable (only semi-decidable). Every propositional sentence can be rewritten in conjunctive normal form (CNF), the input format for resolution. Horn clauses are the restricted fragment where inference stays cheap — the foundation of Prolog.
+
+> **En palabras simples (ES):** La lógica escribe frases que son verdaderas o falsas con símbolos. Para que una computadora razone con ellas, se pasan a un formato estándar llamado **CNF**: una lista de condiciones unidas con "y", donde cada condición es un grupo de opciones unidas con "o". Se logra con 4 pasos fijos: quitar ⇔, quitar ⇒, meter la negación hacia adentro y repartir. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -51,18 +53,44 @@ Ejemplo: `A ∧ B ⇒ C` ≡ `¬(A ∧ B) ∨ C` ≡ `¬A ∨ ¬B ∨ C` (una cl
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** para pasar a CNF: quita ⇔ y ⇒, empuja la negación hacia adentro, y distribuye ∨ sobre ∧.
+> **Idea (ES):** La lógica escribe frases que son verdaderas o falsas con símbolos. Para que una computadora razone con ellas, se pasan a un formato estándar llamado **CNF**: una lista de condiciones unidas con "y", donde cada condición es un grupo de opciones unidas con "o". Se logra con 4 pasos fijos: quitar ⇔, quitar ⇒, meter la negación hacia adentro y repartir.
 
-```text
-CONVERT TO CNF:
+**Antes de empezar: qué significa cada cosa**
+
+| Símbolo | Se lee | Qué significa (en simple) | English |
+|---|---|---|---|
+| ¬A | "no A" | lo contrario de A | not |
+| A ∧ B | "A y B" | las dos son verdad | and |
+| A ∨ B | "A o B" | al menos una es verdad | or |
+| A ⇒ B | "si A, entonces B" | si A es verdad, B también debe serlo | implies |
+| A ⇔ B | "A si y solo si B" | las dos son verdad o las dos son falsas | if and only if |
+| Literal | — | un símbolo solo o negado: A, ¬B | literal |
+| Cláusula | — | literales unidos con ∨: (¬A ∨ B) | clause |
+| CNF | — | cláusulas unidas con ∧: (A ∨ C) ∧ (¬B ∨ C) | conjunctive normal form |
+| ∀ / ∃ | "para todo" / "existe" | solo en lógica de primer orden: "todos los…" / "algún…" | for all / there exists |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
 1. Replace A ⇔ B with (A ⇒ B) ∧ (B ⇒ A).
+   - *ES:* "A si y solo si B" es lo mismo que "si A entonces B, y si B entonces A".
 2. Replace A ⇒ B with ¬A ∨ B.
-3. Move ¬ inward: ¬(A ∧ B) = ¬A ∨ ¬B ; ¬(A ∨ B) = ¬A ∧ ¬B ; ¬¬A = A.
-4. Distribute: A ∨ (B ∧ C) = (A ∨ B) ∧ (A ∨ C).
-Result: a conjunction (AND) of clauses (ORs of literals).
-```
+   - *ES:* "Si A entonces B" es lo mismo que "no A, o B" (solo es falsa cuando A es verdad y B no).
+3. Move ¬ inward: ¬(A ∧ B) = ¬A ∨ ¬B; ¬(A ∨ B) = ¬A ∧ ¬B; ¬¬A = A.
+   - *ES:* Mete la negación hasta los símbolos. Al entrar, el "y" se vuelve "o" y el "o" se vuelve "y" (leyes de De Morgan). Dos negaciones se cancelan.
+4. Distribute ∨ over ∧: A ∨ (B ∧ C) = (A ∨ B) ∧ (A ∨ C).
+   - *ES:* Reparte, como en álgebra a·(b + c) = a·b + a·c, pero con "o" sobre "y".
+5. The result is an AND of clauses (each clause is an OR of literals).
+   - *ES:* El resultado es una lista de cláusulas unidas con "y".
 
-**Say it in the exam (EN):** "Propositional logic is decidable but cannot talk about objects; first-order logic adds objects, predicates and quantifiers but is only semi-decidable. Every sentence has an equivalent CNF, which is what resolution needs."
+**Ejemplo con números:** convertir (A ⇒ B) ⇒ C.
+1. Quito el ⇒ de adentro: (¬A ∨ B) ⇒ C.
+2. Quito el ⇒ de afuera: ¬(¬A ∨ B) ∨ C.
+3. Meto la negación: (A ∧ ¬B) ∨ C.
+4. Reparto: **(A ∨ C) ∧ (¬B ∨ C)**. Son dos cláusulas: ya está en CNF.
+
+**Say it in the exam (EN):** "Propositional logic uses true/false symbols joined by connectives; it is decidable but cannot talk about objects or say 'every'. First-order logic adds objects, predicates, functions and the quantifiers ∀ and ∃; it is much more expressive but only semi-decidable. Every sentence can be converted to CNF, an AND of clauses, by removing ⇔ and ⇒, pushing negations inward and distributing OR over AND; resolution needs CNF."
+
+**Dilo así (ES):** "La lógica proposicional usa símbolos verdaderos o falsos unidos con conectivos; es decidible pero no habla de objetos ni puede decir 'todos'. La lógica de primer orden agrega objetos, predicados y los cuantificadores ∀ y ∃; es más expresiva pero solo semidecidible. Toda frase se puede pasar a CNF quitando ⇔ y ⇒, metiendo la negación y repartiendo el 'o' sobre el 'y'."
 
 ## Errores comunes y tips de examen
 

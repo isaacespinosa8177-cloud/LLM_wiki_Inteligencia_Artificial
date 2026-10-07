@@ -3,11 +3,13 @@ title: Problem Formulation and State Space
 type: concept
 tags: [search, problem-solving]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Problem Formulation and State Space (Formulación de problemas y espacio de estados)
 
 > **Summary (EN):** A problem-solving agent is a goal-based agent that formulates a problem, searches for a sequence of actions that reaches the goal, and executes it. A problem is defined by an initial state, actions, a transition model Result(s, a), a goal test and an action-cost function; together they define the state space, a graph explored incrementally. Because the same state can be reached by several paths, search keeps a frontier and an explored set to avoid infinite loops.
+
+> **En palabras simples (ES):** Buscar es como planear un viaje en un mapa: sabes dónde empiezas, a dónde quieres llegar y qué caminos hay. Todos los algoritmos de búsqueda hacen el mismo ciclo: tienen una lista de lugares pendientes por revisar y sacan uno a la vez. **Lo único que cambia entre algoritmos es cuál sacan primero.** *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -118,21 +120,40 @@ flowchart TD
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** todos los algoritmos de búsqueda son el mismo bucle; solo cambia **qué nodo sacas primero** de la frontera.
+> **Idea (ES):** Buscar es como planear un viaje en un mapa: sabes dónde empiezas, a dónde quieres llegar y qué caminos hay. Todos los algoritmos de búsqueda hacen el mismo ciclo: tienen una lista de lugares pendientes por revisar y sacan uno a la vez. **Lo único que cambia entre algoritmos es cuál sacan primero.**
 
-```text
-GENERIC GRAPH SEARCH:
+**Antes de empezar: qué significa cada cosa**
+
+| Palabra | Qué es (en simple) | English |
+|---|---|---|
+| Estado | una situación del problema, p. ej. "estoy en Arad" | state |
+| Estado inicial / meta | dónde empiezo / a dónde quiero llegar (Arad / Bucarest) | initial state / goal |
+| Acción | un movimiento posible, p. ej. "ir a Sibiu" | action |
+| Costo del paso | cuánto cuesta una acción, p. ej. 140 km | step / action cost |
+| Nodo | un estado + cómo llegué ahí (de dónde vine y cuánto llevo pagado) | node |
+| Frontera | la lista de nodos **descubiertos pero aún no revisados** ("pendientes") | frontier |
+| Expandir | revisar un nodo: generar todos los lugares a los que puedo ir desde él | expand |
+| Explorados | los nodos ya revisados, para no volver a ellos y no dar vueltas | explored / reached set |
+| g(n) | lo que ya pagué para llegar a n (km recorridos) | path cost |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
 1. Put the initial state in the frontier.
-2. Loop:
-   a. If the frontier is empty → return failure.
-   b. Take ONE node out of the frontier (the rule for "which one" defines the algorithm).
-   c. If it is a goal → return the path (follow parent pointers back).
-   d. Mark it as explored.
-   e. Expand it: for each action, compute the child state and its path cost;
-      add the child to the frontier if it is new (or reached by a cheaper path).
-```
+   - *ES:* Pon el punto de partida en la lista de pendientes.
+2. If the frontier is empty → return failure.
+   - *ES:* Si ya no quedan pendientes, no hay solución.
+3. Take ONE node out of the frontier. The rule for choosing which one defines the algorithm.
+   - *ES:* Saca un pendiente. Aquí está la diferencia entre algoritmos: el más antiguo (BFS), el más nuevo (DFS), el más barato (UCS), el que parece más cerca (greedy) o el mejor balance (A\*).
+4. If it is the goal → return the path, following the parent links back to the start.
+   - *ES:* Si es la meta, termina y reconstruye el camino yendo "hacia atrás" de hijo a padre.
+5. Mark it as explored and expand it: for each action, create the child node with its cost, and add it to the frontier if it is new or reached more cheaply.
+   - *ES:* Márcalo como revisado. Mira a dónde puedes ir desde ahí y agrega esos lugares a pendientes (si son nuevos o si ahora llegas más barato). Vuelve al paso 2.
 
-**Say it in the exam (EN):** "A problem has five parts: initial state, actions, transition model, goal test and action costs. Search builds a tree over the state-space graph; the frontier holds generated-but-unexpanded nodes and the explored set prevents loops. FIFO gives BFS, LIFO gives DFS, lowest g gives UCS, lowest h gives greedy, lowest g + h gives A*."
+**Ejemplo con números:** problema de Rumania. Estado inicial: Arad. Acciones desde Arad: ir a Sibiu (140 km), Timisoara (118) o Zerind (75). Meta: Bucarest. Costo: los km. Al expandir Arad, la frontera queda con Sibiu, Timisoara y Zerind.
+
+**Say it in the exam (EN):** "A search problem has five parts: initial state, actions, transition model (the result of each action), goal test and action costs. Search keeps a frontier of generated but not yet expanded nodes and an explored set to avoid loops. Every algorithm uses the same loop; only the order of the frontier changes: FIFO is BFS, LIFO is DFS, lowest g is UCS, lowest h is greedy, lowest g + h is A*."
+
+**Dilo así (ES):** "Un problema de búsqueda tiene cinco partes: estado inicial, acciones, modelo de transición, prueba de meta y costos. La búsqueda guarda una frontera de nodos pendientes y un conjunto de explorados para no dar vueltas. Todos los algoritmos usan el mismo ciclo; solo cambia el orden de la frontera: FIFO es BFS, LIFO es DFS, menor g es UCS, menor h es greedy y menor g + h es A\*."
 
 ## Errores comunes y tips de examen
 

@@ -3,11 +3,13 @@ title: Particle Swarm Optimization
 type: concept
 tags: [optimization, swarm-intelligence, pso, continuous]
 sources: [slides-04-optimization, paper-kennedy-eberhart-1995-pso]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Particle Swarm Optimization (Optimización por enjambre de partículas, PSO)
 
 > **Summary (EN):** PSO (Kennedy & Eberhart, 1995) keeps a swarm of particles, each with a position x (a candidate solution), a velocity v and a personal best p_best; the swarm shares a global best g_best. Each step, velocity is pulled toward p_best (cognitive term) and g_best (social term) with random weights, and the particle moves: x ← x + v. The original update is v ← v + 2·rand·(p_best − x) + 2·rand·(g_best − x); later versions add an inertia weight w. Momentum causes overshooting (exploration) while the attraction terms exploit good regions.
+
+> **En palabras simples (ES):** Imagina una bandada de pájaros buscando comida. Cada pájaro (partícula) recuerda **el mejor lugar que encontró él** y sabe **el mejor lugar que encontró toda la bandada**. En cada paso, su nueva velocidad mezcla tres cosas: seguir como venía (inercia), volver hacia su mejor lugar, e ir hacia el mejor lugar del grupo. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -83,23 +85,47 @@ flowchart TD
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** cada partícula recuerda su mejor lugar y conoce el mejor lugar del enjambre; su velocidad mezcla lo que traía + atracción a su recuerdo + atracción al grupo.
+> **Idea (ES):** Imagina una bandada de pájaros buscando comida. Cada pájaro (partícula) recuerda **el mejor lugar que encontró él** y sabe **el mejor lugar que encontró toda la bandada**. En cada paso, su nueva velocidad mezcla tres cosas: seguir como venía (inercia), volver hacia su mejor lugar, e ir hacia el mejor lugar del grupo.
 
-```text
-PSO (minimizing f):
-1. Place N particles at random positions x_i with velocity v_i = 0.
-   p_best_i ← x_i;  g_best ← best of all p_best.
-2. Repeat for T iterations, for every particle i:
-   a. r1, r2 ← random numbers in [0, 1].
-   b. v_i ← w·v_i + c1·r1·(p_best_i − x_i) + c2·r2·(g_best − x_i)
-            (inertia)   (cognitive: own memory)  (social: swarm memory)
-   c. x_i ← x_i + v_i   (keep it inside the bounds).
-   d. If f(x_i) < f(p_best_i) → p_best_i ← x_i.
-   e. If f(x_i) < f(g_best)  → g_best ← x_i.
-3. Return g_best.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "PSO moves a swarm of candidate solutions through a continuous space. Each velocity combines momentum, attraction to the particle's personal best and attraction to the global best. The original 1995 version had no inertia weight and used coefficients of 2; momentum is essential because overshooting is how the swarm explores."
+| Símbolo | Qué es (en simple) | English |
+|---|---|---|
+| x | la **posición** de la partícula: una solución, p. ej. (x, y) = (1, 1) | position |
+| v | la **velocidad**: cuánto y hacia dónde se moverá en el próximo paso | velocity |
+| p_best | el mejor lugar que **esta** partícula ha visitado | personal best |
+| g_best | el mejor lugar que **todo el enjambre** ha visitado | global best |
+| w | inercia: qué tanto conserva de su velocidad anterior (p. ej. 0.5) | inertia weight |
+| c₁ | cuánto la atrae su propio recuerdo (parte "cognitiva") | cognitive coefficient |
+| c₂ | cuánto la atrae el mejor del grupo (parte "social") | social coefficient |
+| r₁, r₂ | números al azar entre 0 y 1, nuevos en cada paso | random numbers |
+| f | la función que queremos minimizar | objective |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Place N particles at random positions with zero velocity. Each particle's p_best is its starting position; g_best is the best of them.
+   - *ES:* Pon partículas al azar, quietas. Cada una recuerda su posición inicial como su mejor lugar; el mejor del grupo es el mejor de todos.
+2. For each particle, draw two random numbers r₁ and r₂ between 0 and 1.
+   - *ES:* Saca dos números al azar.
+3. Update the velocity: v ← w·v + c₁·r₁·(p_best − x) + c₂·r₂·(g_best − x).
+   - *ES:* Velocidad nueva = **inercia** (w × velocidad anterior) + **recuerdo propio** (c₁ × r₁ × distancia hacia su mejor lugar) + **grupo** (c₂ × r₂ × distancia hacia el mejor del grupo).
+4. Move: x ← x + v (and keep it inside the limits).
+   - *ES:* Posición nueva = posición actual + velocidad.
+5. If f(x) is better than f(p_best) → p_best ← x. If it is better than f(g_best) → g_best ← x.
+   - *ES:* Si el nuevo lugar es mejor que su récord, actualiza su récord. Si es mejor que el récord del grupo, actualiza el del grupo.
+6. Repeat steps 2–5 for many iterations and return g_best.
+   - *ES:* Repite muchas veces y devuelve el mejor lugar del grupo.
+
+**Ejemplo con números:** f(x, y) = (x + 2)² + (y − 2)² + 10. Partícula en x = (1, 1) con v = (0.5, −0.5); su mejor lugar p_best = (0, 2); el mejor del grupo g_best = (−2, 2); w = 0.5, c₁ = c₂ = 1, r₁ = 0.5, r₂ = 0.2.
+- Inercia: 0.5 · (0.5, −0.5) = (0.25, −0.25).
+- Recuerdo propio: 1 · 0.5 · ((0, 2) − (1, 1)) = 0.5 · (−1, 1) = (−0.5, 0.5).
+- Grupo: 1 · 0.2 · ((−2, 2) − (1, 1)) = 0.2 · (−3, 1) = (−0.6, 0.2).
+- Velocidad nueva: suma = **(−0.85, 0.45)**. Posición nueva: (1, 1) + (−0.85, 0.45) = **(0.15, 1.45)**.
+- f pasó de 20 a **14.925**: mejoró. (No supera su récord p_best, que vale 14.)
+
+**Say it in the exam (EN):** "PSO moves a swarm of particles, each a candidate solution, through the search space. Each particle remembers its personal best, and the swarm shares a global best. The new velocity combines inertia, attraction to the personal best (cognitive term) and attraction to the global best (social term), each scaled by a random number; then the particle moves by its velocity. The original 1995 version had no inertia weight and used coefficients of 2."
+
+**Dilo así (ES):** "PSO mueve un enjambre de partículas, cada una una solución candidata. Cada partícula recuerda su mejor lugar y el enjambre comparte el mejor global. La nueva velocidad suma inercia, atracción a su mejor lugar (cognitiva) y atracción al mejor del grupo (social), cada una con un número al azar; luego la partícula se mueve según esa velocidad. La versión original de 1995 no tenía inercia y usaba coeficientes de 2."
 
 ## Errores comunes y tips de examen
 

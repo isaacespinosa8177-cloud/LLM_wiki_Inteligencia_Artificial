@@ -3,11 +3,13 @@ title: Simulated Annealing
 type: concept
 tags: [optimization, local-search, stochastic]
 sources: [code-class-optimization, paper-dorigo-1996-ant-system, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Simulated Annealing (Recocido simulado)
 
 > **Summary (EN):** Simulated annealing is local search that sometimes accepts worse moves to escape local optima. A neighbor with cost change Δ is always accepted if Δ < 0 and otherwise with probability e^(−Δ/T). The temperature T starts high (lots of exploration, almost a random walk) and is lowered by a cooling schedule until the search becomes greedy hill climbing. The class script applies it to the Rastrigin function; Dorigo et al. use it as a baseline for Ant System.
+
+> **En palabras simples (ES):** Es como hill climbing, pero a veces **acepta empeorar** para poder salir de un valle pequeño. Al principio está "caliente" y acepta empeorar casi siempre (explora mucho); con el tiempo se "enfría" y casi nunca acepta empeorar (solo mejora). El nombre viene de cómo se enfría el metal poco a poco para que quede fuerte. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -89,22 +91,41 @@ flowchart TD
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** como hill climbing, pero a veces aceptas empeorar; al principio mucho (temperatura alta) y al final casi nunca.
+> **Idea (ES):** Es como hill climbing, pero a veces **acepta empeorar** para poder salir de un valle pequeño. Al principio está "caliente" y acepta empeorar casi siempre (explora mucho); con el tiempo se "enfría" y casi nunca acepta empeorar (solo mejora). El nombre viene de cómo se enfría el metal poco a poco para que quede fuerte.
 
-```text
-SIMULATED ANNEALING (minimizing f):
-1. current ← random solution; best ← current; T ← T0 (high).
-2. Repeat until T is (almost) 0 or the step budget ends:
-   a. next ← a random neighbor of current.
-   b. Δ = f(next) − f(current).
-   c. If Δ < 0 (better) → accept next.
-      Else accept next with probability e^(−Δ / T).
-   d. If current is better than best → best ← current.
-   e. Cool down: T ← α · T (e.g., α = 0.99).
-3. Return best.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "Simulated annealing escapes local optima by accepting worse moves with probability e^(−Δ/T). High temperature means exploration (almost a random walk); low temperature means exploitation (hill climbing). If T decreases slowly enough, it finds the global optimum with probability approaching 1."
+| Símbolo | Qué es (en simple) | English |
+|---|---|---|
+| f | el costo que queremos hacer pequeño | cost / objective |
+| Vecino | una solución con un cambio pequeño al azar | neighbor |
+| Δ (delta) | cuánto empeora: Δ = f(nuevo) − f(actual). Negativo = mejora | change in cost |
+| T | la **temperatura**: qué tan dispuesto está a aceptar empeorar | temperature |
+| T₀ | la temperatura inicial (alta) | initial temperature |
+| e^(−Δ/T) | la probabilidad de aceptar un empeoramiento: un número entre 0 y 1 (e ≈ 2.718) | acceptance probability |
+| α | cuánto se enfría en cada paso (p. ej. 0.99: T baja un 1 %) | cooling rate |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Start with a random solution and a high temperature T = T₀; remember it as the best.
+   - *ES:* Empieza en cualquier solución, con temperatura alta.
+2. Pick a random neighbor and compute Δ = f(neighbor) − f(current).
+   - *ES:* Prueba un cambio pequeño al azar y mide cuánto empeora o mejora.
+3. If Δ < 0 (better) → accept it. Otherwise accept it with probability e^(−Δ/T).
+   - *ES:* Si mejora, acéptalo siempre. Si empeora, acéptalo a veces: tira un "dado" con probabilidad e^(−Δ/T). Con T alta esa probabilidad es grande; con T baja es casi 0.
+4. If the current solution is the best so far → remember it.
+   - *ES:* Guarda la mejor solución que hayas visto.
+5. Cool down: T ← α · T. Repeat from step 2 until T is almost 0. Return the best.
+   - *ES:* Baja la temperatura un poco y repite. Al final devuelve la mejor.
+
+**Ejemplo con números:** un cambio empeora el costo en Δ = 2. ¿Con qué probabilidad lo acepta?
+- T = 10 (caliente): e^(−2/10) = e^(−0.2) ≈ **0.82** → lo acepta 82 de cada 100 veces.
+- T = 1: e^(−2) ≈ **0.14**.
+- T = 0.1 (frío): e^(−20) ≈ **0.000000002** → casi nunca. Ya se comporta como hill climbing.
+
+**Say it in the exam (EN):** "Simulated annealing is local search that sometimes accepts worse moves so it can escape local optima. A better neighbor is always accepted; a worse one is accepted with probability e^(−Δ/T). At high temperature it explores almost like a random walk; as T decreases it behaves like hill climbing. If the temperature decreases slowly enough, it finds the global optimum with probability approaching 1."
+
+**Dilo así (ES):** "El recocido simulado es búsqueda local que a veces acepta empeorar para salir de óptimos locales. Si el vecino es mejor, lo acepta; si es peor, lo acepta con probabilidad e^(−Δ/T). Con temperatura alta explora casi al azar; al enfriarse se comporta como hill climbing. Si se enfría lo bastante lento, encuentra el óptimo global con probabilidad cercana a 1."
 
 ## Errores comunes y tips de examen
 

@@ -3,11 +3,13 @@ title: Uninformed Search
 type: concept
 tags: [search, uninformed-search, bfs, dfs, dijkstra]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Uninformed Search (Búsqueda no informada: BFS, DFS, UCS/Dijkstra)
 
 > **Summary (EN):** Blind search knows only the initial state, the actions and the goal test; it explores systematically without preferring any path. Algorithms differ in the order they expand nodes and are judged by completeness, optimality, time and space. BFS (FIFO queue) is complete and optimal for uniform costs but uses O(b^d) memory; DFS (LIFO stack) needs only O(b·m) memory but is neither optimal nor, in general, complete. Uniform-cost search (Dijkstra) expands the lowest path cost g(n) first and is optimal for any non-negative costs.
+
+> **En palabras simples (ES):** Búsqueda "a ciegas": no sabes qué tan lejos está la meta, así que revisas en un orden fijo. **BFS** revisa por niveles, como una mancha que se expande (cola: el primero que entra es el primero que sale). **DFS** sigue un solo camino hasta el fondo antes de probar otro (pila: el último que entra es el primero que sale). **UCS** siempre revisa el camino más barato hasta ahora. **IDS** hace DFS con un límite de profundidad que va subiendo. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -104,32 +106,62 @@ flowchart TD
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** BFS = por niveles (cola), DFS = una rama hasta el fondo (pila), UCS = siempre el camino más barato (prioridad por g), IDS = DFS con límite creciente.
+> **Idea (ES):** Búsqueda "a ciegas": no sabes qué tan lejos está la meta, así que revisas en un orden fijo. **BFS** revisa por niveles, como una mancha que se expande (cola: el primero que entra es el primero que sale). **DFS** sigue un solo camino hasta el fondo antes de probar otro (pila: el último que entra es el primero que sale). **UCS** siempre revisa el camino más barato hasta ahora. **IDS** hace DFS con un límite de profundidad que va subiendo.
 
-```text
-BFS:
-1. Queue ← [start]; reached ← {start}.
-2. While the queue is not empty: take the FIRST node.
-3. For each child: if it is the goal → return it (early goal test);
-   if not reached → mark reached, add it to the END of the queue.
+**Antes de empezar: qué significa cada cosa**
 
-DFS:
-1. Stack ← [start].
-2. While the stack is not empty: take the LAST node added.
-3. If it is the goal → return it.
-4. Push its children (skipping states already on the current path).
+| Símbolo / palabra | Qué es (en simple) | English |
+|---|---|---|
+| Cola (FIFO) | fila del banco: sale primero el que llegó primero | queue, first in first out |
+| Pila (LIFO) | pila de platos: sale primero el último que pusiste | stack, last in first out |
+| Cola de prioridad | lista ordenada: siempre sale el de menor valor | priority queue |
+| g | costo acumulado desde el inicio | path cost |
+| b | cuántos hijos tiene cada nodo en promedio | branching factor |
+| d | profundidad de la meta más cercana (cuántos pasos) | depth of shallowest goal |
+| m | profundidad máxima del árbol | maximum depth |
+| Completo / óptimo | siempre encuentra solución si existe / encuentra la más barata | complete / optimal |
 
-UNIFORM-COST SEARCH (Dijkstra):
-1. Priority queue ordered by g (cost so far) ← [start with g = 0].
-2. Pop the node with the SMALLEST g. If it is the goal → return it (test on expansion!).
-3. For each child: if new or reached with a smaller g → update g and push it.
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
 
-ITERATIVE DEEPENING:
-1. For limit = 0, 1, 2, ...: run DFS that does not go deeper than limit.
-2. Stop when DFS finds the goal.
-```
+*BFS (breadth-first search)*
 
-**Say it in the exam (EN):** "BFS is complete and optimal for equal step costs but needs O(b^d) memory. DFS needs only O(b·m) memory but is neither complete nor optimal. UCS is optimal for any positive costs. IDS combines DFS memory with BFS completeness and optimality, at only ~11% extra time."
+1. Put the start in a FIFO queue and mark it as reached.
+   - *ES:* Pon el inicio en la fila.
+2. Take the FIRST node of the queue.
+   - *ES:* Saca el que lleva más tiempo esperando.
+3. For each child: if it is the goal → return it. If it was not reached before → mark it and add it to the END of the queue.
+   - *ES:* Revisa sus hijos: si alguno es la meta, termina ya (se revisa al **generar**). Los nuevos van al final de la fila. Repite desde el paso 2.
+
+*DFS (depth-first search)*
+
+1. Put the start in a LIFO stack.
+   - *ES:* Pon el inicio en la pila.
+2. Take the LAST node added. If it is the goal → return it.
+   - *ES:* Saca el más nuevo; si es la meta, termina.
+3. Push its children, skipping states already on the current path. Go to 2.
+   - *ES:* Mete sus hijos encima de la pila (sin repetir lugares del camino actual, para no dar vueltas).
+
+*UCS (uniform-cost search, also called Dijkstra)*
+
+1. Put the start in a priority queue with g = 0.
+   - *ES:* Pon el inicio con costo 0.
+2. Take the node with the SMALLEST g. If it is the goal → return it.
+   - *ES:* Saca siempre el más barato hasta ahora. Si es la meta, termina (se revisa al **sacarlo**, no al generarlo; así seguro es el más barato).
+3. For each child: if it is new, or the new g is smaller than before → save the new g and add it. Go to 2.
+   - *ES:* Calcula el costo de cada hijo (g del padre + costo del paso). Si es nuevo o encontraste un camino más barato, actualízalo.
+
+*IDS (iterative deepening)*
+
+1. For limit = 0, 1, 2, …: run DFS without going deeper than the limit; stop when the goal is found.
+   - *ES:* Haz DFS hasta profundidad 0, luego hasta 1, luego hasta 2… Usa poca memoria como DFS, pero encuentra la meta más cercana como BFS.
+
+**Ejemplo con números:** grafo de práctica S–A 1, S–B 4, A–B 2, A–C 5, B–C 1, B–G 6, C–G 3, meta G.
+- **BFS:** expande S (descubre A, B), luego A (descubre C), luego B y descubre G → devuelve S–B–G, costo 4 + 6 = **10**. Tiene pocos pasos, pero no es el más barato.
+- **UCS:** saca S(0), A(1), B(3, por S–A–B), C(4, por S–A–B–C) y luego G(7) → devuelve S–A–B–C–G, costo **7**, el más barato.
+
+**Say it in the exam (EN):** "BFS uses a FIFO queue: it is complete, and optimal when all steps cost the same, but it needs O(b^d) memory. DFS uses a LIFO stack: it needs only O(b·m) memory but is neither optimal nor, in general, complete. UCS always expands the cheapest path g and tests the goal when it expands it, so it is optimal for any positive costs. IDS repeats depth-limited DFS with growing limits: DFS memory with BFS completeness."
+
+**Dilo así (ES):** "BFS usa una cola: es completo y óptimo si todos los pasos cuestan igual, pero usa mucha memoria, O(b^d). DFS usa una pila: usa poca memoria, O(b·m), pero no es óptimo ni siempre completo. UCS siempre expande el camino más barato y revisa la meta al sacarla, por eso es óptimo con cualquier costo positivo. IDS repite DFS con límites crecientes: memoria de DFS con la completitud de BFS."
 
 ## Errores comunes y tips de examen
 

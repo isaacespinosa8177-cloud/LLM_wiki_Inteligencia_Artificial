@@ -3,11 +3,13 @@ title: EA Representation and Variation Operators
 type: concept
 tags: [optimization, evolutionary-computation, genetic-algorithms, mutation, crossover]
 sources: [book-eiben-smith-evolutionary-computing, slides-04-optimization, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # EA Representation and Variation Operators (Representación, mutación y recombinación)
 
 > **Summary (EN):** Choosing the genotype representation is the first and often hardest design step of an evolutionary algorithm, and the mutation and recombination operators must match it so that offspring stay valid. Eiben & Smith chapter 4 covers the standard families: binary (bit-flip mutation; one-point, n-point and uniform crossover, Gray code), integer (random resetting, creep), real-valued (uniform and Gaussian mutation, self-adaptive step sizes; discrete, arithmetic and blend recombination), permutation (swap, insert, scramble, inversion; PMX, edge, order and cycle crossover) and trees (genetic programming).
+
+> **En palabras simples (ES):** La forma de guardar una solución (bits, números reales o un orden) decide **cómo** se puede mezclar y cambiar sin romperla. Regla de oro: el hijo siempre debe ser una solución válida. Por ejemplo, en una ruta de ciudades no se puede repetir una ciudad, así que no sirve el corte simple de los bits. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -110,22 +112,45 @@ ORDER-CROSSOVER(p1, p2):            copy p1[a..b] into child;
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** el operador debe respetar la representación: bits → invertir bits y cortar; reales → sumar ruido gaussiano y promediar; permutaciones → intercambiar e invertir, nunca repetir valores.
+> **Idea (ES):** La forma de guardar una solución (bits, números reales o un orden) decide **cómo** se puede mezclar y cambiar sin romperla. Regla de oro: el hijo siempre debe ser una solución válida. Por ejemplo, en una ruta de ciudades no se puede repetir una ciudad, así que no sirve el corte simple de los bits.
 
-```text
-ONE-POINT CROSSOVER (bits): pick a cut point; child1 = head of P1 + tail of P2;
-                            child2 = head of P2 + tail of P1.
-UNIFORM CROSSOVER (bits):   for each gene flip a coin to decide which parent it comes from.
-BIT-FLIP MUTATION:          flip each bit with probability p_m.
-GAUSSIAN MUTATION (reals):  x_i ← x_i + N(0, σ), clipped to its bounds.
-ARITHMETIC CROSSOVER:       child = α·P1 + (1 − α)·P2.
-SWAP MUTATION (perms):      exchange two positions.
-INVERSION MUTATION (perms): reverse a random segment (good for TSP).
-ORDER CROSSOVER (perms):    copy a segment from P1; fill the remaining places
-                            with the missing values in the order they appear in P2.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "The representation decides the operators: the offspring must stay valid. Bit strings use bit-flip and one-point, n-point or uniform crossover; real vectors use Gaussian mutation, possibly self-adaptive, and arithmetic recombination; permutations need special operators such as swap, inversion, PMX or order crossover."
+| Símbolo / palabra | Qué es (en simple) | English |
+|---|---|---|
+| Representación | cómo se guarda una solución: bits, números reales, un orden (permutación) | representation |
+| Gen | una posición de la solución (un bit, un número) | gene |
+| P1, P2 | padre 1 y padre 2 | parents |
+| p_m | probabilidad de mutar cada gen | mutation rate |
+| N(0, σ) | un número al azar "normal": casi siempre cerca de 0; σ dice qué tan lejos puede ir | Gaussian noise |
+| α | un peso entre 0 y 1 para promediar a los padres | weight |
+| Permutación | un orden donde cada valor aparece una sola vez: [1 2 3 4 5 6] | permutation |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Bits — one-point crossover: cut both parents at the same random point; child 1 = start of P1 + end of P2, child 2 = start of P2 + end of P1.
+   - *ES:* Corta los dos en el mismo lugar e intercambia los finales.
+2. Bits — uniform crossover: for each gene, flip a coin to decide which parent it comes from.
+   - *ES:* Para cada posición, una moneda decide de qué padre viene.
+3. Bits — bit-flip mutation: flip each bit with probability p_m.
+   - *ES:* Cada bit puede cambiar de 0 a 1 (o al revés) con probabilidad pequeña.
+4. Real numbers — Gaussian mutation: add a small random number N(0, σ) to each value and keep it inside its limits.
+   - *ES:* Suma a cada número un poquito de "ruido" al azar.
+5. Real numbers — arithmetic crossover: child = α·P1 + (1 − α)·P2.
+   - *ES:* El hijo es un promedio pesado de los padres (con α = 0.5, el punto medio).
+6. Permutations — swap mutation: exchange two positions. Inversion mutation: reverse a random segment.
+   - *ES:* Intercambia dos posiciones, o da vuelta a un tramo. Así no se repite ningún valor.
+7. Permutations — order crossover: copy a segment from P1, then fill the empty places with the missing values in the order they appear in P2.
+   - *ES:* Copia un tramo del padre 1 y completa con los valores que faltan, en el orden en que aparecen en el padre 2.
+
+**Ejemplo con números:**
+- Bits: `110|10110` × `001|11001` → **`11011001`** y **`00110110`**.
+- Reales: P1 = 2, P2 = 6, α = 0.5 → hijo = 0.5·2 + 0.5·6 = **4**. Mutación gaussiana: 4 + 0.3 = 4.3.
+- Permutación: [1 2 3 4 5 6], intercambio de las posiciones 2 y 5 → **[1 5 3 4 2 6]**. Cada número sigue apareciendo una vez.
+
+**Say it in the exam (EN):** "The representation decides the variation operators, because the children must stay valid. Bit strings use bit-flip mutation and one-point, n-point or uniform crossover. Real-valued vectors use Gaussian mutation and arithmetic recombination. Permutations, as in the TSP, need special operators such as swap or inversion mutation and order or PMX crossover; one-point crossover would repeat values."
+
+**Dilo así (ES):** "La representación decide los operadores, porque los hijos deben ser válidos. Con bits se usa mutación por inversión de bits y cruce de uno o varios puntos o uniforme. Con números reales, mutación gaussiana y cruce aritmético. Con permutaciones, como en el TSP, se necesitan operadores especiales como intercambio, inversión, order crossover o PMX; el cruce de un punto repetiría valores."
 
 ## Errores comunes y tips de examen
 

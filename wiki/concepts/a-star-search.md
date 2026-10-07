@@ -3,11 +3,13 @@ title: A* Search
 type: concept
 tags: [search, informed-search, a-star]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # A* Search (Búsqueda A*)
 
 > **Summary (EN):** A* expands the node with the lowest f(n) = g(n) + h(n), where g is the actual cost so far and h the heuristic estimate to the goal; f estimates the total cost of the cheapest solution through n. With an admissible heuristic (tree search) or a consistent one (graph search), A* is complete and optimal. Its weakness is memory: it keeps every generated node, O(b^d). On the Romania map it finds the 418 km route Arad–Sibiu–Rimnicu Vilcea–Pitesti–Bucharest expanding 5 nodes, versus 9 for Dijkstra.
+
+> **En palabras simples (ES):** A\* elige el lugar que tiene el **mejor total estimado del viaje**: lo que ya caminé (g) + lo que creo que me falta (h). Es como greedy, pero sin olvidar lo que ya pagaste. Si la estimación h nunca exagera, el primer camino a la meta que A\* **saca** de la lista es el más barato. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -131,20 +133,42 @@ flowchart LR
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** A\* elige el nodo con menor **costo ya pagado + costo estimado restante**; con una h que no exagera, el primer camino a la meta que *expande* es el óptimo.
+> **Idea (ES):** A\* elige el lugar que tiene el **mejor total estimado del viaje**: lo que ya caminé (g) + lo que creo que me falta (h). Es como greedy, pero sin olvidar lo que ya pagaste. Si la estimación h nunca exagera, el primer camino a la meta que A\* **saca** de la lista es el más barato.
 
-```text
-A*:
-1. Priority queue ordered by f = g + h ← [start with g = 0].
-2. Pop the node with the SMALLEST f.
-3. If it is the goal → return the path. (Test when you EXPAND, not when you generate.)
-4. For each neighbor: new_g = g(node) + step cost.
-   If the neighbor is new or new_g is smaller than its old g:
-       update g, f = g + h, parent; push it into the queue.
-5. Go to 2.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "A* combines UCS (g) and greedy (h): f(n) = g(n) + h(n) estimates the total cost through n. It is complete and optimal if h is admissible (consistent if states are never reopened), and optimally efficient among such algorithms, but it keeps all nodes in memory, O(b^d). On Romania it expands Arad, Sibiu, Rimnicu Vilcea, Fagaras, Pitesti and returns 418."
+| Símbolo | Qué es (en simple) | English |
+|---|---|---|
+| g(n) | lo que ya pagué desde el inicio hasta n (km recorridos) | path cost so far |
+| h(n) | lo que creo que falta desde n hasta la meta (línea recta) | heuristic estimate |
+| f(n) = g(n) + h(n) | el costo total estimado del viaje si paso por n | estimated total cost |
+| Cola de prioridad | lista donde siempre sale el de menor f | priority queue |
+| Padre | de qué nodo vine, para reconstruir el camino | parent |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Put the start in a priority queue with g = 0 and f = h(start).
+   - *ES:* Pon el inicio; su g es 0, así que su f es solo la estimación.
+2. Take the node with the SMALLEST f.
+   - *ES:* Saca el que tiene el mejor total estimado.
+3. If it is the goal → return the path. Test the goal when you take it out, not when you add it.
+   - *ES:* Si es la meta, termina. Ojo: la meta se revisa al **sacarla**; puede estar en la lista con un costo alto y luego aparecer un camino más barato.
+4. For each neighbor: new_g = g(node) + step cost. If the neighbor is new or new_g is smaller than its old g → save new_g, f = new_g + h, and the parent; add it to the queue.
+   - *ES:* Para cada vecino calcula lo que costaría llegar por aquí. Si es nuevo o es más barato que antes, guárdalo con su nuevo total y anota de dónde vino.
+5. Go back to step 2.
+   - *ES:* Repite.
+
+**Ejemplo con números:** Arad → Bucarest (f = g + h):
+1. Saca Arad: f = 0 + 366 = 366.
+2. Saca Sibiu: f = 140 + 253 = 393.
+3. Saca Rimnicu Vilcea: f = 220 + 193 = 413.
+4. Saca Fagaras: f = 239 + 176 = 415. Aquí aparece Bucarest con f = 450 + 0 = **450**, pero A\* **no** para todavía.
+5. Saca Pitesti: f = 317 + 100 = 417. Bucarest mejora a f = 418 + 0 = **418**.
+6. Saca Bucarest con 418 → termina. Camino Arad–Sibiu–Rimnicu Vilcea–Pitesti–Bucarest = **418 km** (el óptimo).
+
+**Say it in the exam (EN):** "A* expands the node with the lowest f(n) = g(n) + h(n), where g is the cost already paid and h the estimated cost to the goal, so f estimates the total cost of the best path through n. It is complete and optimal if h is admissible (and consistent when states are never reopened). Its weakness is memory: it keeps every node, O(b^d). On Romania it finds the optimal 418 km route expanding only 5 nodes."
+
+**Dilo así (ES):** "A\* expande el nodo con menor f = g + h: lo ya pagado más lo que se estima que falta. Es completo y óptimo si h es admisible (y consistente si no reabre estados). Su debilidad es la memoria, porque guarda todos los nodos. En Rumania encuentra la ruta óptima de 418 km expandiendo solo 5 nodos."
 
 ## Errores comunes y tips de examen
 

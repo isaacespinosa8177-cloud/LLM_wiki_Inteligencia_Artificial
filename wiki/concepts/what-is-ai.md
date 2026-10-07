@@ -3,11 +3,13 @@ title: What Is AI?
 type: concept
 tags: [foundations, definitions, turing-test]
 sources: [slides-01-introduction-to-ai, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # What Is AI? (¿Qué es la Inteligencia Artificial?)
 
 > **Summary (EN):** There is no single definition of intelligence; the course lists understanding, problem solving, knowledge, meaning and skill. AI is the attempt to make machines exhibit such abilities. The Turing Test (1950) offers an operational, behavior-based definition, and the 1956 Dartmouth proposal states the founding conjecture that every aspect of intelligence can be described precisely enough for a machine to simulate it. AIMA frames AI as building *rational agents*.
+
+> **En palabras simples (ES):** No hay una sola definición de inteligencia; el curso menciona entender, resolver problemas, tener conocimiento, dar significado y tener habilidad. La IA intenta que las máquinas hagan eso. La **prueba de Turing** (1950) dice: si al conversar no distingues a la máquina de una persona, la máquina se comporta de forma inteligente. El libro de Russell y Norvig dice que la IA construye **agentes racionales**: programas que eligen la mejor acción según lo que saben.
 
 ## Términos clave
 

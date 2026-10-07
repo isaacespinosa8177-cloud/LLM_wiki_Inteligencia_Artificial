@@ -3,11 +3,13 @@ title: State Representation
 type: concept
 tags: [agents, representation]
 sources: [slides-03-intelligent-agents, slides-02-problem-solving, slides-xx-logic-programming-prolog]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # State Representation (Representación de estados)
 
 > **Summary (EN):** States can be atomic (an indivisible black box), factored (a vector of variables with values) or structured (objects and relations among them). More expressive representations allow more reasoning but cost more computation. The course uses all three: atomic states in classical search, factored states in CSPs and optimization, structured representations in first-order logic and Prolog.
+
+> **En palabras simples (ES):** Un "estado" es una foto de la situación del problema. Se puede guardar de tres formas. **Atómica:** solo un nombre, sin partes ("estoy en Sibiu"). **Factorizada:** una lista de valores (las 9 casillas del 8-puzzle, o (x, y)). **Estructurada:** objetos y relaciones entre ellos ("Héctor es padre de Ana"). Cuanto más detalle guardas, más puedes razonar, pero más cuesta calcular.
 
 ## Términos clave
 

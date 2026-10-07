@@ -3,11 +3,13 @@ title: Swarm Intelligence
 type: concept
 tags: [optimization, swarm-intelligence, bio-inspired, multi-agent]
 sources: [slides-04-optimization, paper-kennedy-eberhart-1995-pso, paper-dorigo-1996-ant-system]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Swarm Intelligence (Inteligencia de enjambre)
 
 > **Summary (EN):** Swarm intelligence is collective problem solving that emerges from many simple agents following local rules and sharing information — birds, fish, ants, bees. Millonas' five principles (proximity, quality, diverse response, stability, adaptability) characterize it. The course covers three algorithms: PSO (particles share best positions), ACO (ants communicate indirectly through pheromone, i.e., stigmergy) and ABC (bees divide labor between exploitation and exploration).
+
+> **En palabras simples (ES):** Muchos agentes muy simples (pájaros, hormigas, abejas), cada uno siguiendo reglas sencillas y compartiendo un poco de información, logran juntos algo inteligente que ninguno logra solo, como encontrar el camino más corto a la comida. El curso usa tres algoritmos de este tipo: PSO (partículas como pájaros), ACO (hormigas con feromona) y ABC (abejas).
 
 ## Términos clave
 

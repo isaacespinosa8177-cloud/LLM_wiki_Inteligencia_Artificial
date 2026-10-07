@@ -3,11 +3,13 @@ title: Adversarial Search and Minimax
 type: concept
 tags: [search, games, adversarial-search, minimax]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Adversarial Search and Minimax (Búsqueda adversarial y Minimax)
 
 > **Summary (EN):** In games, two or more agents have opposing goals, so the task is to find an optimal strategy assuming the opponent also plays optimally. For two-player, zero-sum, deterministic, perfect-information games, Minimax defines the value of a node recursively: utility at terminal states, max over successors on MAX's turn and min on MIN's turn. It explores the full tree (time O(b^m), space O(b·m)); real games cut off at a depth limit and use a heuristic evaluation function.
+
+> **En palabras simples (ES):** En un juego de dos jugadores, piensa: "yo elijo lo mejor para mí, y mi rival elige lo peor para mí". Minimax arma el árbol de jugadas y, desde el final hacia arriba, en mis turnos toma el **máximo** y en los del rival el **mínimo**. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -101,17 +103,36 @@ flowchart TD
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** supón que el rival es perfecto: en tus turnos tomas el máximo, en los suyos él toma el mínimo, y esos valores suben desde las hojas.
+> **Idea (ES):** En un juego de dos jugadores, piensa: "yo elijo lo mejor para mí, y mi rival elige lo peor para mí". Minimax arma el árbol de jugadas y, desde el final hacia arriba, en mis turnos toma el **máximo** y en los del rival el **mínimo**.
 
-```text
-MINIMAX(state):
-1. If the game is over → return its utility (or, at the depth limit, EVAL(state)).
-2. If it is MAX's turn → return the MAXIMUM of MINIMAX(child) over all moves.
-3. If it is MIN's turn → return the MINIMUM of MINIMAX(child) over all moves.
-At the root, play the move whose child has the best value.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "Minimax assumes both players play optimally and backs utilities up the game tree: MAX takes the max, MIN the min. It is a depth-first search: time O(b^m), space O(b·m). Real games cut off at a depth limit and use an evaluation function, whose values must never beat a real win."
+| Palabra / símbolo | Qué es (en simple) | English |
+|---|---|---|
+| MAX | yo: quiero el número más alto | maximizing player |
+| MIN | el rival: quiere el número más bajo (lo peor para mí) | minimizing player |
+| Hoja / estado terminal | el final de la partida | terminal state |
+| Utilidad | el puntaje final para MAX (ganar = +1, perder = −1, empate = 0, o puntos) | utility |
+| EVAL | estimación del puntaje cuando no puedes llegar hasta el final (corte de profundidad) | evaluation function |
+| b, m | jugadas posibles por turno / número de turnos hasta el final | branching factor / depth |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. If the game is over → return its utility. (At the depth limit → return EVAL.)
+   - *ES:* Si la partida terminó, devuelve el puntaje final. Si no puedes mirar más lejos, devuelve una estimación.
+2. If it is MAX's turn → return the MAXIMUM value among its children.
+   - *ES:* En mi turno, me quedo con la jugada de mayor valor.
+3. If it is MIN's turn → return the MINIMUM value among its children.
+   - *ES:* En el turno del rival, suponemos que elige la de menor valor (la peor para mí).
+4. At the root, play the move whose child has the best value.
+   - *ES:* Arriba de todo, juega la jugada que llevó al mejor valor.
+
+**Ejemplo con números:** árbol de AIMA. Tengo 3 jugadas; el rival responde con 3 opciones cada una. Hojas: jugada 1 → [3, 12, 8]; jugada 2 → [2, 4, 6]; jugada 3 → [14, 5, 2].
+El rival (MIN) elige el menor en cada grupo: 3, 2 y 2. Yo (MAX) elijo el mayor de esos: **3** → juego la jugada 1.
+
+**Say it in the exam (EN):** "Minimax assumes both players play perfectly. It explores the game tree depth-first and backs values up from the leaves: MAX takes the maximum of its children and MIN the minimum. Time is O(b^m) and space O(b·m). Real games stop at a depth limit and use an evaluation function to estimate the value of the position."
+
+**Dilo así (ES):** "Minimax supone que ambos juegan perfecto. Recorre el árbol de jugadas en profundidad y sube los valores desde las hojas: MAX toma el máximo y MIN el mínimo. Tiempo O(b^m), memoria O(b·m). En juegos reales se corta a cierta profundidad y se usa una función de evaluación."
 
 ## Errores comunes y tips de examen
 

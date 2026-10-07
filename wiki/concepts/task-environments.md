@@ -3,11 +3,13 @@ title: Task Environments
 type: concept
 tags: [agents, environments]
 sources: [slides-03-intelligent-agents, slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Task Environments (Propiedades del entorno)
 
 > **Summary (EN):** Environments are classified along six dimensions: fully vs. partially observable, deterministic vs. non-deterministic (stochastic), episodic vs. sequential, static vs. dynamic (semidynamic), discrete vs. continuous, and single- vs. multi-agent (competitive or cooperative). The classification determines which agent architecture and which algorithms are appropriate — e.g., classical search assumes observable, deterministic, discrete and static.
+
+> **En palabras simples (ES):** Para describir el "mundo" donde trabaja un agente, haz siempre las mismas 7 preguntas en el mismo orden. Cada respuesta es un par de opciones (por ejemplo, "lo ve todo" o "ve solo una parte"). *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -58,20 +60,38 @@ updated: 2026-10-01
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** para clasificar un entorno haz siempre las mismas 7 preguntas, en el mismo orden.
+> **Idea (ES):** Para describir el "mundo" donde trabaja un agente, haz siempre las mismas 7 preguntas en el mismo orden. Cada respuesta es un par de opciones (por ejemplo, "lo ve todo" o "ve solo una parte").
 
-```text
-CLASSIFY AN ENVIRONMENT:
-1. Can the sensors see the whole relevant state?        → fully / partially observable
-2. Is the next state fixed by state + action?           → deterministic / nondeterministic
-3. Do current decisions affect future ones?             → episodic / sequential
-4. Does the world change while the agent thinks?        → static / dynamic (semidynamic)
-5. Finite, well-defined states/actions?                 → discrete / continuous
-6. Are there other agents? Do they compete or help?     → single / multi-agent
-7. Does the agent know the rules (outcomes of actions)? → known / unknown
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "The hardest case is partially observable, multi-agent, nondeterministic, sequential, dynamic, continuous and unknown — like taxi driving. Classical search assumes the opposite: observable, deterministic, static, discrete and known."
+| Palabra | Qué es (en simple) | English |
+|---|---|---|
+| Estado | cómo está el mundo en un momento (posiciones, valores, etc.) | state |
+| Entorno de tarea | el "mundo" donde trabaja el agente y las reglas de ese mundo | task environment |
+| Agente | quien percibe y actúa (ver la página Intelligent Agents) | agent |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Can the sensors see everything that matters? → fully / partially observable.
+   - *ES:* ¿El agente ve todo lo importante? Ajedrez: sí (totalmente observable). Póker: no ve las cartas del rival (parcialmente observable).
+2. Is the next state completely decided by the current state and the action? → deterministic / nondeterministic (stochastic).
+   - *ES:* ¿Si hago lo mismo, pasa siempre lo mismo? Crucigrama: sí (determinista). Lanzar dados: no (estocástico).
+3. Do my current decisions affect future ones? → episodic / sequential.
+   - *ES:* ¿Cada decisión es independiente? Clasificar fotos: sí, cada foto es aparte (episódico). Ajedrez: no, cada jugada afecta las siguientes (secuencial).
+4. Does the world change while the agent is thinking? → static / dynamic (semidynamic if only the score changes).
+   - *ES:* ¿El mundo cambia mientras pienso? Crucigrama: no (estático). Manejar un taxi: sí (dinámico). Ajedrez con reloj: el tablero no cambia pero el tiempo sí (semidinámico).
+5. Are states, time and actions countable (finite steps)? → discrete / continuous.
+   - *ES:* ¿Las opciones se pueden contar? Ajedrez: sí (discreto). Velocidad de un auto: no, es cualquier número (continuo).
+6. Are there other agents? Do they compete or cooperate? → single / multi-agent.
+   - *ES:* ¿Hay otros jugadores? Crucigrama: uno solo. Ajedrez: dos que compiten (multiagente competitivo).
+7. Does the agent know the rules (what each action does)? → known / unknown.
+   - *ES:* ¿El agente conoce las reglas del juego? Si no, tiene que aprenderlas probando.
+
+**Ejemplo con números:** póker → parcialmente observable, estocástico, secuencial, estático, discreto, multiagente. Clasificar imágenes → totalmente observable, determinista, **episódico**, semidinámico, continuo, un solo agente.
+
+**Say it in the exam (EN):** "Environments are classified as fully or partially observable, deterministic or stochastic, episodic or sequential, static or dynamic, discrete or continuous, single- or multi-agent, and known or unknown. The hardest case is taxi driving: partially observable, stochastic, sequential, dynamic, continuous and multi-agent. Classical search assumes the easiest case: observable, deterministic, static, discrete and known."
+
+**Dilo así (ES):** "Los entornos se clasifican en observable total o parcial, determinista o estocástico, episódico o secuencial, estático o dinámico, discreto o continuo, de uno o varios agentes, y conocido o desconocido. El caso más difícil es manejar un taxi. La búsqueda clásica supone el caso más fácil: observable, determinista, estático, discreto y conocido."
 
 ## Errores comunes y tips de examen
 

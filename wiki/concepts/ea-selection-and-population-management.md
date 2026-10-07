@@ -3,11 +3,13 @@ title: EA Selection and Population Management
 type: concept
 tags: [optimization, evolutionary-computation, genetic-algorithms, selection]
 sources: [book-eiben-smith-evolutionary-computing, slides-04-optimization]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # EA Selection and Population Management (Selección y gestión de la población)
 
 > **Summary (EN):** Selection is the fitness-based force that pushes an evolutionary algorithm towards better solutions, and it acts twice: parent selection (who reproduces) and survivor selection (who enters the next generation). Eiben & Smith chapter 5 covers generational vs. steady-state models; fitness-proportional selection and its problems (premature convergence, loss of pressure, sensitivity to shifting f), fixes like windowing and sigma scaling, ranking and tournament selection, roulette-wheel vs. stochastic universal sampling; survivor schemes (age-based, replace-worst, elitism, (μ+λ), (μ,λ)); selection pressure measured by takeover time; and diversity-preserving methods for multimodal problems (fitness sharing, crowding, island models).
+
+> **En palabras simples (ES):** La selección decide **quién tiene hijos** y **quién pasa a la siguiente generación**. Si eliges solo a los mejores, la población mejora rápido pero todos se vuelven parecidos (pierde variedad y puede atascarse). Si eliges casi al azar, conserva variedad pero mejora lento. Los métodos de selección regulan ese equilibrio. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -120,23 +122,39 @@ function SUS(population, a, λ):
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** la selección decide quién se reproduce y quién sobrevive; más presión = converge más rápido pero pierde diversidad.
+> **Idea (ES):** La selección decide **quién tiene hijos** y **quién pasa a la siguiente generación**. Si eliges solo a los mejores, la población mejora rápido pero todos se vuelven parecidos (pierde variedad y puede atascarse). Si eliges casi al azar, conserva variedad pero mejora lento. Los métodos de selección regulan ese equilibrio.
 
-```text
-ROULETTE WHEEL (fitness proportional):
-1. P(i) = f_i / sum of all f.  2. Spin: pick a random r in [0,1] and walk the
-   cumulative probabilities until passing r. Repeat for each parent.
-TOURNAMENT (size k):
-1. Pick k individuals at random.  2. The best one becomes a parent. Repeat.
-ELITISM:
-Always copy the current best individual into the next generation.
-(μ, λ) SURVIVOR SELECTION:
-From λ children keep the best μ; discard all parents.
-(μ + λ) SURVIVOR SELECTION:
-Merge parents and children; keep the best μ.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "Fitness-proportional selection causes premature convergence early and loses pressure late, and it changes if f is shifted. Ranking and tournament selection fix this; tournament size k controls the pressure. Elitism guarantees the best fitness never decreases. Takeover time measures selection pressure."
+| Símbolo / palabra | Qué es (en simple) | English |
+|---|---|---|
+| f_i | la aptitud (nota) del individuo i; aquí más alta = mejor | fitness of individual i |
+| P(i) | la probabilidad de que i sea elegido | selection probability |
+| Ruleta | cada individuo recibe un pedazo de ruleta proporcional a su nota | roulette wheel |
+| Torneo de tamaño k | eliges k individuos al azar y gana el mejor | tournament |
+| Elitismo | el mejor pasa siempre a la siguiente generación | elitism |
+| μ (mu), λ (lambda) | cantidad de padres / cantidad de hijos | parents / offspring |
+| Presión de selección | qué tanto se favorece a los mejores | selection pressure |
+| Convergencia prematura | todos se parecen demasiado pronto y la búsqueda se atasca | premature convergence |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Roulette wheel: P(i) = f_i / (sum of all fitness values). Spin: pick a random number between 0 and 1 and see in which slice it falls. Repeat for each parent.
+   - *ES:* Ruleta: tu probabilidad es tu nota dividida para la suma de todas las notas. Gira la ruleta una vez por cada padre que necesites.
+2. Tournament of size k: pick k individuals at random; the best one becomes a parent. Repeat.
+   - *ES:* Torneo: saca k al azar y gana el mejor. Con k más grande, los mejores ganan más seguido (más presión).
+3. Elitism: always copy the best individual into the next generation.
+   - *ES:* Elitismo: el mejor siempre pasa, así la mejor nota nunca empeora.
+4. (μ, λ) survivor selection: from the λ children keep the best μ; all parents are discarded.
+   - *ES:* (μ, λ): de los λ hijos se quedan los μ mejores; los padres se descartan todos.
+5. (μ + λ) survivor selection: put parents and children together and keep the best μ.
+   - *ES:* (μ + λ): se juntan padres e hijos y se quedan los μ mejores.
+
+**Ejemplo con números:** notas [24, 23, 20, 11] (más alta = mejor). Suma = 78. Ruleta: 24/78 = **0.31**, 23/78 = **0.29**, 20/78 = **0.26**, 11/78 = **0.14**. El peor todavía tiene un 14 % de probabilidad, lo que conserva variedad. Torneo con k = 2: si salen el de 20 y el de 11, gana el de **20**.
+
+**Say it in the exam (EN):** "Selection decides who reproduces and who survives. Fitness-proportional (roulette) selection gives each individual a probability equal to its fitness divided by the total; it can converge too early when one individual is much better, and it loses pressure when everyone is similar. Ranking and tournament selection avoid this; in a tournament, the size k controls the pressure. Elitism guarantees the best solution is never lost. (μ, λ) keeps only the best children; (μ + λ) keeps the best of parents and children."
+
+**Dilo así (ES):** "La selección decide quién se reproduce y quién sobrevive. La ruleta da a cada individuo una probabilidad igual a su nota dividida para el total; puede converger demasiado pronto si uno es mucho mejor, y pierde presión cuando todos se parecen. El ranking y el torneo lo evitan; en el torneo, k controla la presión. El elitismo asegura que nunca se pierda el mejor. (μ, λ) guarda solo a los mejores hijos; (μ + λ), a los mejores entre padres e hijos."
 
 ## Errores comunes y tips de examen
 

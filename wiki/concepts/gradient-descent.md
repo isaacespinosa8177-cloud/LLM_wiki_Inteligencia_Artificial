@@ -3,11 +3,13 @@ title: Gradient Descent
 type: concept
 tags: [optimization, continuous, gradient]
 sources: [code-class-optimization, slides-01-introduction-to-ai, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Gradient Descent (Descenso de gradiente)
 
 > **Summary (EN):** Gradient descent minimizes a differentiable function by repeatedly stepping against the gradient: w ← w − η∇f(w). The learning rate η controls step size — too small is slow, too large overshoots or diverges. It converges to the global minimum on convex functions like the class example f(x,y) = (x−2)² + (y+2)², but only to a local minimum on multimodal ones. It is the engine behind backpropagation.
+
+> **En palabras simples (ES):** Imagina que estás en una montaña con los ojos vendados y quieres bajar al valle. Tocas el suelo con el pie para sentir hacia dónde sube (eso es el gradiente) y das un paso **hacia el lado contrario**. Repites hasta que el suelo esté plano. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -69,18 +71,39 @@ El dilema de α: muy pequeño → demasiados pasos; muy grande → se pasa del m
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** calcula hacia dónde sube más rápido la función (el gradiente) y da un paso pequeño en la dirección contraria; repite.
+> **Idea (ES):** Imagina que estás en una montaña con los ojos vendados y quieres bajar al valle. Tocas el suelo con el pie para sentir hacia dónde sube (eso es el gradiente) y das un paso **hacia el lado contrario**. Repites hasta que el suelo esté plano.
 
-```text
-GRADIENT DESCENT (minimizing f):
-1. Start at some point w; choose a learning rate η.
-2. Repeat until the steps become tiny (or a max number of iterations):
-   a. Compute the gradient ∇f(w) (vector of partial derivatives).
-   b. Move against it: w ← w − η · ∇f(w).
-3. Return w.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "Gradient descent follows the negative gradient. The learning rate matters: too small is slow, too large overshoots or diverges. It finds the global minimum of convex functions such as (x−2)² + (y+2)², but only a local minimum of multimodal ones. Backpropagation computes the gradients that gradient descent uses to train neural networks."
+| Símbolo | Qué es (en simple) | English |
+|---|---|---|
+| w | el punto donde estoy, p. ej. w = (x, y) | current point (weights) |
+| f(w) | qué tan alto estoy (el valor que quiero hacer pequeño) | function value |
+| ∇f(w) | el **gradiente**: hacia dónde y qué tan rápido sube f. Se calcula con las derivadas de f respecto a cada variable | gradient |
+| ∂f/∂x | la derivada de f respecto a x: cuánto cambia f si muevo solo x | partial derivative |
+| η (eta) | la **tasa de aprendizaje**: el tamaño de cada paso | learning rate |
+| w ← … | "el nuevo w es…" (actualizar) | update |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Start at some point w and choose a learning rate η.
+   - *ES:* Elige un punto de partida y el tamaño del paso.
+2. Compute the gradient ∇f(w): the derivative of f with respect to each variable.
+   - *ES:* Calcula hacia dónde sube la función (una derivada por variable).
+3. Move against it: w ← w − η · ∇f(w).
+   - *ES:* Punto nuevo = punto actual − (tamaño del paso) × (gradiente). El signo "−" es para ir **cuesta abajo**.
+4. Repeat steps 2–3 until the steps become tiny or you reach a maximum number of iterations. Return w.
+   - *ES:* Repite hasta que casi no te muevas (llegaste al fondo).
+
+**Ejemplo con números:** f(x, y) = (x − 2)² + (y + 2)², empiezo en (0, 0) con η = 0.1. El mínimo está en (2, −2).
+1. Derivadas: ∂f/∂x = 2(x − 2) y ∂f/∂y = 2(y + 2). En (0, 0): ∇f = (2·(−2), 2·2) = (−4, 4).
+2. Paso: (0, 0) − 0.1·(−4, 4) = (0 + 0.4, 0 − 0.4) = **(0.4, −0.4)**. f bajó de 8 a 5.12.
+3. Siguiente paso: **(0.72, −0.72)**, f = 3.28. Luego **(0.976, −0.976)**, f ≈ 2.10. Se va acercando a (2, −2).
+- Si η es muy grande (más de 1 aquí), los pasos se pasan del valle y se aleja (diverge). Si es muy pequeño, avanza lentísimo.
+
+**Say it in the exam (EN):** "Gradient descent minimizes a function by repeatedly taking a small step against the gradient: w ← w − η∇f(w). The learning rate η matters: too small is slow, too large overshoots or diverges. It reaches the global minimum of convex (bowl-shaped) functions, but only a local minimum of functions with many valleys. Backpropagation computes the gradients that gradient descent uses to train neural networks."
+
+**Dilo así (ES):** "El descenso de gradiente minimiza una función dando pasos pequeños en contra del gradiente: w ← w − η∇f(w). La tasa η importa: muy pequeña es lenta, muy grande se pasa o diverge. Llega al mínimo global si la función tiene un solo valle; si tiene muchos, solo a uno local. Backpropagation calcula los gradientes que se usan para entrenar redes neuronales."
 
 ## Errores comunes y tips de examen
 

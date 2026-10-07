@@ -3,11 +3,13 @@ title: Heuristics
 type: concept
 tags: [search, informed-search, heuristics]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Heuristics (Heurísticas)
 
 > **Summary (EN):** A heuristic h(n) estimates the cost from node n to the goal (h(goal) = 0, h(n) ≥ 0). It encodes problem knowledge to guide search; it is an estimate, not a guarantee. A heuristic is admissible if it never overestimates the true cost and consistent if h(n) ≤ c(n, a, n') + h(n'). Classic examples from the course: straight-line distance (Romania), and Manhattan distance, Euclidean distance and misplaced tiles for sliding puzzles.
+
+> **En palabras simples (ES):** Una heurística es una **estimación** de cuánto falta para llegar a la meta, como la distancia en línea recta en un mapa: no es exacta, pero orienta. La mejor forma de inventar una es resolver una versión **más fácil** del problema (quitando una regla); así la estimación nunca exagera. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -77,23 +79,46 @@ El problema relajado debe poder resolverse **sin búsqueda** (aquí se descompon
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** una buena heurística es el costo exacto de una versión **más fácil** del problema; así nunca sobreestima.
+> **Idea (ES):** Una heurística es una **estimación** de cuánto falta para llegar a la meta, como la distancia en línea recta en un mapa: no es exacta, pero orienta. La mejor forma de inventar una es resolver una versión **más fácil** del problema (quitando una regla); así la estimación nunca exagera.
 
-```text
-DESIGN AN ADMISSIBLE HEURISTIC:
-1. Write the rules of the problem (e.g., "a tile moves to an adjacent blank square").
-2. Remove a restriction to get a relaxed problem
-   (drop "blank" → Manhattan distance; drop both → misplaced tiles).
-3. Use the exact cost of the relaxed problem as h(n).
+**Antes de empezar: qué significa cada cosa**
 
-CHECK A HEURISTIC:
-1. h(goal) = 0 and h(n) ≥ 0?
-2. Admissible: for every n, is h(n) ≤ the real cheapest cost to the goal?
-3. Consistent: for every edge n → n', is h(n) ≤ cost(n, n') + h(n')?
-4. Compare two admissible heuristics: the one that is always ≥ (dominates) is better.
-```
+| Símbolo | Qué es (en simple) | English |
+|---|---|---|
+| h(n) | cuánto **creo** que falta desde n hasta la meta | heuristic estimate |
+| h\*(n) | cuánto falta **de verdad** (el costo real más barato) | true remaining cost |
+| c(n, n') | costo de ir de n a su vecino n' | step cost |
+| Admisible | nunca exagera: h(n) ≤ h\*(n) | admissible |
+| Consistente | al dar un paso, la estimación no baja más de lo que cuesta ese paso: h(n) ≤ c(n, n') + h(n') | consistent |
+| Domina | entre dos admisibles, la que siempre da valores más altos (más cerca de la realidad) | dominates |
 
-**Say it in the exam (EN):** "h(n) estimates the cost from n to the goal. Admissible means it never overestimates; consistent means it satisfies the triangle inequality, which implies admissible. A dominating admissible heuristic expands fewer nodes; on the 8-puzzle Manhattan distance dominates misplaced tiles."
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+*How to invent an admissible heuristic*
+
+1. Write the rules of the problem (8-puzzle: a tile can move to an adjacent square only if it is empty).
+   - *ES:* Escribe las reglas del problema.
+2. Remove a rule to get an easier (relaxed) problem.
+   - *ES:* Quita una regla. Si las fichas se pueden mover aunque la casilla esté ocupada → cada ficha necesita tantos pasos como su distancia horizontal + vertical (**Manhattan**). Si además pueden saltar a cualquier lugar → cada ficha mal ubicada necesita 1 paso (**fichas mal colocadas**).
+3. Use the exact cost of the easier problem as h(n).
+   - *ES:* El costo exacto del problema fácil es tu heurística. Nunca exagera, porque el problema real es más difícil.
+
+*How to check a heuristic*
+
+1. Check that h(goal) = 0 and h(n) ≥ 0.
+   - *ES:* En la meta debe valer 0 y nunca ser negativa.
+2. Admissible: h(n) ≤ the real cheapest cost from n, for every n.
+   - *ES:* ¿Nunca dice que falta **más** de lo que de verdad falta? Si nunca exagera, es admisible.
+3. Consistent: h(n) ≤ c(n, n') + h(n') for every step from n to n'.
+   - *ES:* Al avanzar un paso, la estimación no puede bajar más que lo que costó ese paso (como la desigualdad del triángulo).
+4. Between two admissible heuristics, prefer the one that is always larger (it dominates).
+   - *ES:* Entre dos admisibles, usa la más alta: se acerca más a la realidad y A\* revisa menos nodos.
+
+**Ejemplo con números:** Rumania, h = distancia en línea recta a Bucarest. h(Arad) = 366 km y el camino real más corto mide 418 km → 366 ≤ 418, **admisible**. Consistencia en el paso Arad → Sibiu (140 km): 366 ≤ 140 + 253 = 393 ✓. En el 8-puzzle, una ficha que está a 2 casillas de su lugar suma 1 en "mal colocadas" y 2 en Manhattan: Manhattan es más alta, por eso domina.
+
+**Say it in the exam (EN):** "A heuristic h(n) estimates the cost from n to the goal. It is admissible if it never overestimates the real cost, and consistent if h(n) ≤ c(n, n') + h(n') for every step; consistent implies admissible. A good way to build one is to solve a relaxed problem with fewer rules. Between two admissible heuristics, the one that dominates (is always larger) makes A* expand fewer nodes; on the 8-puzzle, Manhattan distance dominates misplaced tiles."
+
+**Dilo así (ES):** "Una heurística h(n) estima cuánto falta desde n hasta la meta. Es admisible si nunca exagera, y consistente si al dar un paso no baja más que el costo de ese paso; consistente implica admisible. Se construye resolviendo una versión más fácil del problema. Entre dos admisibles, la más alta hace que A\* revise menos nodos; en el 8-puzzle, Manhattan domina a fichas mal colocadas."
 
 ## Errores comunes y tips de examen
 

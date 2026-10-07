@@ -3,11 +3,13 @@ title: Agent Types
 type: concept
 tags: [agents, architectures]
 sources: [slides-03-intelligent-agents, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Agent Types (Tipos de agentes)
 
 > **Summary (EN):** Four agent architectures of increasing power: the simple reflex agent (condition–action rules on the current percept, no memory), the model-based reflex agent (keeps internal state using a world model and a transition model), the goal-based agent (plans and searches toward desired states) and the utility-based agent (maximizes expected utility, handling conflicting goals and uncertainty).
+
+> **En palabras simples (ES):** Hay cuatro tipos de agentes, y cada uno agrega una pieza al anterior: el **reflejo simple** solo reacciona; el **basado en modelo** además recuerda; el **basado en metas** además planifica; el **basado en utilidad** además compara qué tan buena es cada opción. Cualquiera puede además **aprender**. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -67,24 +69,36 @@ flowchart TB
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** cada tipo de agente añade una pieza: memoria (modelo), metas (planificar) y utilidad (comparar opciones).
+> **Idea (ES):** Hay cuatro tipos de agentes, y cada uno agrega una pieza al anterior: el **reflejo simple** solo reacciona; el **basado en modelo** además recuerda; el **basado en metas** además planifica; el **basado en utilidad** además compara qué tan buena es cada opción. Cualquiera puede además **aprender**.
 
-```text
-SIMPLE REFLEX:   action = rule that matches the CURRENT percept.
-MODEL-BASED:     1. state = UPDATE(state, last action, percept, world model)
-                 2. action = rule that matches STATE.
-GOAL-BASED:      1. update state (as above)
-                 2. search/plan a sequence of actions that reaches a GOAL state
-                 3. do the first action of the plan.
-UTILITY-BASED:   1. update state
-                 2. for each action, estimate the EXPECTED UTILITY of its outcomes
-                 3. do the action with the highest expected utility.
-LEARNING AGENT:  critic compares behaviour with a fixed performance standard →
-                 learning element improves the performance element →
-                 problem generator suggests some exploratory actions.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "Simple reflex agents only see the current percept, so they fail in partially observable worlds. Model-based agents keep an internal state. Goal-based agents plan, but goals are binary. Utility-based agents rank outcomes and handle trade-offs and uncertainty. Any of them can be made a learning agent."
+| Palabra | Qué es (en simple) | English |
+|---|---|---|
+| Regla condición–acción | "si pasa X, haz Y" (si está sucio, aspira) | condition–action rule |
+| Estado interno | la memoria del agente: lo que cree que pasa aunque no lo vea | internal state |
+| Modelo del mundo | lo que el agente sabe de cómo cambia el mundo y qué hacen sus acciones | world model |
+| Meta | la situación a la que quiere llegar (estar en Bucarest) | goal |
+| Utilidad | un número que dice qué tan bueno es un resultado (más rápido y seguro = más alto) | utility |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Simple reflex: action = the rule that matches the CURRENT percept.
+   - *ES:* Reflejo simple: mira solo lo que ve ahora y aplica una regla. Ejemplo: un termostato ("si hace frío, enciende").
+2. Model-based: update an internal state with the last action and the new percept, then apply the rule that matches that state.
+   - *ES:* Basado en modelo: primero actualiza su memoria ("ya limpié A"), y decide según esa memoria. Ejemplo: aspiradora que hace un mapa de la casa.
+3. Goal-based: update the state, plan a sequence of actions that reaches a GOAL, and do the first action.
+   - *ES:* Basado en metas: busca un plan para llegar a la meta. Ejemplo: GPS que calcula la ruta.
+4. Utility-based: update the state, estimate the expected utility of each action, and do the best one.
+   - *ES:* Basado en utilidad: no solo pregunta "¿llego?" sino "¿qué tan bien llego?". Ejemplo: taxi autónomo que equilibra rapidez, comodidad y seguridad.
+5. Learning agent: a critic judges how well the agent did; the learning element improves the agent; a problem generator suggests new things to try.
+   - *ES:* Agente que aprende: un "crítico" le pone nota, una parte "aprendiz" mejora sus reglas, y otra parte le propone probar cosas nuevas. Ejemplo: programa de ajedrez que mejora jugando contra sí mismo.
+
+**Ejemplo con números:** aspiradora con nota −1 por cada movimiento. El reflejo simple sigue moviéndose aunque todo esté limpio y pierde puntos. El basado en modelo recuerda "A y B limpios" y se queda quieto (*NoOp*): saca mejor nota.
+
+**Say it in the exam (EN):** "A simple reflex agent reacts only to the current percept, so it fails when it cannot see everything. A model-based agent keeps an internal state. A goal-based agent plans toward a goal, but a goal is only reached or not reached. A utility-based agent gives each outcome a score, so it can trade off goals and handle uncertainty. Any of them can become a learning agent."
+
+**Dilo así (ES):** "El reflejo simple solo reacciona a lo que ve ahora. El basado en modelo además recuerda. El basado en metas planifica para llegar a una meta, pero la meta solo se cumple o no. El basado en utilidad le da una nota a cada resultado y así puede comparar opciones. Cualquiera puede convertirse en un agente que aprende."
 
 ## Errores comunes y tips de examen
 

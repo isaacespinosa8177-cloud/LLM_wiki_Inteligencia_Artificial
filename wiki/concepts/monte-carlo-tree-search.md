@@ -3,11 +3,13 @@ title: Monte Carlo Tree Search
 type: concept
 tags: [games, adversarial-search, mcts, go, chess]
 sources: [book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Monte Carlo Tree Search (Búsqueda de árbol Monte Carlo, MCTS)
 
 > **Summary (EN):** MCTS estimates the value of a game state not with a heuristic evaluation function but by averaging the results of many complete simulated games (playouts) from that state. It grows a search tree with four repeated steps — selection, expansion, simulation, back-propagation — using a selection policy such as UCT (UCB1) that balances exploitation of moves with high win rates against exploration of rarely tried moves. It replaced alpha–beta in Go, where the branching factor (≈361 at the start) and the lack of a good evaluation function defeat heuristic minimax; AlphaGo and AlphaZero combine MCTS with neural networks trained by self-play.
+
+> **En palabras simples (ES):** En vez de usar una fórmula para saber si una posición es buena, juega **muchas partidas rápidas al azar** desde ella y cuenta cuántas ganas. Si desde una jugada ganas 7 de 10, probablemente es buena. Para no probar solo las que ya parecen buenas, de vez en cuando prueba las que casi no has probado. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -94,22 +96,44 @@ flowchart LR
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** en vez de evaluar una posición con una fórmula, juega muchas partidas rápidas desde ella y mira cuántas se ganan.
+> **Idea (ES):** En vez de usar una fórmula para saber si una posición es buena, juega **muchas partidas rápidas al azar** desde ella y cuenta cuántas ganas. Si desde una jugada ganas 7 de 10, probablemente es buena. Para no probar solo las que ya parecen buenas, de vez en cuando prueba las que casi no has probado.
 
-```text
-MCTS (repeat until time runs out):
-1. SELECTION:   from the root, go down choosing the child with the best UCB1
-                (high win rate OR rarely visited) until reaching a leaf.
-2. EXPANSION:   add one new child to that leaf.
-3. SIMULATION:  play a quick game from the new child to the end (playout policy).
-4. BACK-PROPAGATION: walk back to the root adding +1 visit to every node
-                and +1 win to the nodes of the player who won.
-Finally, play the root move with the MOST visits.
+**Antes de empezar: qué significa cada cosa**
 
-UCB1(n) = wins(n)/visits(n) + C · sqrt( ln visits(parent) / visits(n) )
-```
+| Símbolo | Qué es (en simple) | English |
+|---|---|---|
+| Playout (simulación) | una partida rápida, con jugadas al azar, hasta el final | playout / rollout |
+| U(n) | cuántas partidas se ganaron pasando por el nodo n | wins (utility) |
+| N(n) | cuántas veces se visitó (probó) el nodo n | visits |
+| N(padre) | cuántas veces se visitó el nodo de arriba | parent visits |
+| U(n)/N(n) | el porcentaje de victorias: qué tan buena parece la jugada | win rate (exploitation) |
+| C | un número que decide cuánto premiar lo poco probado (p. ej. √2 ≈ 1.41) | exploration constant |
+| ln | logaritmo natural (en la calculadora: tecla "ln") | natural log |
 
-**Say it in the exam (EN):** "MCTS estimates values by averaging playouts instead of using an evaluation function, so it suits games with a huge branching factor or no good evaluation, like Go. UCB1 balances exploitation (average reward) and exploration (rarely tried moves). AlphaGo and AlphaZero combine MCTS with neural networks trained by self-play."
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. SELECTION: from the root, go down choosing the child with the highest UCB1 until you reach a node with untried moves.
+   - *ES:* Baja por el árbol eligiendo en cada nivel el hijo con mayor UCB1 (buen porcentaje **o** pocas visitas).
+2. EXPANSION: add one new child to that node.
+   - *ES:* Agrega una jugada nueva al árbol.
+3. SIMULATION: play a fast random game from the new child until the end.
+   - *ES:* Desde ahí juega una partida rápida al azar hasta que alguien gane.
+4. BACK-PROPAGATION: go back up to the root adding 1 visit to every node on the path, and 1 win to the nodes of the player who won.
+   - *ES:* Sube por el mismo camino sumando una visita a cada nodo y una victoria a los del jugador que ganó.
+5. Repeat steps 1–4 until time runs out; then play the root move with the MOST visits.
+   - *ES:* Repite mientras haya tiempo. Al final juega la jugada que más se visitó.
+
+**La fórmula UCB1:** UCB1(n) = U(n)/N(n) + C · √( ln N(padre) / N(n) )
+- *ES:* primera parte = "qué tan bien le ha ido" (explotar). Segunda parte = "qué poco la he probado" (explorar): se hace grande cuando N(n) es pequeño.
+
+**Ejemplo con números:** el padre tiene N = 15 visitas (ln 15 ≈ 2.708). Hijos: A ganó 7 de 10, B ganó 3 de 4, C ganó 0 de 1. Con C = 1:
+- A: 7/10 + √(2.708/10) = 0.70 + 0.52 = **1.22**
+- B: 3/4 + √(2.708/4) = 0.75 + 0.82 = **1.57**
+- C: 0/1 + √(2.708/1) = 0 + 1.65 = **1.65** ← se elige C: casi no se ha probado.
+
+**Say it in the exam (EN):** "MCTS estimates how good a move is by averaging the results of many random playouts instead of using an evaluation function. Each iteration has four steps: selection, expansion, simulation and back-propagation. Selection uses UCB1, which balances exploitation (high win rate) and exploration (few visits). It works for games with huge branching factors and no good evaluation function, like Go; AlphaGo combined it with neural networks."
+
+**Dilo así (ES):** "MCTS estima qué tan buena es una jugada promediando muchas partidas aleatorias, en vez de usar una función de evaluación. Cada iteración tiene cuatro pasos: selección, expansión, simulación y retropropagación. La selección usa UCB1, que equilibra explotar (buen porcentaje) y explorar (pocas visitas). Sirve para juegos con muchísimas jugadas y sin buena evaluación, como Go."
 
 ## Errores comunes y tips de examen
 

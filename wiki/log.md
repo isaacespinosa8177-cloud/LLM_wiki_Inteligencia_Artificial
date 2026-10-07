@@ -84,3 +84,10 @@ Recent activity: `grep "^## \[" wiki/log.md | tail -5`
 - Created Marp decks `study-tools/slides/unit-1-agents.md` (13 slides), `unit-2-search.md` (15), `unit-3-logic.md` (13), `unit-4-optimization.md` (13) with theme `ia-review.css`; rendered PDFs to `study-tools/slides/pdf/`. Checked every slide for overflow in headless Chromium.
 - Created [study/review-decks.md](study/review-decks.md); linked from `index.md`, `study/study-plan.md` (night-before review, Wed mock exam), `CLAUDE.md` §1 and §7, `README.md`.
 - Added the full-map UCS/A\*/greedy node counts to [study/search-algorithms-comparison.md](study/search-algorithms-comparison.md) (UCS expands 12 on 20 cities vs. 9 on the assignment's 10-city subgraph).
+
+## [2026-10-07] update | Plain-language rewrite of all pseudocode (EN + ES)
+- Isaac found the pseudocode hard to follow (symbols and formulas appeared without definitions) and asked for simpler explanations with a Spanish version beside the English.
+- Rewrote the `Pseudocódigo intuitivo` section of all 32 algorithm pages: everyday-analogy idea, a table defining every symbol, each step in English with its Spanish version below, a worked numeric example from the course, and the exam answer in English and Spanish.
+- Added a `> **En palabras simples (ES):**` callout under the Summary of all 37 concept pages (hand-written for the 5 pages without pseudocode).
+- Updated `tools/build_study.py` (new cheat-sheet intro; Anki pseudocode cards now carry the bilingual steps), `CLAUDE.md` §2 (plain-language rule) and §3 (new pseudocode format), `study/flashcards.md`.
+- Regenerated `study/intuitive-pseudocode.md` and the Anki deck.

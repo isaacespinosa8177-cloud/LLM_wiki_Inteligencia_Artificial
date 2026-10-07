@@ -3,11 +3,13 @@ title: Artificial Bee Colony
 type: concept
 tags: [optimization, swarm-intelligence, abc, continuous]
 sources: [slides-04-optimization]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Artificial Bee Colony (Colonia artificial de abejas, ABC)
 
 > **Summary (EN):** ABC (Karaboga, 2007) imitates honeybee foraging. Food sources are candidate solutions; employed bees exploit their own source by trying a nearby position, onlooker bees pick sources with probability proportional to quality and exploit them too, and scout bees abandon sources that have not improved for `limit` trials and search randomly — they provide exploration. Control parameters: number of food sources (= employed bees = onlooker bees), limit, and maximum cycle number (MCN).
+
+> **En palabras simples (ES):** Imita a las abejas buscando flores. Cada **fuente de comida** es una solución. Las abejas **empleadas** trabajan cada una su fuente probando un lugar cercano. Las **observadoras** van más seguido a las fuentes buenas. Si una fuente no mejora después de varios intentos, se abandona y una abeja **exploradora** busca una fuente nueva al azar. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -51,23 +53,40 @@ Slide 18: "k ∈ {1, 2, …, BN} y j ∈ {1, 2, …, D} son índices elegidos al
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** las abejas empleadas y observadoras mejoran las fuentes buenas; si una fuente se agota sin mejorar, una exploradora busca una nueva al azar.
+> **Idea (ES):** Imita a las abejas buscando flores. Cada **fuente de comida** es una solución. Las abejas **empleadas** trabajan cada una su fuente probando un lugar cercano. Las **observadoras** van más seguido a las fuentes buenas. Si una fuente no mejora después de varios intentos, se abandona y una abeja **exploradora** busca una fuente nueva al azar.
 
-```text
-ARTIFICIAL BEE COLONY:
-1. Create SN random food sources (solutions); trials_i ← 0.
-2. Repeat for MCN cycles:
-   a. EMPLOYED BEES: for each source, try a neighbor that changes one dimension
-      toward/away from a random other source; keep it if better, else trials_i += 1.
-   b. ONLOOKER BEES: choose sources with probability ∝ their quality
-      and do the same local move on them.
-   c. SCOUT BEES: any source with trials_i > limit is abandoned and
-      replaced by a random new source.
-   d. Remember the best source found.
-3. Return the best source.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "ABC divides the work: employed and onlooker bees exploit good food sources, while scout bees explore by replacing exhausted ones. Its parameters are the number of food sources, the abandonment limit and the maximum number of cycles."
+| Símbolo / palabra | Qué es (en simple) | English |
+|---|---|---|
+| Fuente de comida x | una solución candidata | food source |
+| Calidad | qué tan buena es la solución (su nota) | fitness / nectar amount |
+| SN | cuántas fuentes hay (= número de empleadas = número de observadoras) | number of food sources |
+| x_k | otra fuente elegida al azar, para compararse | random partner source |
+| φ (phi) | un número al azar entre −1 y 1 | random factor |
+| v = x + φ(x − x_k) | la posición vecina que se prueba: moverse un poco acercándose o alejándose de otra fuente | neighbor solution |
+| trials | cuántas veces seguidas no mejoró una fuente | failure counter |
+| limit | cuántos fracasos se aceptan antes de abandonar la fuente | abandonment limit |
+| MCN | número máximo de ciclos | maximum cycle number |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Create SN random food sources (solutions); set every trial counter to 0.
+   - *ES:* Crea fuentes al azar; ninguna ha fallado todavía.
+2. Employed bees: for each source x, try a neighbor v = x + φ·(x − x_k) on one variable. If v is better, keep it; otherwise add 1 to its trial counter.
+   - *ES:* Cada empleada prueba un lugar cerca de su fuente (moviéndose un poco respecto a otra fuente al azar). Si es mejor, se queda ahí; si no, cuenta un fracaso.
+3. Onlooker bees: choose sources with probability proportional to their quality and do the same neighbor test on them.
+   - *ES:* Las observadoras eligen fuentes, prefiriendo las buenas, y también prueban vecinos. Así las fuentes buenas se mejoran más.
+4. Scout bees: any source with more failures than the limit is abandoned and replaced by a new random source.
+   - *ES:* Si una fuente falló demasiadas veces seguidas, se abandona y una exploradora busca una nueva al azar (esto es la exploración).
+5. Remember the best source. Repeat steps 2–5 for MCN cycles and return it.
+   - *ES:* Guarda la mejor fuente y repite muchos ciclos.
+
+**Ejemplo con números:** fuente x = 2, fuente compañera al azar x_k = 5, número al azar φ = −0.5. Vecino: v = 2 + (−0.5)·(2 − 5) = 2 + 1.5 = **3.5**. Si f(3.5) es mejor que f(2), la abeja se mueve a 3.5 y su contador vuelve a 0; si no, su contador sube a 1. Con limit = 10, después de 10 fracasos seguidos la fuente se abandona.
+
+**Say it in the exam (EN):** "Artificial Bee Colony imitates honeybee foraging. Each food source is a candidate solution. Employed bees try a nearby position for their source; onlooker bees choose good sources more often and improve them too; both exploit. Scout bees replace sources that have not improved after a set number of trials (the limit) with random new ones, which provides exploration. The parameters are the number of food sources, the limit and the maximum number of cycles."
+
+**Dilo así (ES):** "ABC imita a las abejas buscando comida. Cada fuente es una solución. Las empleadas prueban un lugar cercano a su fuente y las observadoras eligen más seguido las fuentes buenas; ambas explotan. Las exploradoras reemplazan las fuentes que no mejoraron después de 'limit' intentos por otras al azar; eso es la exploración. Los parámetros son el número de fuentes, el límite y el máximo de ciclos."
 
 ## Errores comunes y tips de examen
 

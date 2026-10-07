@@ -3,11 +3,13 @@ title: Constraint Satisfaction Problems
 type: concept
 tags: [search, csp]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Constraint Satisfaction Problems (Problemas de satisfacción de restricciones, CSP)
 
 > **Summary (EN):** A CSP opens up the "black-box" state: variables X₁…Xₙ, domains D₁…Dₙ and constraints C; a solution is a complete and consistent assignment. Because the structure is visible, general (domain-independent) techniques work: constraint propagation (node, arc, path, k-consistency; AC-3), backtracking search with MRV/degree variable ordering and least-constraining-value ordering, forward checking or MAC during search, conflict-directed backjumping, min-conflicts local search, and exploiting graph structure (tree-structured CSPs are solvable in O(nd²)). Examples: map coloring, Sudoku, N-Queens, job-shop scheduling.
+
+> **En palabras simples (ES):** Un CSP es un rompecabezas de "llenar casillas respetando reglas", como colorear un mapa sin que dos vecinos tengan el mismo color, o un Sudoku. Se llena **una casilla a la vez**: empieza por la más difícil (la que tiene menos opciones), prueba primero el valor que menos estorba a los vecinos, y después de cada paso tacha las opciones que ya no sirven. Si te quedas sin opciones, borra el último paso y prueba otra (*backtracking*). *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -156,34 +158,59 @@ flowchart LR
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** asigna una variable a la vez, empieza por la más difícil, prueba primero el valor que menos estorba, y después de cada asignación tacha los valores imposibles de los vecinos.
+> **Idea (ES):** Un CSP es un rompecabezas de "llenar casillas respetando reglas", como colorear un mapa sin que dos vecinos tengan el mismo color, o un Sudoku. Se llena **una casilla a la vez**: empieza por la más difícil (la que tiene menos opciones), prueba primero el valor que menos estorba a los vecinos, y después de cada paso tacha las opciones que ya no sirven. Si te quedas sin opciones, borra el último paso y prueba otra (*backtracking*).
 
-```text
-BACKTRACKING SEARCH for a CSP:
+**Antes de empezar: qué significa cada cosa**
+
+| Palabra | Qué es (en simple) | English |
+|---|---|---|
+| Variable | una casilla por llenar (una región del mapa) | variable |
+| Dominio | los valores que puede tomar (rojo, verde, azul) | domain |
+| Restricción | una regla (dos vecinos no pueden tener el mismo color) | constraint |
+| Asignación | ponerle un valor a una variable | assignment |
+| Backtracking | deshacer el último paso y probar otra opción | backtracking |
+| MRV | elige la variable con **menos valores posibles** ("la más difícil primero") | minimum remaining values |
+| Grado | para desempatar: la variable con más vecinos sin asignar | degree heuristic |
+| LCV | prueba primero el valor que **menos opciones quita** a los vecinos | least constraining value |
+| Forward checking | después de asignar, tacha ese valor en los vecinos | forward checking |
+| Arco (X, Y) | la regla entre dos variables vista desde X | arc |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+*Backtracking search*
+
 1. If every variable has a value → return the assignment.
-2. Pick an unassigned variable: the one with the FEWEST legal values (MRV);
-   break ties with the one in the most constraints (degree).
-3. For each value, starting with the one that rules out the fewest
-   options for the neighbors (LCV):
-   a. If it breaks no constraint, assign it.
-   b. Forward checking: remove now-illegal values from each neighbor's domain.
-      If some neighbor has no values left → undo and try the next value.
-   c. Recurse. If the recursion succeeds → return the solution.
-   d. Otherwise undo the assignment (and the removed values).
-4. No value worked → return failure (backtrack).
+   - *ES:* Si ya llenaste todo, terminaste.
+2. Choose the unassigned variable with the FEWEST legal values (MRV); break ties with the one that has the most constraints (degree).
+   - *ES:* Elige la casilla con menos opciones (la que más probablemente falle: mejor saberlo pronto).
+3. Try its values, starting with the one that removes the fewest options from the neighbors (LCV).
+   - *ES:* Prueba primero el valor que deja más libertad a los demás.
+4. If the value breaks no rule: assign it, and remove now-impossible values from each neighbor (forward checking). If a neighbor runs out of values → undo and try the next value.
+   - *ES:* Ponlo y tacha ese valor en los vecinos. Si un vecino se queda sin opciones, este valor no sirve: quítalo y prueba otro.
+5. Call the algorithm again for the next variable. If it fails → undo this value and try the next one. If no value works → return failure (backtrack).
+   - *ES:* Sigue con la próxima casilla. Si más adelante todo falla, vuelve, cambia este valor y sigue probando. Si ningún valor sirve, avisa al nivel de arriba que retroceda.
 
-AC-3 (arc consistency):
+*AC-3 (arc consistency)*
+
 1. Put every arc (X, Y) in a queue.
-2. Take an arc; delete from X every value with no compatible value in Y.
-3. If X lost values → add (Z, X) for every other neighbor Z of X.
-4. If some domain becomes empty → no solution. Repeat until the queue is empty.
+   - *ES:* Haz una lista con cada pareja de variables conectadas por una regla.
+2. Take an arc (X, Y) and delete from X every value that has no compatible value in Y.
+   - *ES:* Borra de X los valores que no tienen "pareja válida" en Y.
+3. If X lost values → add (Z, X) again for every other neighbor Z of X.
+   - *ES:* Si X perdió valores, revisa otra vez a los vecinos de X, porque pueden haberse quedado sin pareja.
+4. If a domain becomes empty → no solution. Repeat until the queue is empty.
+   - *ES:* Si alguna variable se queda sin valores, no hay solución.
 
-MIN-CONFLICTS (local search):
-1. Start with a complete random assignment.
-2. Repeat: pick a variable in conflict; give it the value with the fewest conflicts.
-```
+*Min-conflicts (local search)*
 
-**Say it in the exam (EN):** "A CSP has variables, domains and constraints. Backtracking assigns one variable per level; MRV is fail-first, LCV is fail-last. Forward checking prunes neighbors' domains after each assignment; MAC goes further by running AC-3. Tree-structured CSPs are solvable in O(n·d²) without backtracking."
+1. Start with all variables filled at random; then repeat: pick a variable that breaks a rule and give it the value with the fewest conflicts.
+   - *ES:* Llena todo al azar y ve arreglando: toma una casilla con conflicto y ponle el valor que menos reglas rompe.
+
+**Ejemplo con números:** colorear Australia con {rojo, verde, azul}. Pongo WA = rojo → tacho rojo en sus vecinos NT y SA. Pongo Q = verde → tacho verde en NT, SA y NSW. Quedan NT = {azul}, SA = {azul}, NSW = {rojo, azul}. MRV elige NT o SA (solo 1 opción). Ojo: NT y SA son vecinos y ambos solo tienen azul → no hay solución por aquí. Forward checking no lo nota; AC-3 sí lo detecta enseguida.
+
+**Say it in the exam (EN):** "A CSP has variables, domains and constraints; a solution gives every variable a value without breaking any constraint. Backtracking assigns one variable at a time and undoes the last choice when it gets stuck. MRV chooses the variable with the fewest legal values (fail first), LCV tries the value that leaves the most options to the neighbors, and forward checking removes inconsistent values from neighbors after each assignment. AC-3 enforces arc consistency and detects failures earlier."
+
+**Dilo así (ES):** "Un CSP tiene variables, dominios y restricciones; una solución da un valor a cada variable sin romper ninguna restricción. Backtracking asigna una variable a la vez y deshace la última decisión cuando se atasca. MRV elige la variable con menos opciones, LCV prueba el valor que más libertad deja, y forward checking tacha valores imposibles en los vecinos. AC-3 revisa todas las parejas y detecta fallas antes."
 
 ## Errores comunes y tips de examen
 

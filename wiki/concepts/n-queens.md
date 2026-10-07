@@ -3,11 +3,13 @@ title: N-Queens
 type: concept
 tags: [csp, backtracking, prolog, worked-example]
 sources: [slides-xx-logic-programming-prolog, slides-02-problem-solving, code-prolog-examples]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # N-Queens (El problema de las N reinas)
 
 > **Summary (EN):** Place N queens on an N×N board so that no two attack each other. It appears twice in the course — in Prolog (queens.pl, select/3 + threat/2) and in Python (backtracking in Homework 1) — and it is the canonical CSP example. Representing the board as a permutation of 1..N guarantees one queen per row and column, leaving only diagonals to check. Solution counts: N=4→2, 5→10, 6→4, 7→40, 8→92, 9→352, 10→724; N=2 and N=3 have none.
+
+> **En palabras simples (ES):** Hay que poner N reinas en un tablero de N×N sin que ninguna ataque a otra (una reina ataca en su fila, su columna y sus diagonales). Se colocan **una por columna**: si la nueva reina choca con alguna anterior, pruebas otra fila; si ninguna fila sirve, regresas a la columna anterior y mueves esa reina. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -76,21 +78,36 @@ Misma lógica; la segunda **poda** antes un tablero malo. Es "Algorithm = Logic 
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** coloca una reina por columna; si la nueva choca con alguna anterior, prueba otra fila; si ninguna sirve, retrocede.
+> **Idea (ES):** Hay que poner N reinas en un tablero de N×N sin que ninguna ataque a otra (una reina ataca en su fila, su columna y sus diagonales). Se colocan **una por columna**: si la nueva reina choca con alguna anterior, pruebas otra fila; si ninguna fila sirve, regresas a la columna anterior y mueves esa reina.
 
-```text
-N-QUEENS (backtracking):
-1. Place queens column by column, starting with column 0.
-2. For the current column, try each row:
-   - Safe if no earlier queen has the same row
-     and no earlier queen is on a diagonal (|row difference| = |column difference|).
-   - If safe: place the queen and solve the next column.
-     If that succeeds → done. Otherwise remove the queen and try the next row.
-3. If no row works → return failure to the previous column (backtrack).
-4. When all N columns have a queen → solution.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "Encoding the board as a permutation guarantees one queen per row and column, so only diagonals must be checked. Testing each queen as it is placed prunes far more than generating full boards and testing them — 77 times fewer inferences for N = 10."
+| Palabra / símbolo | Qué es (en simple) | English |
+|---|---|---|
+| Fila, columna | posición de la reina en el tablero | row, column |
+| Diagonal | dos reinas están en diagonal si la diferencia de filas es igual a la diferencia de columnas | diagonal |
+| \|a − b\| | valor absoluto: la diferencia sin signo (\|2 − 5\| = 3) | absolute value |
+| Permutación | una lista con cada número una sola vez, p. ej. (2, 4, 1, 3): la reina de la columna 1 va en la fila 2, etc. | permutation |
+| Backtracking | deshacer la última reina y probar otra posición | backtracking |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Place queens column by column, starting with the first column.
+   - *ES:* Empieza por la primera columna.
+2. In the current column, try each row. A row is safe if no earlier queen is in the same row and none is on a diagonal (|row difference| = |column difference|).
+   - *ES:* Prueba cada fila. Es segura si ninguna reina anterior está en esa fila ni en diagonal.
+3. If the row is safe → place the queen and go to the next column. If that later fails → remove the queen and try the next row.
+   - *ES:* Si es segura, pon la reina y sigue con la siguiente columna. Si más adelante no hay salida, quítala y prueba la fila siguiente.
+4. If no row works → go back to the previous column (backtrack).
+   - *ES:* Si ninguna fila sirve, regresa a la columna anterior y mueve esa reina.
+5. When all N columns have a queen → that is a solution.
+   - *ES:* Cuando todas las columnas tienen reina, encontraste una solución.
+
+**Ejemplo con números:** N = 4. Si empiezo con la reina de la columna 1 en la fila 1, después de probar todo no hay salida y regreso hasta la columna 1. Con la reina de la columna 1 en la fila 2 sale la solución **(2, 4, 1, 3)**. Comprobación de una pareja: columnas 1 y 3 → filas 2 y 1 → diferencia de filas 1, diferencia de columnas 2 → no están en diagonal ✓.
+
+**Say it in the exam (EN):** "N-queens places N queens on an N×N board so that none attack each other. Representing the board as a permutation (one row number per column, all different) guarantees one queen per row and per column, so only the diagonals must be checked: two queens attack diagonally when |row difference| = |column difference|. Backtracking checks each queen as it is placed and undoes the last queen when no row is safe."
+
+**Dilo así (ES):** "N-reinas pone N reinas en un tablero N×N sin que se ataquen. Si el tablero es una permutación (un número de fila distinto por columna), ya hay una reina por fila y por columna, y solo hay que revisar diagonales: dos reinas chocan en diagonal si la diferencia de filas es igual a la de columnas. Backtracking revisa cada reina al colocarla y deshace la última cuando ninguna fila sirve."
 
 ## Errores comunes y tips de examen
 

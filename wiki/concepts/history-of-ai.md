@@ -3,11 +3,13 @@ title: History of AI
 type: concept
 tags: [foundations, history, timeline]
 sources: [slides-01-introduction-to-ai, slides-04-optimization, slides-xx-logic-programming-prolog, paper-holland-1992-genetic-algorithms, paper-kennedy-eberhart-1995-pso, paper-dorigo-1996-ant-system]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # History of AI (Historia de la IA — línea de tiempo)
 
 > **Summary (EN):** A single timeline that merges every date mentioned across the course sources, from mythical automata to LLM agents. Use it to place each algorithm in context and to answer "who proposed X and when?" exam questions.
+
+> **En palabras simples (ES):** Esta página es una línea de tiempo: quién inventó cada idea y en qué año. Para el examen, lo más preguntado es: prueba de Turing (Alan Turing, 1950), Dartmouth, donde nace el nombre "IA" (1956), perceptrón (Rosenblatt, 1958), Prolog (Colmerauer y Roussel, 1972), algoritmos genéticos (Holland, 1975), PSO (Kennedy y Eberhart, 1995) y colonia de hormigas (Dorigo y colegas, 1996).
 
 ## Línea de tiempo
 

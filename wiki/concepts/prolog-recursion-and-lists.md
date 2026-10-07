@@ -3,11 +3,13 @@ title: Recursion and Lists in Prolog
 type: concept
 tags: [prolog, recursion, lists, worked-example]
 sources: [slides-xx-logic-programming-prolog, code-prolog-examples]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Recursion and Lists in Prolog (Recursión y listas en Prolog)
 
 > **Summary (EN):** Prolog has no loops: repetition is recursion. A recursive predicate needs a base case (usually a fact) and a recursive clause that makes progress. The course examples — factorial, naive vs. accumulator Fibonacci, list membership/append/length, mutually recursive isEven/isOdd, the buggy isPerm, and a binary search tree — show the key ideas: is/2 must come after its inputs are bound, accumulators turn exponential or stack-heavy recursion into linear tail recursion, relations run "backwards", and data structures are just immutable terms.
+
+> **En palabras simples (ES):** Prolog no tiene bucles (for, while); repite cosas con **recursión**: una regla que se usa a sí misma con un problema más pequeño. Siempre necesitas dos partes: el **caso base** (el problema más pequeño, que se responde directo) y el **caso recursivo** (achica el problema y usa la respuesta del pedazo más pequeño). Las cuentas con `is` van **después** de tener los valores. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -91,18 +93,43 @@ Sin clases ni constructores: un árbol es el término `node(K, L, R)` y el patte
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** toda recursión en Prolog tiene un caso base (un hecho) y un caso recursivo que achica el problema; las cuentas con `is` van después de tener los valores.
+> **Idea (ES):** Prolog no tiene bucles (for, while); repite cosas con **recursión**: una regla que se usa a sí misma con un problema más pequeño. Siempre necesitas dos partes: el **caso base** (el problema más pequeño, que se responde directo) y el **caso recursivo** (achica el problema y usa la respuesta del pedazo más pequeño). Las cuentas con `is` van **después** de tener los valores.
 
-```text
-WRITE A RECURSIVE PREDICATE:
-1. Base case: the smallest input as a fact (factorial(0, 1). / len([], 0).).
-2. Recursive case: split the input (N-1, or [H|T]),
-   call the predicate on the smaller part,
-   then build the answer with 'is' (only after its inputs are bound).
-3. Optional: add an accumulator argument to make it tail-recursive (linear Fibonacci).
+**Antes de empezar: qué significa cada cosa**
+
+| Símbolo / palabra | Qué es (en simple) | English |
+|---|---|---|
+| Caso base | la versión más pequeña, con respuesta directa: `len([], 0).` ("la lista vacía mide 0") | base case |
+| Caso recursivo | la regla que se llama a sí misma con algo más pequeño | recursive case |
+| [H\|T] | una lista partida en su primer elemento H (cabeza) y el resto T (cola) | head and tail |
+| [] | la lista vacía | empty list |
+| `is` | calcula una operación: `N is N0 + 1` | arithmetic evaluation |
+| `_` | "cualquier cosa, no me importa" | anonymous variable |
+| Acumulador | un argumento extra que lleva el resultado parcial mientras avanzas | accumulator |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Base case: write the answer for the smallest input as a fact (len([], 0). or factorial(0, 1).).
+   - *ES:* Escribe la respuesta del caso más pequeño como un hecho.
+2. Recursive case: split the input into a smaller part (N − 1, or the tail T of [H|T]).
+   - *ES:* Achica el problema: quita un elemento o resta 1.
+3. Call the same predicate on the smaller part.
+   - *ES:* Pide la respuesta del problema más pequeño.
+4. Build the answer from it with `is`, only after the values are known.
+   - *ES:* Con esa respuesta calcula la tuya. El `is` va después de la llamada, porque antes los valores todavía no existen.
+5. Optional: add an accumulator to carry the partial result (makes it faster, e.g., linear Fibonacci).
+   - *ES:* Opcional: lleva el resultado parcial en un argumento extra para no repetir cálculos.
+
+**Ejemplo con números:** el largo de una lista:
+```prolog
+len([], 0).
+len([_|T], N) :- len(T, N0), N is N0 + 1.
 ```
+`?- len([a, b], N).` → necesita `len([b], N0)` → necesita `len([], N0')` = **0** (caso base) → entonces `len([b])` = 0 + 1 = **1** → entonces `len([a, b])` = 1 + 1 = **2**.
 
-**Say it in the exam (EN):** "Prolog has no loops; it uses recursion with a base fact and a recursive rule. Lists are [Head|Tail]. Accumulators avoid exponential recomputation, as in fib/2 versus the naive fibo/2."
+**Say it in the exam (EN):** "Prolog has no loops, so repetition is recursion: a base case written as a fact and a recursive rule that works on a smaller input. Lists are split into [Head|Tail]. Arithmetic with 'is' must come after its inputs are known. An accumulator carries the partial result and avoids repeating work, which turns the exponential naive Fibonacci into a linear one."
+
+**Dilo así (ES):** "Prolog no tiene bucles; repite con recursión: un caso base escrito como hecho y una regla recursiva que trabaja con algo más pequeño. Las listas se separan en [Cabeza|Cola]. El 'is' debe ir después de tener los valores. Un acumulador lleva el resultado parcial y evita repetir trabajo, por ejemplo en Fibonacci."
 
 ## Errores comunes y tips de examen
 

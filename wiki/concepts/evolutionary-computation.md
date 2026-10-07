@@ -3,11 +3,13 @@ title: Evolutionary Computation
 type: concept
 tags: [optimization, evolutionary-computation, bio-inspired]
 sources: [slides-04-optimization, paper-holland-1992-genetic-algorithms, book-eiben-smith-evolutionary-computing]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Evolutionary Computation (Computación evolutiva)
 
 > **Summary (EN):** Evolutionary computation applies the mechanisms of biological evolution — variation, selection and heredity — to optimization. It has several historical dialects: evolutionary programming (Lawrence Fogel, 1960s, evolving finite-state machines), evolution strategies (Rechenberg and Schwefel, 1970s, real-valued parameter optimization) and genetic algorithms (John Holland, 1975, bit strings with crossover). All share the same loop: initialize a population, evaluate fitness, select parents, recombine and mutate, select survivors, repeat.
+
+> **En palabras simples (ES):** Imita la evolución de las especies. Tienes una **población** de soluciones. Las mejores tienen más probabilidad de "tener hijos"; los hijos mezclan partes de sus padres y a veces tienen un cambio al azar. Generación tras generación, la población mejora. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -85,21 +87,40 @@ flowchart LR
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** una población de soluciones que, generación tras generación, se reproduce (con cambios) y donde los mejores sobreviven.
+> **Idea (ES):** Imita la evolución de las especies. Tienes una **población** de soluciones. Las mejores tienen más probabilidad de "tener hijos"; los hijos mezclan partes de sus padres y a veces tienen un cambio al azar. Generación tras generación, la población mejora.
 
-```text
-GENERIC EVOLUTIONARY ALGORITHM:
-1. Create a random population and evaluate everyone's fitness.
-2. Repeat until a good-enough solution or the budget runs out:
-   a. SELECT parents (better fitness → more chances).
-   b. RECOMBINE pairs of parents to make children.
-   c. MUTATE the children slightly.
-   d. EVALUATE the children.
-   e. SELECT who survives into the next generation.
-3. Return the best individual found.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "All evolutionary algorithms share this loop; they differ in representation — bit strings in GAs, real vectors in evolution strategies, finite-state machines in evolutionary programming, trees in genetic programming. Variation creates diversity; selection raises quality."
+| Palabra | Qué es (en simple) | English |
+|---|---|---|
+| Individuo | una solución candidata | individual |
+| Población | el grupo de soluciones en una generación | population |
+| Aptitud (fitness) | la nota de cada solución: qué tan buena es | fitness |
+| Generación | una vuelta completa del ciclo | generation |
+| Selección | elegir quién se reproduce o sobrevive (los mejores tienen ventaja) | selection |
+| Recombinación (cruce) | mezclar dos padres para formar hijos | recombination / crossover |
+| Mutación | un cambio pequeño al azar en un hijo | mutation |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Create a random population and compute everyone's fitness.
+   - *ES:* Crea soluciones al azar y ponle nota a cada una.
+2. SELECT parents: better fitness → more chances.
+   - *ES:* Elige padres, dando más oportunidad a los de mejor nota.
+3. RECOMBINE pairs of parents to make children.
+   - *ES:* Mezcla cada pareja de padres para crear hijos.
+4. MUTATE the children a little.
+   - *ES:* Cambia un poquito a los hijos al azar (para probar cosas nuevas).
+5. EVALUATE the children, and SELECT who survives into the next generation.
+   - *ES:* Ponle nota a los hijos y decide quién pasa a la siguiente generación.
+6. Repeat steps 2–5 until the solution is good enough or the time runs out; return the best individual.
+   - *ES:* Repite muchas generaciones y devuelve la mejor solución encontrada.
+
+**Ejemplo con números:** buscar el mínimo de f(x, y) = (x + 2)² + (y − 2)² + 10. Cada individuo es un punto (x, y); su nota es f (más baja = mejor). Si (−1, 3) tiene f = 12 y (5, 5) tiene f = 68, el primero tendrá más hijos. Con las generaciones, la población se junta cerca de (−2, 2), donde f = 10.
+
+**Say it in the exam (EN):** "Evolutionary algorithms keep a population of candidate solutions. Each generation they select parents by fitness, recombine and mutate them to create children, and select survivors. Variation (recombination and mutation) creates diversity; selection pushes quality up. The main families differ in representation: bit strings in genetic algorithms, real vectors in evolution strategies, finite-state machines in evolutionary programming, and trees in genetic programming."
+
+**Dilo así (ES):** "Los algoritmos evolutivos mantienen una población de soluciones. En cada generación eligen padres según su aptitud, los cruzan y mutan para crear hijos, y eligen quién sobrevive. La variación (cruce y mutación) crea diversidad y la selección sube la calidad. Las familias se diferencian por cómo representan las soluciones: bits en GA, vectores reales en estrategias evolutivas, máquinas de estados en programación evolutiva y árboles en programación genética."
 
 ## Errores comunes y tips de examen
 

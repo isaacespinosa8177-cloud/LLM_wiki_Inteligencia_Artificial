@@ -3,11 +3,13 @@ title: Genetic Algorithms
 type: concept
 tags: [optimization, evolutionary-computation, genetic-algorithms]
 sources: [slides-04-optimization, paper-holland-1992-genetic-algorithms, book-eiben-smith-evolutionary-computing]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Genetic Algorithms (Algoritmos genéticos, GA)
 
 > **Summary (EN):** A genetic algorithm evolves a population of chromosomes (classically bit strings) using selection by fitness, crossover between parents (single-, two- or k-point) and bit-flip mutation with a small probability. Holland's explanation of why it works is implicit parallelism: every string samples many schemata (regions like 1**0*) at once, and short, compact building blocks with above-average fitness survive crossover and multiply. In the course assignment, a 16-bit GA minimizes (x+2)² + (y−2)² + 10 and reaches the optimum (−2, 2).
+
+> **En palabras simples (ES):** Un algoritmo genético guarda cada solución como una **cadena de bits (unos y ceros)**, como si fuera su ADN. Las cadenas con mejor nota tienen más hijos. Un hijo se forma cortando a los dos padres en un mismo punto y pegando el principio de uno con el final del otro (cruce). Después, cada bit del hijo tiene una probabilidad pequeña de cambiar (mutación). Esto se repite muchas generaciones. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -167,22 +169,43 @@ flowchart LR
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** los cromosomas buenos tienen más hijos; los hijos mezclan pedazos de sus padres (cruce) y a veces cambian un bit (mutación).
+> **Idea (ES):** Un algoritmo genético guarda cada solución como una **cadena de bits (unos y ceros)**, como si fuera su ADN. Las cadenas con mejor nota tienen más hijos. Un hijo se forma cortando a los dos padres en un mismo punto y pegando el principio de uno con el final del otro (cruce). Después, cada bit del hijo tiene una probabilidad pequeña de cambiar (mutación). Esto se repite muchas generaciones.
 
-```text
-GENETIC ALGORITHM:
-1. Create N random bit strings (chromosomes); decode each and compute its fitness.
-2. Repeat for G generations:
-   a. Selection: pick parents with probability proportional to fitness
-      (roulette) or by tournaments; optionally copy the best ones unchanged (elitism).
-   b. Crossover: for each pair, pick a random cut point and swap the tails
-      → two children.
-   c. Mutation: flip each bit of each child with a small probability p_m.
-   d. The children form the new population.
-3. Return the best chromosome found.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "A GA applies selection, crossover and mutation to a population of encoded solutions. Crossover is the main operator because it combines good building blocks (schemata) from different parents; mutation keeps diversity. Holland explains its power with implicit parallelism: each string samples many schemata at once."
+| Símbolo / palabra | Qué es (en simple) | English |
+|---|---|---|
+| Cromosoma | la cadena de bits que representa una solución, p. ej. 16 bits | chromosome |
+| Decodificar | convertir los bits en números (x, y) para poder calcular la nota | decode |
+| Aptitud (fitness) | la nota de la solución; aquí f(x, y), y más baja es mejor porque minimizamos | fitness |
+| N | cuántos cromosomas hay en la población | population size |
+| G | cuántas generaciones se repite el ciclo | number of generations |
+| Elitismo | copiar los mejores sin cambios a la siguiente generación, para no perderlos | elitism |
+| Punto de corte | dónde se cortan los padres para cruzarlos | crossover point |
+| p_m | probabilidad de que **cada bit** cambie (0 ↔ 1) | mutation rate |
+| Esquema | un patrón de bits como 1\*\*0 (\* = cualquier valor): un "bloque" bueno que se hereda | schema |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Create N random bit strings (chromosomes); decode each one and compute its fitness.
+   - *ES:* Crea N cadenas de bits al azar. Convierte cada una en números (x, y) y calcula su nota.
+2. Selection: pick parents, giving better chromosomes more chances (roulette wheel or tournaments). Optionally copy the best ones unchanged to the next generation (elitism).
+   - *ES:* Elige a los padres; los de mejor nota tienen más probabilidad. Puedes guardar a los mejores tal cual para no perderlos.
+3. Crossover: for each pair of parents, pick a random cut point and swap the ends → two children.
+   - *ES:* Corta a los dos padres en el mismo lugar al azar e intercambia los finales: salen dos hijos que mezclan partes buenas de ambos.
+4. Mutation: flip each bit of each child with a small probability p_m.
+   - *ES:* Cada bit de cada hijo tiene una probabilidad pequeña de cambiar de 0 a 1 o de 1 a 0. Así aparece algo nuevo (variedad).
+5. The children form the new population. Repeat steps 2–5 for G generations and return the best chromosome found.
+   - *ES:* Los hijos son la nueva generación. Repite y al final devuelve la mejor cadena encontrada.
+
+**Ejemplo con números:**
+- **Decodificar (16 bits, 8 para x y 8 para y; en cada grupo el primer bit es el signo, 1 = negativo, y los otros 7 bits son el valor):** `1000001000000010` → x: `1` (negativo) `0000010` (= 2) → **x = −2**; y: `0` (positivo) `0000010` (= 2) → **y = 2**. f = (−2 + 2)² + (2 − 2)² + 10 = **10**: es el mínimo.
+- **Cruce en el punto 3:** padre 1 = `110|10110`, padre 2 = `001|11001` → hijo 1 = `110` + `11001` = **`11011001`**, hijo 2 = `001` + `10110` = **`00110110`**.
+- **Mutación:** con 16 bits y p_m = 1/16, en promedio cambia 1 bit por hijo.
+
+**Say it in the exam (EN):** "A genetic algorithm evolves a population of bit strings. Each generation it selects parents by fitness, combines them with crossover (cut both parents at a random point and swap the ends) and applies bit-flip mutation with a small probability. Elitism keeps the best solutions. Crossover combines good building blocks (schemata) from different parents, and mutation keeps diversity. Holland explained this with implicit parallelism: each string tests many schemata at once."
+
+**Dilo así (ES):** "Un algoritmo genético hace evolucionar una población de cadenas de bits. En cada generación elige padres según su aptitud, los cruza (corta en un punto al azar e intercambia los finales) y muta bits con una probabilidad pequeña. El elitismo guarda a los mejores. El cruce junta bloques buenos de distintos padres y la mutación mantiene la variedad. Holland lo explicó con el paralelismo implícito: cada cadena prueba muchos esquemas a la vez."
 
 ## Errores comunes y tips de examen
 

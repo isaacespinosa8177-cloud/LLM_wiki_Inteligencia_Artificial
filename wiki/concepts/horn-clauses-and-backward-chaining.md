@@ -3,11 +3,13 @@ title: Horn Clauses and Backward Chaining
 type: concept
 tags: [logic, inference, prolog]
 sources: [slides-xx-logic-programming-prolog, book-russell-norvig-aima, book-luger-ai]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Horn Clauses and Backward Chaining (Cláusulas de Horn y encadenamiento hacia atrás)
 
 > **Summary (EN):** A Horn clause has at most one positive literal. Definite clauses (exactly one) read as rules A ∧ B ⇒ C; facts are definite clauses with an empty body; goal clauses (no positive literal) are queries. This restriction makes knowledge bases read as implications and allows inference by chaining — forward from facts or backward from the query — with propositional entailment linear in the size of the KB. Prolog is backward chaining over first-order definite clauses, depth first and left to right.
+
+> **En palabras simples (ES):** Una cláusula de Horn es una regla simple del tipo "si pasa esto **y** esto, entonces aquello", o un hecho ("Héctor es padre de Ana"). Para **probar** algo, se trabaja hacia atrás: busca una regla que lo concluya y luego prueba cada una de sus condiciones, hasta llegar a hechos conocidos. Así razona Prolog. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
@@ -68,18 +70,42 @@ flowchart TD
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** para probar algo, busca una regla que lo concluya y prueba sus condiciones, una por una, hasta llegar a hechos.
+> **Idea (ES):** Una cláusula de Horn es una regla simple del tipo "si pasa esto **y** esto, entonces aquello", o un hecho ("Héctor es padre de Ana"). Para **probar** algo, se trabaja hacia atrás: busca una regla que lo concluya y luego prueba cada una de sus condiciones, hasta llegar a hechos conocidos. Así razona Prolog.
 
-```text
-BACKWARD CHAINING (prove goal G):
-1. If G is a known fact → success.
-2. Find a rule whose head matches G (unify, getting a substitution θ).
-3. Prove each condition in the rule's body, left to right, applying θ.
-4. If a condition fails → try the next matching rule.
+**Antes de empezar: qué significa cada cosa**
+
+| Palabra | Qué es (en simple) | English |
+|---|---|---|
+| Hecho | algo que se sabe que es verdad: `parent(hector, ana).` | fact |
+| Regla | "cabeza es verdad si el cuerpo es verdad": `c :- a, b.` = "c si a y b" | rule (definite clause) |
+| Cabeza / cuerpo | la conclusión (izquierda de `:-`) / las condiciones (derecha) | head / body |
+| Meta | lo que queremos probar (la pregunta) | goal / query |
+| Cláusula de Horn | cláusula con **como mucho un** literal positivo (un hecho, una regla o una pregunta) | Horn clause |
+| Unificar | encontrar valores para las variables que hagan iguales dos expresiones | unify |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. If the goal G is a known fact → success.
+   - *ES:* Si lo que quiero probar ya es un hecho, listo.
+2. Otherwise, find a rule whose head matches G (unify them).
+   - *ES:* Si no, busca una regla cuya conclusión encaje con lo que quiero probar.
+3. Prove each condition of the rule's body, left to right, using the values found.
+   - *ES:* Prueba cada condición de esa regla, de izquierda a derecha, con los valores que ya encontraste.
+4. If a condition fails → try the next rule that matches G.
+   - *ES:* Si una condición no se puede probar, prueba con otra regla.
 5. If no rule works → G fails.
-```
+   - *ES:* Si ninguna regla sirve, no se puede probar.
 
-**Say it in the exam (EN):** "A Horn clause has at most one positive literal, so knowledge reads as rules (A ∧ B ⇒ C), facts and goals. Inference is by chaining: forward from facts, or backward from the query, which is what Prolog does — depth-first, left to right."
+**Ejemplo con números:** hechos `parent(hector, ana).` y `parent(ana, sofia).` Regla: `grandparent(X, Z) :- parent(X, Y), parent(Y, Z).` ("X es abuelo de Z si X es padre de Y y Y es padre de Z").
+Pregunta: ¿`grandparent(hector, sofia)`?
+1. Encaja con la regla: X = hector, Z = sofia.
+2. Primera condición: `parent(hector, Y)` → el hecho da Y = ana ✓.
+3. Segunda condición: `parent(ana, sofia)` → es un hecho ✓.
+4. Respuesta: **sí**.
+
+**Say it in the exam (EN):** "A Horn clause has at most one positive literal, so knowledge is written as rules (A ∧ B ⇒ C), facts and goals. With Horn clauses, inference is done by chaining: forward chaining starts from the facts and derives new ones; backward chaining starts from the goal and looks for rules that prove it. Prolog uses backward chaining, depth-first and left to right."
+
+**Dilo así (ES):** "Una cláusula de Horn tiene como mucho un literal positivo, así que el conocimiento se escribe como reglas, hechos y preguntas. Se razona encadenando: hacia adelante, desde los hechos; o hacia atrás, desde la pregunta buscando reglas que la prueben. Prolog encadena hacia atrás, en profundidad y de izquierda a derecha."
 
 ## Errores comunes y tips de examen
 
