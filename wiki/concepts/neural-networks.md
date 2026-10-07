@@ -7,35 +7,54 @@ updated: 2026-10-07
 ---
 # Neural Networks (Redes neuronales: perceptrón, backprop, SVM, deep learning)
 
-> **Summary (EN):** The connectionist thread of AI as presented in the intro lecture: Rosenblatt's perceptron (1958) stores knowledge in synaptic weights learned from experience; backpropagation computes the gradient of the loss with respect to every weight, enabling multi-layer networks that solve XOR; SVMs (Vapnik, 1995) maximize the margin between classes; deep learning (Bengio, Hinton, LeCun) scales networks in depth. PSO was also shown to train network weights.
+> **Summary (EN):** The "learning from data" side of AI as shown in the intro lecture. Rosenblatt's perceptron (1958) is an artificial neuron that stores what it learns in its weights. Backpropagation computes how much each weight of a multilayer network contributed to the error, so gradient descent can fix it; this lets networks learn XOR. SVMs (Vapnik, 1995) separate two classes leaving the widest possible gap. Deep learning (Bengio, Hinton, LeCun) uses networks with many layers. PSO can also train network weights.
 
 > **En palabras simples (ES):** Un perceptrón es una "balanza" que suma las entradas, cada una multiplicada por su importancia (peso). Si la suma pasa de cero, dice "sí" (1); si no, dice "no" (0). Cuando se equivoca, ajusta un poco las importancias para no repetir el error. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Perceptron | Perceptrón | Neurona artificial: suma ponderada + función umbral. |
-| Synaptic weights | Pesos sinápticos | Parámetros donde se guarda el conocimiento aprendido. |
-| Backpropagation | Retropropagación | Regla de la cadena para obtener ∂Loss/∂w en cada capa. |
-| Loss function | Función de pérdida | Mide el error de la red; se minimiza. |
-| XOR problem | Problema XOR | No es linealmente separable: un perceptrón solo no lo resuelve. |
-| Margin | Margen | Distancia entre la frontera de decisión y los puntos más cercanos (SVM). |
-| Deep learning | Aprendizaje profundo | Redes con muchas capas. |
+| Perceptron | Perceptrón | Una neurona artificial: multiplica cada entrada por un peso, suma, y responde 1 o 0. |
+| Weights | Pesos (sinápticos) | Números que dicen cuánto importa cada entrada; ahí se guarda lo aprendido. |
+| Bias | Sesgo | Un número extra que facilita o dificulta que la neurona diga "sí". |
+| Loss function | Función de pérdida | Mide qué tan equivocada está la red; se quiere hacer pequeña. |
+| Backpropagation | Retropropagación | Método para calcular cuánta "culpa" tiene cada peso en el error. |
+| Linearly separable | Linealmente separable | Datos que se pueden separar con una línea recta. |
+| XOR problem | Problema XOR | Un caso que **no** se separa con una línea recta: un perceptrón solo no lo aprende. |
+| Margin | Margen | El espacio libre entre la línea que separa y los puntos más cercanos (SVM). |
+| Deep learning | Aprendizaje profundo | Redes con muchas capas de neuronas. |
 
 ## Explicación
 
-**Perceptrón (1958).** Inspirado en neuronas biológicas. Una red neuronal es "un procesador paralelo distribuido formado por unidades simples que pueden almacenar conocimiento basado en experiencia" (slides 01, s8). El conocimiento se adquiere del entorno con un proceso de aprendizaje y se guarda en los **pesos**.
+### 1. El perceptrón (1958): una neurona artificial
 
-Complemento (conocimiento general): salida `y = step(w·x + b)`; regla de aprendizaje `w ← w + η (t − y) x`. Solo separa clases **linealmente separables**.
+Está inspirado en las neuronas del cerebro. La clase la define como "un procesador paralelo distribuido formado por unidades simples que pueden almacenar conocimiento basado en experiencia" (slides 01, s8). En simple: muchas unidades pequeñas que aprenden de ejemplos y guardan lo aprendido en sus **pesos**.
 
-**Backpropagation.** Calcula el gradiente de la pérdida respecto a los pesos de cada neurona. Permite entrenar capas en serie con no linealidades, y así resolver XOR. Es [gradient descent](gradient-descent.md) aplicado a una red: `w ← w − η ∂L/∂w`.
+**Cómo decide** (complemento: conocimiento general):
 
-**SVM (1995).** Clasificador lineal parecido al perceptrón, pero elige la frontera que **maximiza el margen** entre las dos clases (la fórmula está en imagen en la slide; en forma estándar: minimizar ½‖w‖² sujeto a yᵢ(w·xᵢ + b) ≥ 1).
+1. Multiplica cada entrada por su peso y suma todo, más el sesgo: `w·x + b`.
+2. Si el resultado es mayor que 0 → responde **1**; si no → responde **0**.
 
-**Deep learning.** Las herramientas existían desde los 60; el término aparece en 1986; Bengio, Hinton y LeCun mostraron cómo entrenar redes profundas con backprop modificado.
+**Cómo aprende:** si se equivoca, corrige los pesos con `w ← w + η (t − y) x`, es decir: peso nuevo = peso viejo + (tamaño del paso) × (error) × (entrada). Si acierta, el error es 0 y no cambia nada.
 
-**Conexión con optimización.** Kennedy y Eberhart entrenaron con [PSO](particle-swarm-optimization.md) una red 2-3-1 para XOR (13 pesos) en ~31 iteraciones, y redes para Iris con resultados similares a backprop: los pesos de una red son solo un punto en un espacio continuo que cualquier optimizador puede buscar.
+**Su límite:** solo puede separar datos con **una línea recta**. Por eso no aprende **XOR**: en XOR, los puntos (0,0) y (1,1) dan 0, y los puntos (0,1) y (1,0) dan 1; ninguna línea recta separa unos de otros.
+
+### 2. Backpropagation: entrenar redes de varias capas
+
+Si pones neuronas en **varias capas**, la red sí puede aprender XOR. El problema es saber cómo corregir los pesos de las capas de en medio. **Backpropagation** calcula, yendo de la salida hacia atrás, **cuánto contribuyó cada peso al error** (eso es el gradiente, ∂L/∂w). Después, el [descenso de gradiente](gradient-descent.md) corrige cada peso un poquito: `w ← w − η ∂L/∂w`.
+
+### 3. SVM (1995): la línea con más espacio
+
+Una SVM también separa dos grupos con una línea (o un plano), como el perceptrón. Pero de todas las líneas posibles elige la que **deja el mayor espacio libre (margen)** entre los dos grupos, como trazar una carretera lo más ancha posible entre dos pueblos. La fórmula está como imagen en la slide; en su forma estándar es: minimizar ½‖w‖² cumpliendo yᵢ(w·xᵢ + b) ≥ 1 (complemento: conocimiento general).
+
+### 4. Deep learning
+
+Las ideas existían desde los años 60. El término "deep learning" aparece en 1986. Bengio, Hinton y LeCun mostraron cómo entrenar redes con **muchas capas** usando versiones mejoradas de backpropagation.
+
+### 5. Conexión con la unidad de optimización
+
+Los pesos de una red son simplemente **una lista de números**, así que cualquier optimizador puede buscarlos. Kennedy y Eberhart entrenaron con [PSO](particle-swarm-optimization.md) una red pequeña (2 entradas, 3 neuronas ocultas, 1 salida: 13 pesos) para resolver XOR en unas 31 iteraciones, y redes para el conjunto de flores Iris con resultados parecidos a backpropagation.
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
@@ -91,8 +110,8 @@ Probamos otra vez: 1·1 + 1·1 + 1 = 3 > 0 → y = 1. ¡Ahora acierta!
 
 ## Errores comunes y tips de examen
 
-- Un perceptrón **simple no puede** aprender XOR; hace falta al menos una capa oculta + backprop.
-- Backprop **no es** un algoritmo de aprendizaje completo por sí solo: calcula gradientes; el que actualiza es el descenso de gradiente.
+- Un perceptrón **solo** no puede aprender XOR; hace falta al menos una capa oculta y backpropagation.
+- Backpropagation **no** actualiza los pesos por sí solo: solo **calcula** los gradientes. Quien actualiza es el descenso de gradiente.
 
 ## Relacionado
 
