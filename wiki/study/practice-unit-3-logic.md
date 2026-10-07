@@ -3,7 +3,7 @@ title: Practice problems — Unit 3 (Logic and Prolog)
 type: study
 tags: [study, practice, logic, prolog]
 sources: [slides-xx-logic-programming-prolog, code-prolog-examples, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Practice problems — Unit 3: Logic and Prolog (Problemas de práctica — Unidad 3)
 
@@ -12,6 +12,8 @@ updated: 2026-10-01
 ## Problem 1 — CNF
 
 Convert to CNF: (a) A ⇔ B, (b) (A ⇒ B) ⇒ C, (c) ¬(A ∧ (B ∨ C)).
+
+> *En español:* Pasa a CNF: (a) A ⇔ B, (b) (A ⇒ B) ⇒ C, (c) ¬(A ∧ (B ∨ C)).
 
 <details><summary>Solución</summary>
 
@@ -24,6 +26,8 @@ Convert to CNF: (a) A ⇔ B, (b) (A ⇒ B) ⇒ C, (c) ¬(A ∧ (B ∨ C)).
 
 Classify each clause as definite clause (rule), fact, goal clause, or not Horn: (a) ¬A ∨ ¬B ∨ C, (b) A ∨ B, (c) ¬A ∨ ¬B, (d) C, (e) ¬A ∨ B ∨ C. Write the Horn ones in Prolog.
 
+> *En español:* Clasifica cada cláusula como regla (cláusula definida), hecho, pregunta (cláusula objetivo) o no-Horn: (a) ¬A ∨ ¬B ∨ C, (b) A ∨ B, (c) ¬A ∨ ¬B, (d) C, (e) ¬A ∨ B ∨ C. Escribe en Prolog las que sean de Horn.
+
 <details><summary>Solución</summary>
 
 (a) Cláusula definida: `c :- a, b.` (b) **No Horn** (2 positivos). (c) Cláusula objetivo: `?- a, b.` (d) Hecho: `c.` (e) **No Horn** (2 positivos: B y C).
@@ -32,6 +36,8 @@ Classify each clause as definite clause (rule), fact, goal clause, or not Horn: 
 ## Problem 3 — Unification
 
 Give the most general unifier or say "fail": (a) `p(X, f(Y)) = p(a, f(b))`, (b) `p(X, X) = p(a, b)`, (c) `f(X, g(X)) = f(Y, g(a))`, (d) `[H|T] = [a]`, (e) `[A, B] = [1, 2, 3]`, (f) `X = 2 + 3`.
+
+> *En español:* Da el unificador más general o di "falla": (a) `p(X, f(Y)) = p(a, f(b))`, (b) `p(X, X) = p(a, b)`, (c) `f(X, g(X)) = f(Y, g(a))`, (d) `[H|T] = [a]`, (e) `[A, B] = [1, 2, 3]`, (f) `X = 2 + 3`.
 
 <details><summary>Solución</summary>
 
@@ -42,6 +48,8 @@ Give the most general unifier or say "fail": (a) `p(X, f(Y)) = p(a, f(b))`, (b) 
 
 Using the lecture's `family.pl` (hector → ana, luis; ana → sofia; luis → diego), what do these return? (a) `?- parent(hector, X).` (all answers) (b) `?- findall(Z, grandparent(hector, Z), L).` (c) `?- sibling(ana, X).` (d) `?- findall(D, ancestor(hector, D), L).` (e) `?- \+ parent(sofia, _).` (f) `?- \+ parent(X, ana).`
 
+> *En español:* Con el `family.pl` de clase (hector → ana, luis; ana → sofia; luis → diego), ¿qué responde cada consulta? (a) `?- parent(hector, X).` (todas las respuestas) (b) `?- findall(Z, grandparent(hector, Z), L).` (c) `?- sibling(ana, X).` (d) `?- findall(D, ancestor(hector, D), L).` (e) `?- \+ parent(sofia, _).` (f) `?- \+ parent(X, ana).`
+
 <details><summary>Solución</summary>
 
 (a) `X = ana ; X = luis.` (b) `L = [sofia, diego].` (c) `X = luis.` (d) `L = [ana, luis, sofia, diego]` (primero los hijos —primera cláusula—, luego los nietos). (e) `true` (no hay hijos registrados para sofia: mundo cerrado). (f) `false`: existe un X (hector) que es padre de ana; negar con variables sin ligar no pregunta "¿quién no es padre de ana?".
@@ -51,6 +59,8 @@ Using the lecture's `family.pl` (hector → ana, luis; ana → sofia; luis → d
 
 What does each query print/return? (a) `X = 2 + 3.` (b) `X is 2 + 3.` (c) `2 + 3 =:= 5.` (d) `2 + 3 = 5.` (e) `X is Y + 1.` (Y unbound)
 
+> *En español:* ¿Qué responde cada consulta? (a) `X = 2 + 3.` (b) `X is 2 + 3.` (c) `2 + 3 =:= 5.` (d) `2 + 3 = 5.` (e) `X is Y + 1.` (Y sin valor)
+
 <details><summary>Solución</summary>
 
 (a) `X = 2+3` (término). (b) `X = 5`. (c) `true` (compara valores). (d) `false` (estructuras distintas). (e) **Error**: *Arguments are not sufficiently instantiated* — `is` necesita la derecha ligada.
@@ -59,6 +69,8 @@ What does each query print/return? (a) `X = 2 + 3.` (b) `X is 2 + 3.` (c) `2 + 3
 ## Problem 6 — Write the rules
 
 Using `parent/2`, `male/1`, `female/1`, write: (a) `aunt(A, N)`, (b) `last(X, List)` (last element), (c) `sum_list(List, S)`.
+
+> *En español:* Usando `parent/2`, `male/1` y `female/1`, escribe: (a) `aunt(A, N)` (A es tía de N), (b) `last(X, List)` (último elemento de la lista), (c) `sum_list(List, S)` (suma de la lista).
 
 <details><summary>Solución</summary>
 
@@ -79,6 +91,8 @@ Errores típicos: olvidar `A \= P` (la madre sería "tía" de su hijo), poner `S
 
 Trace `?- factorial(2, X).` with `factorial(0, 1).` and `factorial(A, B) :- A > 0, C is A - 1, factorial(C, D), B is A * D.`
 
+> *En español:* Traza paso a paso `?- factorial(2, X).` con `factorial(0, 1).` y `factorial(A, B) :- A > 0, C is A - 1, factorial(C, D), B is A * D.`
+
 <details><summary>Solución</summary>
 
 ```text
@@ -97,6 +111,8 @@ Por eso SWI muestra `X = 2 ;` y luego `false.`
 
 `max(X, Y, X) :- X >= Y, !.` and `max(_, Y, Y).` What does `?- max(5, 3, 3).` return and why? Fix it.
 
+> *En español:* Con `max(X, Y, X) :- X >= Y, !.` y `max(_, Y, Y).`, ¿qué responde `?- max(5, 3, 3).` y por qué? Arréglalo.
+
 <details><summary>Solución</summary>
 
 Devuelve **true** (¡incorrecto!). La primera cláusula no unifica (la cabeza pide max(5,3,5)), así que el corte nunca se ejecuta y la segunda cláusula acepta Y = 3. Arreglos: `max(X, Y, M) :- X >= Y, !, M = X.` (unificar la salida **después** del corte) o sin corte: `max(X, Y, M) :- ( X >= Y -> M = X ; M = Y ).`
@@ -109,6 +125,8 @@ Why does this loop, and give two fixes?
 path(X, Z) :- path(X, Y), link(Y, Z).
 path(X, Z) :- link(X, Z).
 ```
+
+> *En español:* ¿Por qué este programa se queda en un bucle infinito? Da dos formas de arreglarlo.
 
 <details><summary>Solución</summary>
 

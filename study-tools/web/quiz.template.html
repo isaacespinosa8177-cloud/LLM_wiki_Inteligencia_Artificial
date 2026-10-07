@@ -65,6 +65,7 @@ select { font: inherit; font-size: 14px; padding: 6px 8px; border-radius: 8px; b
 .feedback.ok { border-color: var(--ok); background: var(--ok-soft); }
 .feedback.bad { border-color: var(--bad); background: var(--bad-soft); }
 .feedback strong { font-family: var(--font-display); }
+.es { font-style: italic; color: var(--muted); }
 .see { font-family: var(--font-mono); font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
 .btn { font: inherit; font-weight: 700; border: 0; border-radius: 8px; padding: 10px 18px; cursor: pointer; background: var(--accent); color: var(--surface); }
 .btn.ghost { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
@@ -83,7 +84,7 @@ kbd { font-family: var(--font-mono); font-size: 12px; border: 1px solid var(--li
   <header>
     <div class="eyebrow">Inteligencia Artificial · USFQ · test Thu Oct 8</div>
     <h1>IA Exam Drill</h1>
-    <p class="lede">Multiple-choice questions from your study wiki, in English like the exam. Pick the units, answer, and read the explanation after each question.</p>
+    <p class="lede">Multiple-choice questions from your study wiki, in English like the exam. Pick the units, answer, and read the explanation after each question (in English, with a simple Spanish version below).</p>
     <div class="controls" id="units" role="group" aria-label="Units"></div>
     <div class="row">
       <label class="hint" for="count">Questions per round
@@ -187,10 +188,11 @@ kbd { font-family: var(--font-mono); font-size: 12px; border: 1px solid var(--li
       else if (+b.dataset.oi === oi) b.classList.add("bad");
     });
     const fb = $("fb"); fb.className = "feedback " + (ok ? "ok" : "bad"); fb.hidden = false;
-    fb.innerHTML = `<strong></strong><span></span><span class="see"></span>`;
+    fb.innerHTML = `<strong></strong><span></span><span class="es"></span><span class="see"></span>`;
     fb.children[0].textContent = ok ? "Correct." : `Not quite. Answer: ${q.options[q.correct]}`;
     fb.children[1].textContent = q.explanation;
-    fb.children[2].textContent = q.see ? `Wiki → ${q.see}` : "";
+    fb.children[2].textContent = q.explanation_es ? `ES: ${q.explanation_es}` : "";
+    fb.children[3].textContent = q.see ? `Wiki → ${q.see}` : "";
     $("live").textContent = `${correct} correct`;
     $("next").hidden = false; $("next").textContent = idx + 1 < round.length ? "Next question" : "See results";
     $("next").focus({ preventScroll: true });
@@ -215,12 +217,13 @@ kbd { font-family: var(--font-mono); font-size: 12px; border: 1px solid var(--li
     const list = $("rlist"); list.innerHTML = "";
     wrongs.forEach(({ q, oi }) => {
       const a = document.createElement("article");
-      a.innerHTML = `<div class="qtag"></div><strong></strong><span></span><span></span><span class="see"></span>`;
+      a.innerHTML = `<div class="qtag"></div><strong></strong><span></span><span></span><span class="es"></span><span class="see"></span>`;
       a.children[0].textContent = UNIT_NAMES[q.unit];
       a.children[1].textContent = q.question;
       a.children[2].textContent = `You answered: ${q.options[oi]} · Correct: ${q.options[q.correct]}`;
       a.children[3].textContent = q.explanation;
-      a.children[4].textContent = q.see ? `Wiki → ${q.see}` : "";
+      a.children[4].textContent = q.explanation_es ? `ES: ${q.explanation_es}` : "";
+      a.children[5].textContent = q.see ? `Wiki → ${q.see}` : "";
       list.appendChild(a);
     });
     $("redo").hidden = !wrongs.length;

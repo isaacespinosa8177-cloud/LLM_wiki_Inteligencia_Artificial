@@ -63,6 +63,12 @@ explanations.** Concretely, on every wiki page:
 Keep technical terms in English inside Spanish prose the first time, e.g.
 "la frontera (*frontier*)". Use plain, student-friendly Spanish.
 
+**Plain-language rule (requested by Isaac).** Write for someone seeing the topic for the first
+time: define a word or symbol before using it, prefer an everyday analogy and a small numeric
+example over abstract wording, and never drop a formula without saying what each letter means.
+Every concept page starts, right after the Summary (EN), with
+`> **En palabras simples (ES):**` — the whole idea in 2–4 simple Spanish sentences.
+
 ## 3. Page format
 
 Every page in `wiki/` (except `index.md` and `log.md`) starts with YAML frontmatter:
@@ -99,10 +105,18 @@ Spanish explanation, built up from intuition to formal definition.
 ```
 
 **Intuitive pseudocode (required on every algorithm/procedure page).** Isaac answers exams
-in **English** and wants to explain algorithms "the intuitive way", without real code. Use
-exactly the heading `## Pseudocódigo intuitivo (para explicar en el examen)` with: a
-`> **Idea (ES):**` one-liner in Spanish; a ```` ```text ```` block of numbered plain-English
-steps; and a `**Say it in the exam (EN):**` 2–4 sentence answer including key properties.
+in **English** but understands best in **Spanish**, and asked for explanations that assume
+no prior knowledge. Use exactly the heading `## Pseudocódigo intuitivo (para explicar en el examen)`
+and, in this order:
+1. `> **Idea (ES):**` — 1–3 plain Spanish sentences with an everyday analogy.
+2. `**Antes de empezar: qué significa cada cosa**` — a table `Símbolo | Qué es (en simple) | English`
+   defining **every** symbol, letter and term used below. No formula may use an undefined symbol.
+3. `**Pasos** — en inglés (…) y debajo en español (…):` — a numbered list; each step in English,
+   followed by a sub-bullet `- *ES:* …` saying the same in simple Spanish. When a step has a
+   formula, the Spanish line reads it in words ("peso nuevo = peso viejo + …").
+4. `**Ejemplo con números:**` — a small worked example from the course, step by step.
+5. `**Say it in the exam (EN):**` and `**Dilo así (ES):**` — the same 2–4 sentence answer in both languages.
+No relative links inside this section (it is copied into `wiki/study/`).
 `tools/build_study.py` compiles these into `wiki/study/intuitive-pseudocode.md`.
 
 **Source pages** (`wiki/sources/`) instead use: Summary (EN) · Ficha (metadata table:

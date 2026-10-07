@@ -31,7 +31,7 @@ Together they define the **state space** (a graph). Search keeps a **frontier** 
 > ES: el nodo ≠ el estado. Un nodo guarda estado + padre + acción + costo g.
 
 ---
-
+<!-- _class: small -->
 ## "The frontier order defines the algorithm"
 
 | Frontier ordered by… | Algorithm |
@@ -44,6 +44,8 @@ Together they define the **state space** (a graph). Search keeps a **frontier** 
 
 **A\* = UCS + greedy:** set h = 0 → UCS; ignore g → greedy.
 Goal test: BFS can test when **generating**; UCS and A\* must test when **expanding** (popping).
+
+> ES: todos los algoritmos sacan nodos de una lista de pendientes; solo cambia cuál sacan primero.
 
 ---
 
@@ -107,6 +109,8 @@ Greedy (by h only) goes Sibiu → Fagaras → Bucharest = **450** (not optimal).
 | Sudoku | naive backtracking | solved | 4 208 assignments |
 | Sudoku | MRV + forward checking | solved | **51** assignments |
 
+> ES: con una buena pista (heurística) se revisan muchísimos menos estados para llegar al mismo resultado.
+
 ---
 
 ## Local search & hill climbing
@@ -119,7 +123,7 @@ Greedy (by h only) goes Sibiu → Fagaras → Bucharest = **450** (not optimal).
 > ES: búsqueda local = solo importa el estado final, no el camino (N-reinas, optimización).
 
 ---
-
+<!-- _class: small -->
 ## Minimax
 
 - Two-player, zero-sum, deterministic, perfect information.
@@ -133,6 +137,8 @@ AIMA Fig. 6.2:   MAX
        MIN 3    MIN 2     MIN 2
       3 12 8   2  4  6   14 5 2      → root = 3 (move a1)
 ```
+
+> ES: el rival elige el mínimo de cada grupo (3, 2, 2) y yo el máximo de esos: 3.
 
 ---
 
@@ -164,6 +170,8 @@ Practice 7: N = 15; children A 7/10, B 3/4, C 0/1.
 
 Used in Go (b ≈ 361, no good evaluation function): AlphaGo / AlphaZero = MCTS + neural networks.
 
+> ES: UCB1 = % de victorias (explotar) + bono por haberlo probado poco (explorar).
+
 ---
 
 ## Expectiminimax (games of chance)
@@ -174,6 +182,8 @@ Used in Go (b ≈ 361, no good evaluation function): AlphaGo / AlphaZero = MCTS 
 
 Practice 8: a₁ → 0.5·2 + 0.5·4 = **3**; a₂ → 0.5·1 + 0.5·8 = **4.5** → choose **a₂**.
 Treating chance as MIN would wrongly choose a₁.
+
+> ES: en el nodo de azar se promedia con las probabilidades; no se elige ni el máximo ni el mínimo.
 
 ---
 
@@ -200,6 +210,8 @@ NT = {blue}, SA = {blue}, NSW = {red, blue}, V = {r, g, b}.
 - Forward checking does **not** notice NT and SA (neighbors) both only have blue; **AC-3 / MAC would** and would backtrack immediately.
 
 Arc consistency, X < Y with X, Y ∈ {1, 2, 3} → X = {1, 2}, Y = {2, 3}.
+
+> ES: forward checking solo tacha valores en los vecinos de la variable recién llenada; AC-3 sigue revisando todas las parejas.
 
 ---
 

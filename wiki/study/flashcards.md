@@ -3,7 +3,7 @@ title: Flashcards (Anki deck)
 type: study
 tags: [study, flashcards, anki, spaced-repetition]
 sources: [book-russell-norvig-aima, slides-02-problem-solving, slides-04-optimization, slides-xx-logic-programming-prolog]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Flashcards — Anki deck (Tarjetas de estudio)
 
@@ -18,7 +18,7 @@ updated: 2026-10-01
 | `glossary` | Término en inglés → término en español + explicación |
 | `unit1-agents` … `unit4-optimization` | Preguntas de examen y problemas de práctica de cada unidad |
 | `practice` | Problemas con solución completa |
-| `pseudocode` | "Write the intuitive pseudocode for X" → pasos en inglés + respuesta de examen |
+| `pseudocode` | "Write the steps of X" → pasos en inglés con su versión en español debajo + respuesta de examen |
 | `quiz` | Preguntas de opción múltiple del [quiz bank](quiz-bank.md) (las mismas del [Exam Drill](interactive-tools.md)) |
 
 ## Cómo importarlo

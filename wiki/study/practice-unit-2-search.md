@@ -3,7 +3,7 @@ title: Practice problems — Unit 2 (Search, games and CSP)
 type: study
 tags: [study, practice, search, games, csp]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Practice problems — Unit 2: Search, games and CSP (Problemas de práctica — Unidad 2)
 
@@ -30,6 +30,8 @@ Ties are broken alphabetically. Children are generated in alphabetical order.
 
 Give the order of **expanded** nodes and the returned path for (a) BFS (goal test when generating), (b) DFS (graph search, no repeated states on the path), (c) uniform-cost search.
 
+> *En español:* Da el orden en que se **expanden** (revisan) los nodos y el camino que devuelve: (a) BFS (revisando la meta al generar), (b) DFS (sin repetir estados del camino actual), (c) búsqueda de costo uniforme.
+
 <details><summary>Solución</summary>
 
 (a) **BFS:** expande S, A, B. Al expandir B genera G → devuelve **S → B → G** (costo 10, el de **menos pasos**, no el más barato).
@@ -43,6 +45,8 @@ Give the order of **expanded** nodes and the returned path for (a) BFS (goal tes
 
 (a) Run greedy best-first and A*. Give expanded nodes with their f values and the returned path. (b) Which one is optimal here and why?
 
+> *En español:* (a) Ejecuta greedy y A\*. Da los nodos expandidos con su valor f y el camino que devuelven. (b) ¿Cuál es óptimo aquí y por qué?
+
 <details><summary>Solución</summary>
 
 (a) **Greedy (f = h):** S(5) → B(3) → G(0). Devuelve **S → B → G, costo 10**.
@@ -54,6 +58,8 @@ Give the order of **expanded** nodes and the returned path for (a) BFS (goal tes
 ## Problem 3 — Heuristic properties
 
 (a) Is h admissible? Is it consistent? (Compute the true cost-to-go h\* of every node.) (b) Same questions for h' with h'(A) = 7 (others unchanged).
+
+> *En español:* (a) ¿La heurística h es admisible? ¿Es consistente? (Calcula el costo real h\* desde cada nodo hasta G.) (b) Las mismas preguntas para h' con h'(A) = 7 (lo demás igual).
 
 <details><summary>Solución</summary>
 
@@ -68,6 +74,8 @@ h\*: G = 0, C = 3, B = min(6, 1+3) = 4, A = min(2+4, 5+3) = 6, S = min(1+6, 4+4)
 
 Start (2,4,3 / 1,_,6 / 7,5,8), goal (1,2,3 / 4,5,6 / 7,8,_). Compute h₁ (misplaced tiles, blank not counted) and h₂ (Manhattan). The optimal solution has 6 moves; comment.
 
+> *En español:* Inicio (2,4,3 / 1,_,6 / 7,5,8), meta (1,2,3 / 4,5,6 / 7,8,_). Calcula h₁ (fichas mal colocadas, sin contar el hueco) y h₂ (Manhattan). La solución óptima tiene 6 movimientos; comenta.
+
 <details><summary>Solución</summary>
 
 Fichas fuera de lugar: 2, 4, 1, 5, 8 → **h₁ = 5**. Manhattan: 2 → 1, 4 → 1, 1 → 1, 5 → 1, 8 → 1, las demás 0 → **h₂ = 6**.
@@ -79,6 +87,8 @@ Ambas ≤ 6 (admisibles). h₂ es exacta en este estado y domina a h₁ → gree
 
 MAX root with three MIN children: B = [4, 8, 9], C = [3, 7, 1], D = [6, 2, 5]. (a) Minimax value and best move. (b) Which leaves are pruned by alpha–beta (left to right)?
 
+> *En español:* Raíz MAX con tres hijos MIN: B = [4, 8, 9], C = [3, 7, 1], D = [6, 2, 5]. (a) Valor minimax y mejor jugada. (b) ¿Qué hojas poda alfa–beta (revisando de izquierda a derecha)?
+
 <details><summary>Solución</summary>
 
 (a) B = 4, C = 1, D = 2 → raíz = **4**, jugada hacia **B**.
@@ -89,6 +99,8 @@ MAX root with three MIN children: B = [4, 8, 9], C = [3, 7, 1], D = [6, 2, 5]. (
 ## Problem 6 — Alpha–beta (3 ply)
 
 MAX root A with MIN children B and C. B has MAX children D = [3, 5] and E = [6, 9]; C has MAX children F = [1, 2] and G = [0, −1]. Trace alpha–beta.
+
+> *En español:* Raíz MAX A con hijos MIN B y C. B tiene hijos MAX D = [3, 5] y E = [6, 9]; C tiene hijos MAX F = [1, 2] y G = [0, −1]. Traza alfa–beta paso a paso.
 
 <details><summary>Solución</summary>
 
@@ -120,6 +132,8 @@ flowchart TD
 
 A node visited N = 15 times has children A = 7/10, B = 3/4, C = 0/1 (wins/visits). Which child does UCB1 select with (a) C = 1, (b) C = 0.3? (ln 15 ≈ 2.708)
 
+> *En español:* Un nodo visitado N = 15 veces tiene hijos A = 7/10, B = 3/4, C = 0/1 (victorias/visitas). ¿Qué hijo elige UCB1 con (a) C = 1, (b) C = 0.3? (ln 15 ≈ 2.708)
+
 <details><summary>Solución</summary>
 
 Explotación: A 0.700, B 0.750, C 0. Raíz de exploración √(ln N / n): A √0.271 = 0.520, B √0.677 = 0.823, C √2.708 = 1.646.
@@ -132,6 +146,8 @@ Explotación: A 0.700, B 0.750, C 0. Raíz de exploración √(ln N / n): A √0
 
 MAX chooses a₁ or a₂. Each leads to a chance node (0.5 / 0.5) whose outcomes are MIN nodes: a₁ → MIN[2, 4] and MIN[7, 4]; a₂ → MIN[10, 1] and MIN[8, 9]. (a) Expectiminimax decision? (b) What would plain minimax choose if chance were treated as an adversary (MIN)?
 
+> *En español:* MAX elige a₁ o a₂. Cada una lleva a una moneda (50 % / 50 %) y después juega MIN: a₁ → MIN[2, 4] y MIN[7, 4]; a₂ → MIN[10, 1] y MIN[8, 9]. (a) ¿Qué decide expectiminimax? (b) ¿Qué elegiría minimax si tratara la moneda como un rival (MIN)?
+
 <details><summary>Solución</summary>
 
 (a) a₁: 0.5·min(2,4) + 0.5·min(7,4) = 0.5·2 + 0.5·4 = **3**. a₂: 0.5·min(10,1) + 0.5·min(8,9) = 0.5·1 + 0.5·8 = **4.5** → elegir **a₂**.
@@ -143,6 +159,8 @@ MAX chooses a₁ or a₂. Each leads to a chance node (0.5 / 0.5) whose outcomes
 
 (a) Australia map with {red, green, blue}. Assign WA = red, then Q = green. Give the domains of NT, SA, NSW, V after forward checking. Which variable does MRV choose next? (b) X, Y ∈ {1, 2, 3} with X < Y. Make the arc set consistent.
 
+> *En español:* (a) Mapa de Australia con {rojo, verde, azul}. Asigna WA = rojo y luego Q = verde. Da los dominios de NT, SA, NSW y V después de forward checking. ¿Qué variable elige MRV después? (b) X, Y ∈ {1, 2, 3} con X < Y. Haz que el arco sea consistente (tacha los valores sin pareja).
+
 <details><summary>Solución</summary>
 
 (a) Tras WA = red: NT = {g, b}, SA = {g, b}. Tras Q = green: NT = **{blue}**, SA = **{blue}**, NSW = **{red, blue}**, V = {r, g, b}. MRV elige NT o SA (1 valor). Nota: forward checking **no** detecta que NT y SA (vecinos) quedaron ambos con solo blue; **MAC/AC-3** sí lo detectaría y retrocedería ya.
@@ -153,6 +171,8 @@ MAX chooses a₁ or a₂. Each leads to a chance node (0.5 / 0.5) whose outcomes
 ## Problem 10 — Complexity
 
 b = 10, solution depth d = 5. (a) Nodes generated by BFS and by IDS? (b) Why is IDS preferred when memory is limited? (c) With perfect move ordering, how much deeper can alpha–beta search than minimax in the same time?
+
+> *En español:* b = 10 hijos por nodo, la solución está a profundidad d = 5. (a) ¿Cuántos nodos genera BFS y cuántos IDS? (b) ¿Por qué se prefiere IDS cuando hay poca memoria? (c) Con el orden perfecto, ¿cuánto más profundo puede mirar alfa–beta que minimax en el mismo tiempo?
 
 <details><summary>Solución</summary>
 

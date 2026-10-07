@@ -3,94 +3,105 @@ title: EA Representation and Variation Operators
 type: concept
 tags: [optimization, evolutionary-computation, genetic-algorithms, mutation, crossover]
 sources: [book-eiben-smith-evolutionary-computing, slides-04-optimization, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # EA Representation and Variation Operators (Representación, mutación y recombinación)
 
-> **Summary (EN):** Choosing the genotype representation is the first and often hardest design step of an evolutionary algorithm, and the mutation and recombination operators must match it so that offspring stay valid. Eiben & Smith chapter 4 covers the standard families: binary (bit-flip mutation; one-point, n-point and uniform crossover, Gray code), integer (random resetting, creep), real-valued (uniform and Gaussian mutation, self-adaptive step sizes; discrete, arithmetic and blend recombination), permutation (swap, insert, scramble, inversion; PMX, edge, order and cycle crossover) and trees (genetic programming).
+> **Summary (EN):** The first and often hardest decision in an evolutionary algorithm is how to write a solution (its representation), and the mutation and crossover operators must match it so that children are always valid solutions. Eiben & Smith chapter 4 covers the standard cases: bits (bit-flip mutation; one-point, n-point and uniform crossover; Gray code), integers (random resetting, creep), real numbers (uniform and Gaussian mutation, self-adapting step sizes; discrete, arithmetic and blend crossover), permutations (swap, insert, scramble and inversion mutation; PMX, edge, order and cycle crossover) and trees (genetic programming).
+
+> **En palabras simples (ES):** La forma de guardar una solución (bits, números reales o un orden) decide **cómo** se puede mezclar y cambiar sin romperla. Regla de oro: el hijo siempre debe ser una solución válida. Por ejemplo, en una ruta de ciudades no se puede repetir una ciudad, así que no sirve el corte simple de los bits. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Genotype / phenotype | Genotipo / fenotipo | Codificación dentro del EA / solución real decodificada (10010 ↔ 18). |
-| Encoding / decoding | Codificación / decodificación | Fenotipo → genotipo / genotipo → fenotipo. |
-| Locus, gene / allele | Locus, gen / alelo | Posición / valor en esa posición. |
-| Mutation rate p_m | Tasa de mutación | Probabilidad de mutar cada gen (o cada cromosoma en permutaciones). |
-| Crossover rate p_c | Tasa de cruce | Probabilidad de recombinar (si no, se copian los padres). |
-| Arity | Aridad | Nº de padres: 1 = mutación, 2 = cruce, > 2 = multiparental. |
-| Positional / distributional bias | Sesgo posicional / distribucional | n-point tiende a mantener juntos genes cercanos / uniform tiende a heredar 50 % de cada padre. |
-| Gray code | Código Gray | Enteros consecutivos difieren en un solo bit. |
-| Step size σ / self-adaptation | Tamaño de paso / autoadaptación | Desviación de la mutación gaussiana; σ evoluciona dentro del cromosoma. |
-| Respect | Respeto | Propiedad de un cruce: lo que comparten ambos padres pasa al hijo. |
+| Genotype / phenotype | Genotipo / fenotipo | La solución en "código" dentro del algoritmo / lo que significa (`10010` ↔ 18). |
+| Encoding / decoding | Codificar / decodificar | Pasar de la solución al código / del código a la solución. |
+| Locus, gene / allele | Posición, gen / alelo | Un lugar de la cadena / el valor en ese lugar. |
+| Mutation rate p_m | Tasa de mutación | Probabilidad de cambiar cada gen (en permutaciones: cada cromosoma). |
+| Crossover rate p_c | Tasa de cruce | Probabilidad de cruzar a dos padres (si no, los hijos son copias). |
+| Arity | Aridad | Cuántos padres usa: 1 = mutación, 2 = cruce, más de 2 = multiparental. |
+| Gray code | Código Gray | Forma de escribir números en bits donde dos números seguidos difieren en un solo bit. |
+| Step size σ (sigma) | Tamaño de paso | Qué tan grandes son, en promedio, los cambios de la mutación gaussiana. |
+| Self-adaptation | Autoadaptación | El propio σ va dentro de la solución y también evoluciona. |
+| Permutation | Permutación | Un orden donde cada valor aparece una sola vez: [3 1 2]. |
+| Respect | Respeto | Propiedad de un cruce: lo que los dos padres tienen en común pasa al hijo. |
 
 ## Explicación
 
-**Regla de oro (Eiben & Smith §4.1):** los operadores deben **no salir del espacio de genotipos** (el hijo de dos permutaciones debe ser una permutación). La **selección** solo mira la aptitud y es independiente de la representación; los **operadores de variación** dependen totalmente de ella. Históricamente el cruce fue el operador principal en GA, la mutación el único en programación evolutiva, y en programación genética a veces solo se usa cruce.
+### La regla de oro (Eiben & Smith §4.1)
 
-### 1. Representación binaria (§4.2)
+Los operadores **nunca deben producir algo inválido**: el hijo de dos permutaciones debe ser una permutación. La **selección** solo mira la nota, así que funciona igual con cualquier representación; en cambio, la **mutación y el cruce dependen totalmente** de cómo se guarde la solución. Históricamente, el cruce fue el operador principal en los GA, la mutación el único en la programación evolutiva, y en la programación genética a veces solo se usa cruce.
 
-- **Mutación bit-flip:** cada bit cambia con probabilidad p_m; en promedio L·p_m bits por hijo. Se recomienda entre "un gen por generación" y "un gen por hijo".
-- **Problema de los bits:** cada bit tiene distinto peso; de 7 (0111) a 8 (1000) hacen falta 4 cambios, pero a 6 (0110) solo 1 → usar **código Gray**. Usar bits para codificar números suele ser un error: mejor representación entera o real.
+### 1. Bits (§4.2)
+
+- **Mutación por cambio de bit:** cada bit cambia con probabilidad p_m; en promedio cambian L·p_m bits por hijo (L = largo de la cadena). Se recomienda entre "un bit por generación" y "un bit por hijo".
+- **El problema de los bits:** no todos los bits pesan igual. Para pasar de 7 (`0111`) a 8 (`1000`) hay que cambiar 4 bits, pero para pasar de 7 a 6 (`0110`) solo 1. Con **código Gray**, dos números seguidos siempre difieren en un bit. En general, usar bits para guardar números suele ser mala idea: es mejor usar directamente enteros o reales.
 - **Cruce:**
 
-| Operador | Cómo funciona | Sesgo |
+| Operador | Cómo funciona | Efecto |
 |---|---|---|
-| One-point | Punto r ∈ [1, L−1]; se intercambian las colas | Posicional fuerte (no junta genes de extremos opuestos) |
-| n-point | n puntos; se alternan segmentos | Posicional |
-| Uniform | Cada gen se hereda del padre 1 si U[0,1] < p (p = 0.5), si no del padre 2; el segundo hijo es el inverso | Sin sesgo posicional; sesgo distribucional (≈50 % de cada padre) |
+| Un punto (*one-point*) | Elige un punto r entre 1 y L−1 e intercambia los finales | Tiende a mantener juntos los genes cercanos; nunca junta los dos extremos |
+| n puntos | Elige n puntos y alterna pedazos de cada padre | Parecido, con más mezcla |
+| Uniforme | Para cada gen tira una moneda (p = 0.5) para decidir de qué padre viene; el otro hijo recibe lo contrario | No le importa la posición; cada hijo hereda ~50 % de cada padre |
 
-### 2. Representación entera (§4.3)
+### 2. Enteros (§4.3)
 
-- Atributos **ordinales** (2 se parece a 3) vs. **cardinales** (rojo/azul/amarillo, sin orden).
-- **Random resetting:** con p_m, poner un valor permitido al azar (para cardinales).
-- **Creep mutation:** sumar un valor pequeño ± (para ordinales).
-- Cruce: los mismos que en binario (promediar enteros no tiene sentido).
+- Valores **ordinales** (tienen orden: 2 se parece a 3) vs. **cardinales** (sin orden: rojo, azul, amarillo).
+- **Reasignación aleatoria** (*random resetting*): con probabilidad p_m, poner un valor permitido al azar. Sirve para cardinales.
+- **Mutación por arrastre** (*creep*): sumar o restar un valor pequeño. Sirve para ordinales.
+- Cruce: los mismos que con bits (promediar enteros no tiene sentido).
 
-### 3. Representación real (§4.4)
+### 3. Números reales (§4.4)
 
 **Mutación:**
-- **Uniforme:** x'ᵢ ~ U[Lᵢ, Uᵢ].
-- **Gaussiana (no uniforme):** x'ᵢ = xᵢ + N(0, σ), recortada a [Lᵢ, Uᵢ]; ~2/3 de los cambios están en ±σ. σ = **tamaño de paso de mutación**. (Cauchy = colas más gruesas.)
-- **Autoadaptativa** (estrategias evolutivas): σ va **dentro** del cromosoma y evoluciona. Primero se muta σ y luego x con el nuevo σ:
-  - Un σ: σ' = σ · e^(τ·N(0,1)), x'ᵢ = xᵢ + σ'·Nᵢ(0,1), con τ ∝ 1/√n y un mínimo ε₀ para σ (contornos de mutación = **círculos**).
-  - n σ: σ'ᵢ = σᵢ · e^(τ'·N(0,1) + τ·Nᵢ(0,1)) (contornos = **elipses** alineadas con los ejes).
-  - Correlacionada: además n(n−1)/2 ángulos de rotación (elipses **rotadas**, matriz de covarianza).
-  - Teoría y experimentos coinciden: σ debe **decrecer** con el tiempo (explorar al inicio, afinar al final).
+- **Uniforme:** reemplazar el valor por cualquier número al azar dentro de sus límites [Lᵢ, Uᵢ].
+- **Gaussiana:** x'ᵢ = xᵢ + N(0, σ), recortado a sus límites. N(0, σ) es un número al azar que casi siempre es pequeño: unos 2 de cada 3 cambios quedan entre −σ y +σ. (La versión Cauchy a veces da saltos más grandes.)
+- **Autoadaptativa** (estrategias evolutivas): el tamaño de paso σ va **dentro** de la solución y también evoluciona. Primero se cambia σ y después x con el nuevo σ:
+  - Un solo σ: σ' = σ · e^(τ·N(0,1)) y x'ᵢ = xᵢ + σ'·Nᵢ(0,1), con τ ∝ 1/√n y un valor mínimo para σ. Los cambios se reparten en **círculos**.
+  - Un σ por variable: σ'ᵢ = σᵢ · e^(τ'·N(0,1) + τ·Nᵢ(0,1)). Los cambios se reparten en **elipses** alineadas con los ejes.
+  - Con ángulos de rotación: elipses **inclinadas**.
+  - Tanto la teoría como los experimentos dicen que σ debe **ir bajando**: pasos grandes al inicio (explorar) y pequeños al final (afinar).
 
-**Recombinación (padres x e y, hijo z):**
+**Cruce (padres x e y, hijo z):**
 
-| Tipo | Fórmula | Nota |
+| Tipo | Fórmula | Comentario |
 |---|---|---|
-| Discreta | zᵢ = xᵢ o yᵢ con igual probabilidad | Solo la mutación crea valores nuevos |
-| Simple arithmetic | Primeros k genes de x; el resto α·yᵢ + (1−α)·xᵢ | — |
-| Single arithmetic | Solo el gen k se promedia | — |
-| Whole arithmetic (la más usada) | z = α·x + (1−α)·y | Con α = ½ los dos hijos son iguales; reduce el rango de valores |
-| Blend (BLX-α) | zᵢ en un intervalo que **excede** el de los padres | Crea material nuevo sin reducir el rango |
+| Discreto | Cada zᵢ se copia de x o de y, al azar | Solo la mutación crea valores nuevos |
+| Aritmético simple | Primeros k genes de x; el resto α·yᵢ + (1−α)·xᵢ | — |
+| Aritmético de un gen | Solo se promedia el gen k | — |
+| Aritmético completo (el más usado) | z = α·x + (1−α)·y | Promedio pesado; con α = ½ los dos hijos son iguales; los valores se van juntando |
+| Blend (BLX-α) | zᵢ al azar en un rango un poco **más ancho** que el de los padres | Crea valores nuevos sin que todo se junte |
+
+Ejemplo: padres 2 y 6 con α = 0.5 → hijo = 0.5·2 + 0.5·6 = 4.
 
 ### 4. Permutaciones (§4.5)
 
-Dos clases de problemas: **orden** (scheduling: importa qué va antes) y **adyacencia** (TSP: importan los enlaces; [1,2,3,4] ≡ [2,3,4,1]). Para n = 30 ciudades hay ~10³² tours. Aquí p_m es la probabilidad de mutar **el cromosoma**, no cada gen.
+Hay dos tipos de problemas:
+- **De orden** (horarios): importa qué va **antes** de qué.
+- **De adyacencia** (TSP, el viajante): importa qué ciudad está **al lado** de cuál ([1,2,3,4] es el mismo recorrido que [2,3,4,1]).
+
+Con 30 ciudades hay unos 10³² recorridos. Aquí p_m es la probabilidad de mutar **la solución entera**, no cada gen.
 
 | Mutación | Qué hace (ejemplo sobre [1 2 3 4 5 6 7 8 9]) |
 |---|---|
-| Swap | Intercambia dos posiciones (2 y 5 → [1 5 3 4 2 6 7 8 9]) |
-| Insert | Mueve un alelo junto a otro (5 junto a 2 → [1 2 5 3 4 6 7 8 9]) |
-| Scramble | Desordena un subconjunto de posiciones |
-| Inversion | Invierte un segmento (2..5 → [1 5 4 3 2 6 7 8 9]); rompe solo 2 enlaces → base del **2-opt** para TSP |
+| Intercambio (*swap*) | Intercambia dos posiciones (2 y 5 → [1 5 3 4 2 6 7 8 9]) |
+| Inserción (*insert*) | Mueve un valor junto a otro (el 5 junto al 2 → [1 2 5 3 4 6 7 8 9]) |
+| Revolver (*scramble*) | Desordena algunas posiciones |
+| Inversión (*inversion*) | Da vuelta un tramo (de 2 a 5 → [1 5 4 3 2 6 7 8 9]); solo rompe 2 enlaces, por eso es la base del **2-opt** para el TSP |
 
-| Cruce | Idea | Para |
+| Cruce | Idea (en simple) | Sirve para |
 |---|---|---|
-| **PMX** (Partially Mapped) | Copia un segmento de P1 y ubica los valores del segmento de P2 siguiendo el "mapeo" entre ambos segmentos; el resto de P2 | Adyacencia (TSP) |
-| **Edge (edge-3)** | Tabla de vecinos de cada ciudad en ambos padres; preferir aristas comunes y la lista más corta | Adyacencia; preserva aristas comunes (*respect*) |
-| **Order (OX, Davis)** | Copia un segmento de P1; completa con los valores restantes en el orden en que aparecen en P2 desde el segundo punto (circular) | Orden |
-| **Cycle** | Divide en ciclos de posiciones y alterna ciclos de cada padre | Posición absoluta |
+| **PMX** (*Partially Mapped*) | Copia un tramo de P1; los valores del mismo tramo en P2 se ubican siguiendo la "correspondencia" entre ambos tramos; el resto viene de P2 | Adyacencia (TSP) |
+| **Edge (edge-3)** | Hace una tabla con los vecinos de cada ciudad en los dos padres y prefiere los enlaces que tienen en común | Adyacencia; conserva los enlaces comunes |
+| **Order (OX, Davis)** | Copia un tramo de P1 y completa con los valores que faltan, en el orden en que aparecen en P2 empezando después del segundo corte (dando la vuelta) | Orden |
+| **Cycle** | Divide las posiciones en "ciclos" y toma un ciclo de cada padre alternadamente | Posición exacta |
 
-**Ejemplo de Eiben & Smith (§3.4.1) — 8 reinas como permutación:** igual que en el curso ([N-Queens](n-queens.md)), el genotipo es una permutación de 1..8 (fila de la reina en cada columna) → filas y columnas nunca chocan; solo hay que minimizar los ataques diagonales. Mutación = **swap**; cruce = **cut-and-crossfill** (copiar la primera parte de P1 y rellenar con los valores de P2 en orden, saltando los repetidos).
+**Ejemplo de Eiben & Smith (§3.4.1), 8 reinas como permutación:** igual que en el curso ([N-Queens](n-queens.md)), la solución es una permutación de 1..8 (la fila de la reina de cada columna), así que nunca chocan en filas ni columnas; solo hay que reducir los choques en diagonal. Mutación = **intercambio**; cruce = **cut-and-crossfill** (copiar la primera parte de P1 y completar con los valores de P2 en su orden, saltando los repetidos).
 
 ### 5. Árboles (§4.6)
 
-En **programación genética** el individuo es un árbol de sintaxis (un programa o fórmula). Mutación = reemplazar un subárbol por uno aleatorio; cruce = intercambiar subárboles entre padres.
+En la **programación genética**, cada solución es un árbol que representa un programa o una fórmula. Mutar = reemplazar una rama por otra al azar; cruzar = intercambiar ramas entre los padres.
 
 ## Pseudocódigo
 
@@ -110,29 +121,52 @@ ORDER-CROSSOVER(p1, p2):            copy p1[a..b] into child;
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** el operador debe respetar la representación: bits → invertir bits y cortar; reales → sumar ruido gaussiano y promediar; permutaciones → intercambiar e invertir, nunca repetir valores.
+> **Idea (ES):** La forma de guardar una solución (bits, números reales o un orden) decide **cómo** se puede mezclar y cambiar sin romperla. Regla de oro: el hijo siempre debe ser una solución válida. Por ejemplo, en una ruta de ciudades no se puede repetir una ciudad, así que no sirve el corte simple de los bits.
 
-```text
-ONE-POINT CROSSOVER (bits): pick a cut point; child1 = head of P1 + tail of P2;
-                            child2 = head of P2 + tail of P1.
-UNIFORM CROSSOVER (bits):   for each gene flip a coin to decide which parent it comes from.
-BIT-FLIP MUTATION:          flip each bit with probability p_m.
-GAUSSIAN MUTATION (reals):  x_i ← x_i + N(0, σ), clipped to its bounds.
-ARITHMETIC CROSSOVER:       child = α·P1 + (1 − α)·P2.
-SWAP MUTATION (perms):      exchange two positions.
-INVERSION MUTATION (perms): reverse a random segment (good for TSP).
-ORDER CROSSOVER (perms):    copy a segment from P1; fill the remaining places
-                            with the missing values in the order they appear in P2.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "The representation decides the operators: the offspring must stay valid. Bit strings use bit-flip and one-point, n-point or uniform crossover; real vectors use Gaussian mutation, possibly self-adaptive, and arithmetic recombination; permutations need special operators such as swap, inversion, PMX or order crossover."
+| Símbolo / palabra | Qué es (en simple) | English |
+|---|---|---|
+| Representación | cómo se guarda una solución: bits, números reales, un orden (permutación) | representation |
+| Gen | una posición de la solución (un bit, un número) | gene |
+| P1, P2 | padre 1 y padre 2 | parents |
+| p_m | probabilidad de mutar cada gen | mutation rate |
+| N(0, σ) | un número al azar "normal": casi siempre cerca de 0; σ dice qué tan lejos puede ir | Gaussian noise |
+| α | un peso entre 0 y 1 para promediar a los padres | weight |
+| Permutación | un orden donde cada valor aparece una sola vez: [1 2 3 4 5 6] | permutation |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Bits — one-point crossover: cut both parents at the same random point; child 1 = start of P1 + end of P2, child 2 = start of P2 + end of P1.
+   - *ES:* Corta los dos en el mismo lugar e intercambia los finales.
+2. Bits — uniform crossover: for each gene, flip a coin to decide which parent it comes from.
+   - *ES:* Para cada posición, una moneda decide de qué padre viene.
+3. Bits — bit-flip mutation: flip each bit with probability p_m.
+   - *ES:* Cada bit puede cambiar de 0 a 1 (o al revés) con probabilidad pequeña.
+4. Real numbers — Gaussian mutation: add a small random number N(0, σ) to each value and keep it inside its limits.
+   - *ES:* Suma a cada número un poquito de "ruido" al azar.
+5. Real numbers — arithmetic crossover: child = α·P1 + (1 − α)·P2.
+   - *ES:* El hijo es un promedio pesado de los padres (con α = 0.5, el punto medio).
+6. Permutations — swap mutation: exchange two positions. Inversion mutation: reverse a random segment.
+   - *ES:* Intercambia dos posiciones, o da vuelta a un tramo. Así no se repite ningún valor.
+7. Permutations — order crossover: copy a segment from P1, then fill the empty places with the missing values in the order they appear in P2.
+   - *ES:* Copia un tramo del padre 1 y completa con los valores que faltan, en el orden en que aparecen en el padre 2.
+
+**Ejemplo con números:**
+- Bits: `110|10110` × `001|11001` → **`11011001`** y **`00110110`**.
+- Reales: P1 = 2, P2 = 6, α = 0.5 → hijo = 0.5·2 + 0.5·6 = **4**. Mutación gaussiana: 4 + 0.3 = 4.3.
+- Permutación: [1 2 3 4 5 6], intercambio de las posiciones 2 y 5 → **[1 5 3 4 2 6]**. Cada número sigue apareciendo una vez.
+
+**Say it in the exam (EN):** "The representation decides the variation operators, because the children must stay valid. Bit strings use bit-flip mutation and one-point, n-point or uniform crossover. Real-valued vectors use Gaussian mutation and arithmetic recombination. Permutations, as in the TSP, need special operators such as swap or inversion mutation and order or PMX crossover; one-point crossover would repeat values."
+
+**Dilo así (ES):** "La representación decide los operadores, porque los hijos deben ser válidos. Con bits se usa mutación por inversión de bits y cruce de uno o varios puntos o uniforme. Con números reales, mutación gaussiana y cruce aritmético. Con permutaciones, como en el TSP, se necesitan operadores especiales como intercambio, inversión, order crossover o PMX; el cruce de un punto repetiría valores."
 
 ## Errores comunes y tips de examen
 
-- Aplicar cruce de un punto a **permutaciones** produce hijos inválidos (valores repetidos) → usar PMX, OX, cycle o edge.
-- Representar reales con bits es posible (tarea GA) pero suele ser peor que la representación real + mutación gaussiana.
-- One-point crossover: el punto se elige en [1, L−1] para que no quede antes del primer gen ni después del último.
-- En la tarea GA: 16 bits en signo-magnitud, cruce de un punto y bit-flip con p_m = 0.1 ([tarea](../assignments/genetic-algorithm-task.md)).
+- El cruce de un punto aplicado a **permutaciones** da hijos inválidos (con valores repetidos) → usar PMX, OX, cycle o edge.
+- Guardar números reales en bits es posible (lo hace la tarea GA), pero suele funcionar peor que guardar los reales directamente con mutación gaussiana.
+- En el cruce de un punto, el corte se elige entre 1 y L−1 para que no quede antes del primer gen ni después del último.
+- En la tarea GA: 16 bits en signo-magnitud, cruce de un punto y cambio de bit con p_m = 0.1 ([tarea](../assignments/genetic-algorithm-task.md)).
 
 ## Relacionado
 

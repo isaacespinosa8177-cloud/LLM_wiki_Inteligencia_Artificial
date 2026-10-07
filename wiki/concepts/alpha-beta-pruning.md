@@ -3,27 +3,39 @@ title: Alpha–Beta Pruning
 type: concept
 tags: [search, games, adversarial-search]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Alpha–Beta Pruning (Poda alfa–beta)
 
-> **Summary (EN):** Alpha–beta pruning returns exactly the same decision as Minimax while skipping branches that cannot influence it. α is the best value found so far for MAX (a lower bound) and β the best for MIN (an upper bound); a branch is pruned when its value can no longer fall inside (α, β). With perfect move ordering the time drops from O(b^m) to O(b^(m/2)), effectively doubling the searchable depth.
+> **Summary (EN):** Alpha–beta pruning gives exactly the same decision as Minimax but skips branches that cannot change it. α is the best value MAX can already guarantee (a lower bound) and β the best value MIN can already guarantee (an upper bound); when α ≥ β the remaining children of a node are pruned. With the best move ordering the time drops from O(b^m) to O(b^(m/2)), so it can search about twice as deep.
+
+> **En palabras simples (ES):** Es minimax, pero deja de mirar una rama en cuanto se da cuenta de que **no puede cambiar la decisión**. Ejemplo: si ya tengo una jugada que me asegura 3, y en otra rama el rival puede dejarme en 2 o menos, no necesito ver el resto de esa rama: nunca la elegiría. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| α (alpha) | α | Mejor valor garantizado para MAX en el camino actual (cota inferior). |
-| β (beta) | β | Mejor valor garantizado para MIN en el camino actual (cota superior). |
-| Pruning | Poda | No explorar ramas que no pueden cambiar la decisión. |
-| Move ordering | Orden de movimientos | Explorar primero las mejores jugadas maximiza la poda. |
+| α (alpha) | Alfa | Lo mínimo que **yo (MAX) ya tengo asegurado** por otra rama. Empieza en −∞. |
+| β (beta) | Beta | Lo máximo que **el rival (MIN) ya me tiene limitado** por otra rama. Empieza en +∞. |
+| Pruning | Poda | No mirar ramas que no pueden cambiar la decisión. |
+| Cut-off | Corte | El momento en que se deja de mirar (cuando α ≥ β). |
+| Move ordering | Orden de jugadas | Revisar primero las mejores jugadas hace que se pode más. |
 
 ## Explicación
 
+### 1. La idea con un ejemplo de la vida diaria
+
+Estás eligiendo restaurante con un amigo que siempre elige el plato más barato del menú. Ya viste el restaurante A: lo peor que te puede pasar ahí es un plato de 3 puntos. Entras al menú del restaurante B y el primer plato vale 2 puntos. Tu amigo puede elegir ese 2, así que en B te va a ir **2 o peor**. Ya sabes que A (3) es mejor, así que **no necesitas leer el resto del menú de B**. Eso es podar.
+
+### 2. Qué son α y β
+
+- **α (alfa) = "al menos".** Lo mínimo que MAX ya tiene asegurado en el camino actual.
+- **β (beta) = "como mucho".** Lo máximo que MIN va a permitir en el camino actual.
+- Si en algún momento **α ≥ β**, la rama actual nunca se va a jugar: se poda.
+
 **Reglas de poda (slides 02, s20):**
-- En un nodo **MIN**, si su valor cae **por debajo de α** → podar (MAX nunca elegiría este camino; ya tiene algo mejor).
-- En un nodo **MAX**, si su valor sube **por encima de β** → podar (MIN nunca dejaría llegar aquí).
-- Formalmente se poda cuando α ≥ β.
+- En un nodo **MIN**: si su valor ya bajó **hasta α o menos** → podar. MAX nunca vendría aquí; ya tiene algo igual o mejor.
+- En un nodo **MAX**: si su valor ya subió **hasta β o más** → podar. MIN nunca dejaría llegar aquí.
 
 ```python
 def alphabeta(state, depth, alpha, beta, maximizing):
@@ -49,25 +61,29 @@ def alphabeta(state, depth, alpha, beta, maximizing):
 # call: alphabeta(root, D, float('-inf'), float('inf'), True)
 ```
 
-**Intuición (AIMA §6.2.3):** α = "**at least**" (lo mínimo que MAX ya tiene asegurado), β = "**at most**" (lo máximo que MIN dejará). Si un jugador ya tiene una opción mejor en el mismo nivel o más arriba, nunca irá a n; en cuanto sabemos lo suficiente de n para concluirlo, lo podamos.
+### 3. Ejemplo de AIMA (Fig. 6.5): el mismo árbol de minimax
 
-**Ejemplo de AIMA (Fig. 6.5), el mismo árbol de minimax:** B = {3, 12, 8} → B = 3, la raíz vale ≥ 3. En C la primera hoja vale 2 → C ≤ 2 < 3 → **se podan las otras dos hojas de C**. En D: 14 (D ≤ 14, seguir), 5 (D ≤ 5, seguir), 2 → D = 2. Raíz = max(3, ≤2, 2) = 3. Formalmente: MINIMAX(raíz) = max(min(3,12,8), min(2,x,y), min(14,5,2)) = max(3, z, 2) con z ≤ 2 → no depende de x ni y.
+Hojas: B = {3, 12, 8}, C = {2, 4, 6}, D = {14, 5, 2}.
 
-**Ejemplo mínimo.** MAX tiene dos hijos MIN, A y B. A tiene hojas {3, 12, 8} → A = 3, así α = 3. En B la primera hoja vale 2 → B ≤ 2 < α = 3 → las demás hojas de B se podan; MAX elige A sin mirarlas.
+1. **Rama B:** el rival elige min(3, 12, 8) = 3. Ahora yo tengo asegurado **α = 3**.
+2. **Rama C:** la primera hoja es 2. El rival puede dejarme en **2 o menos**, y yo ya tengo 3. Como 3 ≥ 2 (α ≥ β), **no miro 4 ni 6**: se podan.
+3. **Rama D:** 14 (D ≤ 14, sigo), 5 (D ≤ 5, sigo), 2 → D = 2. No se pudo podar porque el 2 salió al final.
+4. **Resultado:** max(3, ≤2, 2) = **3**, igual que minimax, pero sin revisar 2 hojas.
 
-**Orden de jugadas y complejidad (AIMA §6.2.4).**
-- Orden perfecto: **O(b^(m/2))** → factor de ramificación efectivo **√b** (en ajedrez ~6 en vez de 35): se busca el **doble de profundidad** en el mismo tiempo.
-- Orden aleatorio: ≈ O(b^(3m/4)).
-- En el ejemplo de la Fig. 6.5 no se pudo podar D porque sus peores hijos (para MIN) salieron primero; si el 2 hubiera salido primero, se podaban los otros dos.
-- Ordenamiento simple en ajedrez (capturas, luego amenazas, avances, retrocesos) queda a un factor ~2 del óptimo.
-- **Killer move heuristic:** probar primero las jugadas que resultaron mejores antes (por ejemplo en la iteración anterior de *iterative deepening*).
-- **Transposition table:** guardar el valor de posiciones ya evaluadas que se alcanzan por distintos órdenes de jugadas (transposiciones); en ajedrez duplica la profundidad alcanzable.
+En fórmula: MINIMAX(raíz) = max(min(3,12,8), min(2,x,y), min(14,5,2)) = max(3, z, 2) con z ≤ 2 = 3. El resultado **no depende** de x ni de y, por eso se pueden saltar.
 
-**Aplicación a la tarea.** El tic-tac-toe 4×4 usa minimax puro con profundidad 4 "because full minimax is too large". Con alpha-beta y buen orden se podría buscar a ~profundidad 8 con el mismo costo.
+### 4. El orden importa (AIMA §6.2.4)
+
+- **Orden perfecto** (las mejores jugadas primero): **O(b^(m/2))**. Es como si cada nodo tuviera solo √b hijos (en ajedrez ~6 en vez de 35). Resultado: se puede mirar **el doble de profundo** en el mismo tiempo.
+- **Orden al azar:** ≈ O(b^(3m/4)).
+- En el ejemplo, D no se pudo podar porque sus peores hojas (para el rival) salieron primero. Si el 2 hubiera salido primero, se podaban las otras dos.
+- Trucos para ordenar bien: en ajedrez, probar primero capturas, luego amenazas, avances y retrocesos (queda a un factor ~2 del ideal). **Killer moves:** probar primero las jugadas que funcionaron antes. **Tabla de transposiciones:** guardar el valor de posiciones ya vistas a las que se llega por distinto orden de jugadas; en ajedrez duplica la profundidad alcanzable.
+
+**Aplicación a la tarea.** El gato 4×4 usa minimax sin poda con profundidad 4 "because full minimax is too large". Con alfa–beta y buen orden se podría llegar a ~profundidad 8 con el mismo costo.
 
 ### Diagrama
 
-El mismo árbol con alpha–beta: tras ver el 2 bajo C, C ≤ 2 < 3 = α, así que **4 y 6 nunca se evalúan**.
+El mismo árbol con alfa–beta: después de ver el 2 bajo C, C ≤ 2 < 3 = α, así que **4 y 6 nunca se revisan**.
 
 ```mermaid
 flowchart TD
@@ -87,30 +103,46 @@ flowchart TD
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** deja de mirar una rama en cuanto sabes que el rival nunca te dejaría llegar ahí (o que tú nunca la elegirías).
+> **Idea (ES):** Es minimax, pero deja de mirar una rama en cuanto se da cuenta de que **no puede cambiar la decisión**. Ejemplo: si ya tengo una jugada que me asegura 3, y en otra rama el rival puede dejarme en 2 o menos, no necesito ver el resto de esa rama: nunca la elegiría.
 
-```text
-ALPHA-BETA(state, α = −∞, β = +∞):
-α = best value MAX can already guarantee ("at least")
-β = best value MIN can already guarantee ("at most")
-1. Terminal or depth limit → return utility / EVAL.
-2. MAX node: v = −∞; for each child:
-       v = max(v, ALPHA-BETA(child, α, β)); α = max(α, v);
-       if α ≥ β → STOP (prune the remaining children).
-   return v
-3. MIN node: v = +∞; for each child:
-       v = min(v, ALPHA-BETA(child, α, β)); β = min(β, v);
-       if α ≥ β → STOP (prune the remaining children).
-   return v
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "Alpha–beta returns exactly the minimax decision while skipping branches that cannot change it. With perfect move ordering it examines O(b^(m/2)) nodes, so it can search about twice as deep; with random ordering about O(b^(3m/4))."
+| Símbolo | Qué es (en simple) | English |
+|---|---|---|
+| α (alfa) | lo mínimo que **yo (MAX) ya tengo asegurado** en otra rama. Empieza en −∞ | best value for MAX so far |
+| β (beta) | lo máximo que **el rival (MIN) ya me tiene limitado** en otra rama. Empieza en +∞ | best value for MIN so far |
+| v | el valor que va acumulando el nodo actual | current value |
+| Podar | no mirar los hijos que faltan, porque no cambian nada | prune |
+| −∞ / +∞ | "todavía no hay nada asegurado" | minus / plus infinity |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Start at the root with α = −∞ and β = +∞.
+   - *ES:* Al inicio no hay nada asegurado.
+2. Leaf (or depth limit) → return its utility (or EVAL).
+   - *ES:* En una hoja, devuelve su puntaje.
+3. MAX node: v = −∞. For each child: v = max(v, value of child); α = max(α, v); if α ≥ β → stop, prune the remaining children. Return v.
+   - *ES:* En mi turno, voy guardando el mejor valor visto y subo α. Si α llega a ser ≥ β, el rival nunca me dejaría llegar aquí: dejo de mirar.
+4. MIN node: v = +∞. For each child: v = min(v, value of child); β = min(β, v); if α ≥ β → stop, prune the remaining children. Return v.
+   - *ES:* En el turno del rival, guardo el menor valor visto y bajo β. Si α ≥ β, yo nunca elegiría esta rama: dejo de mirar.
+5. Pass α and β down to the children when you visit them.
+   - *ES:* Cada hijo recibe los α y β actuales de su padre.
+
+**Ejemplo con números:** mismo árbol que minimax: [3, 12, 8], [2, 4, 6], [14, 5, 2].
+1. Primera rama: el rival elige min(3, 12, 8) = 3. Ahora yo tengo asegurado α = 3.
+2. Segunda rama: la primera hoja es 2. El rival podrá dejarme en **2 o menos**, y yo ya tengo 3 → α = 3 ≥ β = 2 → **podo** 4 y 6 sin mirarlas.
+3. Tercera rama: 14 → 5 → 2; el rival elige 2. No hay poda porque la hoja peor llega al final.
+4. Resultado: **3**, igual que minimax, pero sin revisar 2 hojas.
+
+**Say it in the exam (EN):** "Alpha–beta returns exactly the same decision as minimax but skips branches that cannot change it. α is the value MAX can already guarantee and β the value MIN can already guarantee; when α ≥ β the remaining children are pruned. With the best move ordering it examines O(b^(m/2)) nodes, so it can search about twice as deep in the same time."
+
+**Dilo así (ES):** "Alfa–beta da la misma decisión que minimax pero se salta ramas que no pueden cambiarla. α es lo que MAX ya tiene asegurado y β lo que MIN ya tiene asegurado; cuando α ≥ β se podan los hijos restantes. Con el mejor orden revisa O(b^(m/2)) nodos, así que puede mirar el doble de profundo en el mismo tiempo."
 
 ## Errores comunes y tips de examen
 
-- Alpha–beta **no cambia el resultado** de minimax, solo ahorra trabajo.
-- α solo se actualiza en nodos MAX y β en nodos MIN; ambos se **pasan hacia abajo**.
-- En el examen, al trazar a mano: escribir [α, β] en cada nodo y tachar las ramas podadas.
+- Alfa–beta **no cambia el resultado** de minimax: solo ahorra trabajo.
+- α solo cambia en nodos MAX y β solo en nodos MIN; los dos se **pasan hacia abajo** a los hijos.
+- En el examen, al trazar a mano: escribe [α, β] al lado de cada nodo y tacha las ramas podadas.
 
 ## Relacionado
 

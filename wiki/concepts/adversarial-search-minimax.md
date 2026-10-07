@@ -3,32 +3,42 @@ title: Adversarial Search and Minimax
 type: concept
 tags: [search, games, adversarial-search, minimax]
 sources: [slides-02-problem-solving, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Adversarial Search and Minimax (Búsqueda adversarial y Minimax)
 
-> **Summary (EN):** In games, two or more agents have opposing goals, so the task is to find an optimal strategy assuming the opponent also plays optimally. For two-player, zero-sum, deterministic, perfect-information games, Minimax defines the value of a node recursively: utility at terminal states, max over successors on MAX's turn and min on MIN's turn. It explores the full tree (time O(b^m), space O(b·m)); real games cut off at a depth limit and use a heuristic evaluation function.
+> **Summary (EN):** In games, agents have opposing goals, so we look for the best move assuming the opponent also plays perfectly. For two-player, zero-sum, deterministic games where both players see everything, Minimax gives each position a value: the final score at the end of the game, the maximum of the children on MAX's turn and the minimum on MIN's turn. It explores the whole game tree depth-first (time O(b^m), memory O(b·m)); real games stop at a depth limit and use an evaluation function to estimate positions.
+
+> **En palabras simples (ES):** En un juego de dos jugadores, piensa: "yo elijo lo mejor para mí, y mi rival elige lo peor para mí". Minimax arma el árbol de jugadas y, desde el final hacia arriba, en mis turnos toma el **máximo** y en los del rival el **mínimo**. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Adversarial search | Búsqueda adversarial | Búsqueda con oponente. |
-| MAX / MIN | MAX / MIN | Jugador que maximiza / minimiza el valor. |
+| Adversarial search | Búsqueda adversarial | Buscar la mejor jugada cuando hay un rival. |
+| MAX / MIN | MAX / MIN | Yo, que quiero el número más alto / el rival, que quiere el más bajo. |
 | Zero-sum | Suma cero | Lo que gana uno lo pierde el otro. |
-| Perfect information | Información perfecta | Entorno totalmente observable. |
-| Utility / terminal test | Utilidad / prueba terminal | Valor de un estado final / ¿terminó el juego? |
-| Ply | Ply (media jugada) | Un movimiento de un jugador. |
-| Evaluation function | Función de evaluación | Estimación heurística del valor de un estado no terminal. |
-| Cutoff / depth limit | Corte / límite de profundidad | Dejar de buscar a cierta profundidad. |
+| Perfect information | Información perfecta | Los dos ven todo el tablero (nada oculto). |
+| Utility | Utilidad | El puntaje final de la partida (ganar = +1, perder = −1, empate = 0). |
+| Terminal test | Prueba terminal | La pregunta "¿ya terminó la partida?". |
+| Ply | Ply (media jugada) | Una jugada de un solo jugador. |
+| Evaluation function | Función de evaluación | Una estimación de qué tan buena es una posición que todavía no termina. |
+| Cutoff / depth limit | Corte / límite de profundidad | Dejar de mirar más adelante después de cierto número de jugadas. |
+| *b*, *m* | — | Jugadas posibles por turno / número de jugadas hasta el final. |
 
 ## Explicación
 
-**Definición formal de un juego (AIMA §6.1):** S₀ (estado inicial), TO-MOVE(s) (a quién le toca), ACTIONS(s), RESULT(s, a), IS-TERMINAL(s) (prueba terminal) y UTILITY(s, p) (en ajedrez 1, 0 o ½). Los juegos más estudiados son **deterministas, de dos jugadores, por turnos, de información perfecta y de suma cero**. El árbol de tic-tac-toe tiene < 9! = 362 880 hojas (5 478 estados distintos); el de ajedrez > 10⁴⁰ nodos.
+### 1. ¿Qué cambia cuando hay un rival?
 
-**De caminos a estrategias.** Hasta ahora un solo agente buscaba un camino. En un juego, el resultado depende también de lo que haga el rival; buscamos la **mejor jugada suponiendo que el rival juega óptimamente**.
+Hasta ahora buscábamos un **camino**. En un juego, lo que pasa depende también de lo que haga el rival. Ya no buscamos un camino, sino **la mejor jugada suponiendo que el rival también juega perfecto**.
 
-**Valor minimax:**
+Un juego se describe con seis cosas (AIMA §6.1): el estado inicial (S₀), a quién le toca (TO-MOVE), qué jugadas hay (ACTIONS), qué pasa después de cada jugada (RESULT), si ya terminó (IS-TERMINAL) y el puntaje final (UTILITY; en ajedrez 1, 0 o ½). Los juegos más estudiados son **deterministas, de dos jugadores, por turnos, con todo a la vista y de suma cero**.
+
+¿Qué tan grandes son? El árbol del gato (tic-tac-toe) tiene menos de 362 880 finales (5 478 posiciones distintas); el del ajedrez, más de 10⁴⁰ nodos.
+
+### 2. El valor minimax
+
+A cada posición se le da un número así:
 
 ```
 MINIMAX(s) =
@@ -36,6 +46,11 @@ MINIMAX(s) =
     max_a MINIMAX(RESULT(s, a))                  if TO-MOVE(s) = MAX
     min_a MINIMAX(RESULT(s, a))                  if TO-MOVE(s) = MIN
 ```
+
+En palabras:
+- Si la partida terminó → su valor es el puntaje final.
+- Si me toca a mí (MAX) → su valor es **el mayor** de los valores de mis jugadas.
+- Si le toca al rival (MIN) → su valor es **el menor** de los valores de sus jugadas.
 
 ```python
 def minimax(state, maximizing, depth):
@@ -46,17 +61,27 @@ def minimax(state, maximizing, depth):
     return max(values) if maximizing else min(values)
 ```
 
-- Supone que ambos juegan de forma óptima.
-- Explora el árbol completo hasta los nodos terminales: tiempo **O(b^m)**, espacio **O(b·m)** (DFS).
-- Para juegos reales es imposible: ajedrez b ≈ 35, ~80 plies → 35⁸⁰ ≈ **10¹²³** estados.
-- La estrategia de MAX es un **plan condicional** (una respuesta para cada jugada de MIN): minimax generaliza el [AND–OR search](search-in-complex-environments.md) (MAX ≈ OR, MIN ≈ AND).
-- Si MIN no juega óptimo, MAX obtiene **al menos** el valor minimax (puede ser mejor arriesgar contra un rival débil).
+### 3. Ejemplo de AIMA (Fig. 6.2)
 
-**Ejemplo de AIMA (Fig. 6.2), árbol de 2 plies:** MAX tiene a₁, a₂, a₃ que llevan a nodos MIN B, C, D con hojas B = {3, 12, 8}, C = {2, 4, 6}, D = {14, 5, 2}. Valores MIN: B = 3, C = 2, D = 2 → la raíz vale max(3, 2, 2) = **3** y la decisión minimax es **a₁**.
+Tengo 3 jugadas (a₁, a₂, a₃). Después de cada una, el rival tiene 3 respuestas. Los puntajes finales son: después de a₁ → {3, 12, 8}; después de a₂ → {2, 4, 6}; después de a₃ → {14, 5, 2}.
 
-**Juegos de más de dos jugadores (§6.2.2):** cada nodo guarda un **vector** de utilidades ⟨v_A, v_B, v_C⟩ y cada jugador elige el hijo que maximiza su componente. Surgen **alianzas** de forma natural (dos débiles contra uno fuerte).
+1. El rival (MIN) elige el **menor** en cada grupo: B = 3, C = 2, D = 2.
+2. Yo (MAX) elijo el **mayor** de esos: max(3, 2, 2) = **3**.
+3. Juego **a₁**.
 
-### Heuristic minimax: cortar y evaluar (AIMA §6.3)
+### 4. Propiedades
+
+- Supone que **los dos juegan perfecto**.
+- Recorre el árbol en profundidad (como DFS): tiempo **O(b^m)**, memoria **O(b·m)**.
+- En juegos reales es imposible llegar al final: en ajedrez hay unas 35 jugadas por turno y unas 80 jugadas por partida → 35⁸⁰ ≈ **10¹²³** posiciones.
+- Si el rival **no** juega perfecto, yo obtengo **al menos** el valor minimax (quizá más).
+- Mi estrategia es un **plan condicional**: una respuesta para cada jugada del rival. Es la misma idea que la [búsqueda AND–OR](search-in-complex-environments.md) (mi turno ≈ OR, turno del rival ≈ AND).
+
+**Más de dos jugadores (§6.2.2):** cada nodo guarda un **vector** de puntajes ⟨v_A, v_B, v_C⟩ y cada jugador elige lo mejor para su propio puntaje. Aparecen **alianzas** solas (dos débiles contra uno fuerte).
+
+### 5. Minimax con corte y evaluación (AIMA §6.3)
+
+Como no se puede llegar al final, se mira solo unas cuantas jugadas adelante y se **estima** qué tan buena es la posición:
 
 ```
 H-MINIMAX(s, d) =
@@ -65,19 +90,21 @@ H-MINIMAX(s, d) =
     min_a H-MINIMAX(RESULT(s, a), d + 1)           if TO-MOVE(s) = MIN
 ```
 
-- **Función de evaluación:** rápida de calcular, fuertemente correlacionada con la probabilidad de ganar, EVAL = UTILITY en estados terminales y, en los demás, entre perder y ganar. La forma típica es una **función lineal ponderada**: EVAL(s) = w₁f₁(s) + … + wₙfₙ(s) (en ajedrez: peón 1, caballo/alfil 3, torre 5, reina 9). Supone que las características son **independientes**; los programas modernos usan combinaciones no lineales y pesos aprendidos.
-- **Valor esperado por categorías:** si 82 % de los finales "2 peones vs 1" se ganan, 2 % se pierden y 16 % son tablas: 0.82·1 + 0.02·0 + 0.16·½ = **0.90**.
-- **Cutoff test:** profundidad fija o, mejor, **iterative deepening** (devuelve la jugada de la búsqueda completa más profunda cuando se acaba el tiempo).
-- **Quiescence search:** solo evaluar posiciones **quietas** (sin una captura pendiente que cambie todo); si no, seguir buscando (p. ej. solo capturas).
-- **Horizon effect:** el programa "empuja" una pérdida inevitable más allá de su horizonte con jugadas dilatorias (sacrificar peones para salvar un alfil condenado). Mitigación: **singular extensions**.
-- **Forward pruning (Type B):** descartar jugadas que parecen malas (beam search, **ProbCut**, *late move reduction*); ahorra tiempo pero puede errar. Alpha–beta, en cambio, solo poda lo que *demostradamente* no importa.
-- **Tablas de aperturas y finales:** en vez de buscar, consultar. Los finales con ≤ 7 piezas están resueltos por **análisis retrógrado**.
+- **Función de evaluación (EVAL):** debe ser rápida, parecerse a la probabilidad de ganar y dar el puntaje real en posiciones finales. La forma típica es una **suma con pesos**: EVAL(s) = w₁f₁(s) + … + wₙfₙ(s). En ajedrez, por ejemplo, se cuentan las piezas: peón 1, caballo o alfil 3, torre 5, reina 9. Esto supone que cada característica cuenta por separado; los programas modernos aprenden combinaciones más complejas.
+- **Promedio por tipo de posición:** si el 82 % de los finales "2 peones contra 1" se ganan, el 2 % se pierden y el 16 % son tablas: 0.82·1 + 0.02·0 + 0.16·½ = **0.90**.
+- **¿Cuándo cortar?** A profundidad fija o, mejor, con **profundización iterativa**: cuando se acaba el tiempo, se usa la mejor jugada de la búsqueda completa más profunda.
+- **Búsqueda de quietud (*quiescence*):** solo evaluar posiciones "tranquilas", sin una captura pendiente que lo cambie todo; si no, seguir mirando.
+- **Efecto horizonte:** el programa "esconde" una pérdida inevitable empujándola más allá de lo que alcanza a ver (por ejemplo, sacrifica peones para retrasar la pérdida de un alfil que igual va a perder).
+- **Poda hacia adelante (*forward pruning*):** descartar jugadas que parecen malas sin revisarlas. Ahorra tiempo, pero puede equivocarse. (Alfa–beta, en cambio, solo poda lo que **seguro** no importa.)
+- **Tablas de aperturas y finales:** en vez de buscar, consultar respuestas ya guardadas. Los finales con 7 piezas o menos ya están resueltos.
 
-Rendimiento en ajedrez (AIMA): minimax con 10⁶ nodos/s llega a ~5 plies (lo vence un jugador promedio); alpha–beta + tabla de transposiciones llega a ~14 plies (nivel experto); Stockfish supera los 30 plies.
+Cuánto alcanza a ver en ajedrez (AIMA): minimax a 10⁶ nodos/s llega a unas 5 jugadas (le gana un jugador promedio); con alfa–beta y tablas, unas 14 (nivel experto); Stockfish, más de 30.
 
-**Función de evaluación del tic-tac-toe 4×4 (tarea):** para cada línea (4 filas, 4 columnas, 2 diagonales), si solo tiene X suma el número de X; si solo tiene O, resta el número de O. Es la idea clásica de "líneas abiertas".
+### 6. La tarea del gato 4×4
 
-⚠️ **Regla de oro:** los valores terminales deben **dominar** a cualquier valor heurístico. Si ganar vale +1 pero una posición no terminal puede valer +2, el agente prefiere la posición "prometedora" a ganar. Esto ocurre en la [tarea 4×4](../assignments/tic-tac-toe-4x4-minimax.md) (verificado: la IA no tomó una victoria inmediata en 2 de 54 posiciones de prueba). Solución: ganar = +1000 (o +1000 − profundidad para preferir victorias rápidas).
+**Función de evaluación de la tarea:** para cada línea (4 filas, 4 columnas, 2 diagonales): si solo tiene X, suma cuántas X hay; si solo tiene O, resta cuántas O hay. Es la idea clásica de "líneas abiertas".
+
+⚠️ **Regla de oro:** **ganar tiene que valer más que cualquier estimación.** Si ganar vale +1 pero una posición sin terminar puede valer +2, el programa prefiere esa posición "prometedora" antes que ganar. Esto pasa en la [tarea 4×4](../assignments/tic-tac-toe-4x4-minimax.md) (verificado: la IA no tomó una victoria inmediata en 2 de 54 posiciones de prueba). Solución: ganar = +1000 (o +1000 − profundidad, para preferir ganar rápido).
 
 ### Diagrama
 
@@ -101,26 +128,45 @@ flowchart TD
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** supón que el rival es perfecto: en tus turnos tomas el máximo, en los suyos él toma el mínimo, y esos valores suben desde las hojas.
+> **Idea (ES):** En un juego de dos jugadores, piensa: "yo elijo lo mejor para mí, y mi rival elige lo peor para mí". Minimax arma el árbol de jugadas y, desde el final hacia arriba, en mis turnos toma el **máximo** y en los del rival el **mínimo**.
 
-```text
-MINIMAX(state):
-1. If the game is over → return its utility (or, at the depth limit, EVAL(state)).
-2. If it is MAX's turn → return the MAXIMUM of MINIMAX(child) over all moves.
-3. If it is MIN's turn → return the MINIMUM of MINIMAX(child) over all moves.
-At the root, play the move whose child has the best value.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "Minimax assumes both players play optimally and backs utilities up the game tree: MAX takes the max, MIN the min. It is a depth-first search: time O(b^m), space O(b·m). Real games cut off at a depth limit and use an evaluation function, whose values must never beat a real win."
+| Palabra / símbolo | Qué es (en simple) | English |
+|---|---|---|
+| MAX | yo: quiero el número más alto | maximizing player |
+| MIN | el rival: quiere el número más bajo (lo peor para mí) | minimizing player |
+| Hoja / estado terminal | el final de la partida | terminal state |
+| Utilidad | el puntaje final para MAX (ganar = +1, perder = −1, empate = 0, o puntos) | utility |
+| EVAL | estimación del puntaje cuando no puedes llegar hasta el final (corte de profundidad) | evaluation function |
+| b, m | jugadas posibles por turno / número de turnos hasta el final | branching factor / depth |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. If the game is over → return its utility. (At the depth limit → return EVAL.)
+   - *ES:* Si la partida terminó, devuelve el puntaje final. Si no puedes mirar más lejos, devuelve una estimación.
+2. If it is MAX's turn → return the MAXIMUM value among its children.
+   - *ES:* En mi turno, me quedo con la jugada de mayor valor.
+3. If it is MIN's turn → return the MINIMUM value among its children.
+   - *ES:* En el turno del rival, suponemos que elige la de menor valor (la peor para mí).
+4. At the root, play the move whose child has the best value.
+   - *ES:* Arriba de todo, juega la jugada que llevó al mejor valor.
+
+**Ejemplo con números:** árbol de AIMA. Tengo 3 jugadas; el rival responde con 3 opciones cada una. Hojas: jugada 1 → [3, 12, 8]; jugada 2 → [2, 4, 6]; jugada 3 → [14, 5, 2].
+El rival (MIN) elige el menor en cada grupo: 3, 2 y 2. Yo (MAX) elijo el mayor de esos: **3** → juego la jugada 1.
+
+**Say it in the exam (EN):** "Minimax assumes both players play perfectly. It explores the game tree depth-first and backs values up from the leaves: MAX takes the maximum of its children and MIN the minimum. Time is O(b^m) and space O(b·m). Real games stop at a depth limit and use an evaluation function to estimate the value of the position."
+
+**Dilo así (ES):** "Minimax supone que ambos juegan perfecto. Recorre el árbol de jugadas en profundidad y sube los valores desde las hojas: MAX toma el máximo y MIN el mínimo. Tiempo O(b^m), memoria O(b·m). En juegos reales se corta a cierta profundidad y se usa una función de evaluación."
 
 ## Errores comunes y tips de examen
 
-- Minimax es **DFS**: por eso el espacio es lineal O(b·m) aunque el tiempo sea exponencial.
-- MAX elige el máximo **de los valores de sus hijos**, que son nodos MIN (y viceversa).
-- Con corte por profundidad, el resultado ya no es el minimax "verdadero", sino una aproximación que depende de la evaluación.
-- Mejora directa: [Alpha–Beta Pruning](alpha-beta-pruning.md) (mismo resultado, menos nodos). Alternativa sin evaluación: [MCTS](monte-carlo-tree-search.md).
-- El espacio es O(b·m) si se generan todas las acciones a la vez, **O(m)** si se generan de a una (backtracking).
-- "Zero-sum" en ajedrez: técnicamente *constant-sum* (1 + 0 o ½ + ½).
+- Minimax recorre el árbol en profundidad (DFS): por eso la memoria es pequeña, O(b·m), aunque el tiempo sea enorme.
+- MAX elige el máximo **de los valores de sus hijos**, que son nodos MIN (y al revés).
+- Si cortas a cierta profundidad, el resultado ya no es el minimax "verdadero", sino una aproximación que depende de la función de evaluación.
+- Mejora directa: [Alpha–Beta Pruning](alpha-beta-pruning.md) (mismo resultado, menos trabajo). Alternativa sin función de evaluación: [MCTS](monte-carlo-tree-search.md).
+- La memoria es O(b·m) si se generan todas las jugadas a la vez, y O(m) si se generan de una en una (backtracking).
+- El ajedrez técnicamente es de "suma constante" (1 + 0, o ½ + ½), pero se le llama de suma cero.
 
 ## Relacionado
 

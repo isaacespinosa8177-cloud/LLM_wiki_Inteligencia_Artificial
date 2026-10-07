@@ -3,35 +3,49 @@ title: Simulated Annealing
 type: concept
 tags: [optimization, local-search, stochastic]
 sources: [code-class-optimization, paper-dorigo-1996-ant-system, book-russell-norvig-aima]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Simulated Annealing (Recocido simulado)
 
-> **Summary (EN):** Simulated annealing is local search that sometimes accepts worse moves to escape local optima. A neighbor with cost change Δ is always accepted if Δ < 0 and otherwise with probability e^(−Δ/T). The temperature T starts high (lots of exploration, almost a random walk) and is lowered by a cooling schedule until the search becomes greedy hill climbing. The class script applies it to the Rastrigin function; Dorigo et al. use it as a baseline for Ant System.
+> **Summary (EN):** Simulated annealing is local search that sometimes accepts a worse solution so it can escape local optima. A better neighbor is always accepted; a worse one, whose cost is higher by Δ, is accepted with probability e^(−Δ/T). The temperature T starts high (it accepts almost anything, like a random walk) and is lowered step by step by a cooling schedule until the search only accepts improvements, like hill climbing. The class script applies it to the Rastrigin function; Dorigo et al. compare Ant System against it.
+
+> **En palabras simples (ES):** Es como hill climbing, pero a veces **acepta empeorar** para poder salir de un valle pequeño. Al principio está "caliente" y acepta empeorar casi siempre (explora mucho); con el tiempo se "enfría" y casi nunca acepta empeorar (solo mejora). El nombre viene de cómo se enfría el metal poco a poco para que quede fuerte. *(Abajo está el pseudocódigo paso a paso, en inglés y en español.)*
 
 ## Términos clave
 
-| English | Español | Significado |
+| English | Español | Significado (en simple) |
 |---|---|---|
-| Annealing | Recocido | Calentar un metal y enfriarlo lentamente para que alcance un estado de baja energía. |
-| Temperature T | Temperatura | Controla cuánto empeoramiento se acepta. |
-| Cooling schedule | Esquema de enfriamiento | Cómo baja T (p. ej. geométrico T ← αT). |
-| Metropolis criterion | Criterio de Metropolis | Aceptar con probabilidad e^(−Δ/T). |
-| Energy Δ | Diferencia de energía | f(nuevo) − f(actual) al minimizar. |
+| Annealing | Recocido | Calentar un metal y enfriarlo muy despacio para que quede fuerte y ordenado. |
+| Temperature T | Temperatura | Qué tan dispuesto está el algoritmo a aceptar empeorar. |
+| Cooling schedule | Esquema de enfriamiento | Cómo baja T con el tiempo; p. ej. T ← α·T (cada paso queda un poco más frío). |
+| α (alpha) | Tasa de enfriamiento | Por cuánto se multiplica T en cada paso (p. ej. 0.99). |
+| Δ (delta) | Cambio de costo | f(nuevo) − f(actual). Negativo = mejora; positivo = empeora. |
+| e^(−Δ/T) | Probabilidad de aceptar | Número entre 0 y 1: grande si T es alta o Δ es pequeño (e ≈ 2.718). |
+| Metropolis criterion | Criterio de Metropolis | El nombre de esa regla de aceptación. |
 
 ## Explicación
 
-**Intuición.** Hill climbing se queda en el primer valle. SA permite "subir colinas" de vez en cuando: al principio (T alta) acepta casi cualquier movimiento; al final (T baja) casi solo mejoras. Si T baja lo suficientemente despacio, la probabilidad de terminar en el óptimo global tiende a 1 (complemento AIMA §4.1.2).
+### 1. La idea
 
-**Probabilidad de aceptación** (al minimizar):
+Hill climbing se queda en el primer valle que encuentra. El recocido simulado deja que, **de vez en cuando, empeore** para poder salir de ese valle:
+- **Al principio (T alta):** acepta casi cualquier cambio, aunque empeore → explora mucho.
+- **Al final (T baja):** casi solo acepta mejoras → afina la respuesta.
 
-| Δ | T alta (100) | T baja (0.1) |
+Si T baja **lo bastante despacio**, la probabilidad de terminar en el mejor valle de todos se acerca a 1 (complemento AIMA §4.1.2).
+
+### 2. ¿Con qué probabilidad acepta empeorar?
+
+Probabilidad de aceptar un cambio, minimizando:
+
+| Cambio Δ | T alta (100) | T baja (0.1) |
 |---|---|---|
-| −1 (mejora) | 1 | 1 |
-| +1 | e^(−0.01) ≈ 0.99 | e^(−10) ≈ 0.00005 |
-| +10 | e^(−0.1) ≈ 0.90 | ≈ 0 |
+| −1 (mejora) | 1 (siempre) | 1 (siempre) |
+| +1 (empeora poco) | e^(−0.01) ≈ 0.99 | e^(−10) ≈ 0.00005 |
+| +10 (empeora mucho) | e^(−0.1) ≈ 0.90 | ≈ 0 |
 
-**Código de clase (`sa_functions.py`, resumido):**
+Se ve que: con T alta acepta casi todo; con T baja casi nunca acepta empeorar; y un empeoramiento grande se acepta menos que uno pequeño.
+
+### 3. El código de clase (`sa_functions.py`, resumido)
 
 ```python
 def simulated_annealing(func, bounds, max_iter, initial_temp, cooling_rate):
@@ -46,13 +60,17 @@ def simulated_annealing(func, bounds, max_iter, initial_temp, cooling_rate):
     return best
 ```
 
-Aplicado a Rastrigin 2-D en [−5.12, 5.12]², T₀ = 100, α = 0.8, 100 000 iteraciones.
+Cómo leerlo: empieza en un punto al azar. En cada vuelta prueba un punto cercano (moviéndose entre −1 y +1 en cada coordenada, sin salirse de los límites); calcula cuánto cambió f; si mejora, o si "gana el dado" con probabilidad e^(−Δ/T), se mueve; guarda el mejor que haya visto; y enfría T.
 
-⚠️ **Enfriamiento demasiado rápido.** Con α = 0.8, T < 10⁻⁸ tras ~105 iteraciones: el 99.9 % de las iteraciones son hill climbing puro (y T llega a 0.0 tras ~3 400, causando divisiones por cero). Valores típicos de α: 0.95–0.9999, o ajustar α para que T llegue a ~10⁻³ al final: α = (T_final/T₀)^(1/max_iter).
+Se aplica a Rastrigin en 2-D, en [−5.12, 5.12]², con T₀ = 100, α = 0.8 y 100 000 iteraciones.
 
-### La versión de AIMA (§4.1.2)
+⚠️ **Se enfría demasiado rápido.** Con α = 0.8, la temperatura queda casi en 0 (menos de 10⁻⁸) después de unas 105 iteraciones. Así, el 99.9 % del tiempo el algoritmo es solo hill climbing. Además, T llega a ser exactamente 0.0 tras unas 3 400 iteraciones y se produce una división por cero. Valores normales de α: entre 0.95 y 0.9999, o calcular α para que T termine cerca de 10⁻³: α = (T_final/T₀)^(1/max_iter).
 
-AIMA la presenta como un punto medio entre hill climbing (nunca baja → se atasca) y la caminata aleatoria (encuentra el óptimo pero de forma ineficiente). **Analogía:** meter una pelota de ping-pong en la grieta más profunda de una superficie llena de baches: si solo la dejas rodar queda en un mínimo local; si **sacudes** la superficie, salta a otros. Hay que sacudir fuerte al inicio (T alta) y cada vez menos (T baja).
+### 4. La versión del libro (AIMA §4.1.2)
+
+El libro lo presenta como un punto medio entre **hill climbing** (nunca baja, así que se atasca) y la **caminata al azar** (encuentra el óptimo, pero tardando muchísimo).
+
+**Analogía:** quieres que una pelota de ping-pong caiga en el hoyo más profundo de una superficie llena de baches. Si solo la dejas rodar, se queda en el primer hoyo. Si **sacudes** la superficie, salta a otros hoyos. Hay que sacudir fuerte al principio (T alta) y cada vez más suave (T baja).
 
 ```
 function SIMULATED-ANNEALING(problem, schedule) returns a solution state
@@ -66,9 +84,9 @@ function SIMULATED-ANNEALING(problem, schedule) returns a solution state
         else current ← next only with probability e^(ΔE/T)
 ```
 
-⚠️ **Convención de signos.** En esta figura AIMA 4e cambia al punto de vista de *gradient descent* (minimizar un costo): ΔE = VALUE(current) − VALUE(next) > 0 significa que `next` es **mejor** → se acepta siempre; si ΔE < 0 (empeora), se acepta con probabilidad e^(ΔE/T) < 1. El código de clase usa Δ = f(nuevo) − f(actual) = −ΔE y e^(−Δ/T): **es la misma regla** — siempre aceptar mejoras; aceptar empeoramientos con probabilidad e^(−|empeoramiento|/T).
+⚠️ **Ojo con los signos.** En esta versión del libro VALUE es un **costo** (minimizar) y ΔE = VALUE(actual) − VALUE(siguiente). Si ΔE > 0, el siguiente **es mejor** → se acepta siempre. Si ΔE < 0 (empeora), se acepta con probabilidad e^(ΔE/T), que es menor que 1. El código de clase usa Δ = f(nuevo) − f(actual), que es lo mismo con el signo cambiado, y e^(−Δ/T). **Es exactamente la misma regla:** siempre aceptar mejoras; aceptar empeoramientos con probabilidad e^(−tamaño del empeoramiento / T).
 
-Propiedad clave: si el esquema baja T **lo suficientemente lento**, por la distribución de Boltzmann toda la probabilidad se concentra en los óptimos globales, que se encuentran con probabilidad → 1. Usos: diseño de circuitos VLSI desde los 80, *scheduling* de fábricas.
+Si T baja lo bastante despacio, toda la probabilidad termina concentrada en los mejores valles (por la distribución de Boltzmann), así que los encuentra con probabilidad cercana a 1. Usos reales: diseño de chips desde los años 80 y horarios de fábricas.
 
 ### Diagrama
 
@@ -89,28 +107,47 @@ flowchart TD
 
 ## Pseudocódigo intuitivo (para explicar en el examen)
 
-> **Idea (ES):** como hill climbing, pero a veces aceptas empeorar; al principio mucho (temperatura alta) y al final casi nunca.
+> **Idea (ES):** Es como hill climbing, pero a veces **acepta empeorar** para poder salir de un valle pequeño. Al principio está "caliente" y acepta empeorar casi siempre (explora mucho); con el tiempo se "enfría" y casi nunca acepta empeorar (solo mejora). El nombre viene de cómo se enfría el metal poco a poco para que quede fuerte.
 
-```text
-SIMULATED ANNEALING (minimizing f):
-1. current ← random solution; best ← current; T ← T0 (high).
-2. Repeat until T is (almost) 0 or the step budget ends:
-   a. next ← a random neighbor of current.
-   b. Δ = f(next) − f(current).
-   c. If Δ < 0 (better) → accept next.
-      Else accept next with probability e^(−Δ / T).
-   d. If current is better than best → best ← current.
-   e. Cool down: T ← α · T (e.g., α = 0.99).
-3. Return best.
-```
+**Antes de empezar: qué significa cada cosa**
 
-**Say it in the exam (EN):** "Simulated annealing escapes local optima by accepting worse moves with probability e^(−Δ/T). High temperature means exploration (almost a random walk); low temperature means exploitation (hill climbing). If T decreases slowly enough, it finds the global optimum with probability approaching 1."
+| Símbolo | Qué es (en simple) | English |
+|---|---|---|
+| f | el costo que queremos hacer pequeño | cost / objective |
+| Vecino | una solución con un cambio pequeño al azar | neighbor |
+| Δ (delta) | cuánto empeora: Δ = f(nuevo) − f(actual). Negativo = mejora | change in cost |
+| T | la **temperatura**: qué tan dispuesto está a aceptar empeorar | temperature |
+| T₀ | la temperatura inicial (alta) | initial temperature |
+| e^(−Δ/T) | la probabilidad de aceptar un empeoramiento: un número entre 0 y 1 (e ≈ 2.718) | acceptance probability |
+| α | cuánto se enfría en cada paso (p. ej. 0.99: T baja un 1 %) | cooling rate |
+
+**Pasos** — en inglés (como lo escribes en el examen) y debajo en español (para entender):
+
+1. Start with a random solution and a high temperature T = T₀; remember it as the best.
+   - *ES:* Empieza en cualquier solución, con temperatura alta.
+2. Pick a random neighbor and compute Δ = f(neighbor) − f(current).
+   - *ES:* Prueba un cambio pequeño al azar y mide cuánto empeora o mejora.
+3. If Δ < 0 (better) → accept it. Otherwise accept it with probability e^(−Δ/T).
+   - *ES:* Si mejora, acéptalo siempre. Si empeora, acéptalo a veces: tira un "dado" con probabilidad e^(−Δ/T). Con T alta esa probabilidad es grande; con T baja es casi 0.
+4. If the current solution is the best so far → remember it.
+   - *ES:* Guarda la mejor solución que hayas visto.
+5. Cool down: T ← α · T. Repeat from step 2 until T is almost 0. Return the best.
+   - *ES:* Baja la temperatura un poco y repite. Al final devuelve la mejor.
+
+**Ejemplo con números:** un cambio empeora el costo en Δ = 2. ¿Con qué probabilidad lo acepta?
+- T = 10 (caliente): e^(−2/10) = e^(−0.2) ≈ **0.82** → lo acepta 82 de cada 100 veces.
+- T = 1: e^(−2) ≈ **0.14**.
+- T = 0.1 (frío): e^(−20) ≈ **0.000000002** → casi nunca. Ya se comporta como hill climbing.
+
+**Say it in the exam (EN):** "Simulated annealing is local search that sometimes accepts worse moves so it can escape local optima. A better neighbor is always accepted; a worse one is accepted with probability e^(−Δ/T). At high temperature it explores almost like a random walk; as T decreases it behaves like hill climbing. If the temperature decreases slowly enough, it finds the global optimum with probability approaching 1."
+
+**Dilo así (ES):** "El recocido simulado es búsqueda local que a veces acepta empeorar para salir de óptimos locales. Si el vecino es mejor, lo acepta; si es peor, lo acepta con probabilidad e^(−Δ/T). Con temperatura alta explora casi al azar; al enfriarse se comporta como hill climbing. Si se enfría lo bastante lento, encuentra el óptimo global con probabilidad cercana a 1."
 
 ## Errores comunes y tips de examen
 
-- SA mantiene **una** solución (no es poblacional), pero es estocástico.
-- Con T → ∞ es caminata aleatoria; con T = 0 es hill climbing.
-- Guardar siempre la **mejor** solución vista: la actual puede empeorar.
+- El recocido simulado trabaja con **una sola** solución (no con una población), pero usa azar.
+- Con T muy alta es una caminata al azar; con T = 0 es hill climbing.
+- Guarda siempre la **mejor** solución vista: la actual puede empeorar en cualquier momento.
 
 ## Relacionado
 

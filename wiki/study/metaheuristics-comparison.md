@@ -3,11 +3,22 @@ title: Metaheuristics comparison
 type: study
 tags: [study, optimization, comparison, cheat-sheet]
 sources: [slides-04-optimization, paper-holland-1992-genetic-algorithms, paper-kennedy-eberhart-1995-pso, paper-dorigo-1996-ant-system, code-class-optimization]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Metaheuristics comparison (Comparación de metaheurísticas)
 
 > **Summary (EN):** Side-by-side cheat sheet for Unit 4: gradient descent, simulated annealing, genetic algorithms, PSO, ACO and ABC — inspiration, representation, key operators and parameters, how each explores and exploits, and the problems each suits.
+
+> **En palabras simples (ES):** Los seis algoritmos buscan lo mismo: el mejor valor de una función (por ejemplo, el punto más bajo de un valle). Cambian en **cuántas soluciones llevan a la vez**, **en qué se inspiran** y **cómo equilibran explorar** (buscar en zonas nuevas) **y explotar** (mejorar lo que ya es bueno). Esta hoja los compara lado a lado.
+
+### Cómo leer la tabla
+
+- **Nº de soluciones:** "1" = mejora una sola solución; "población / enjambre / colonia / colmena" = muchas a la vez.
+- **Representación:** cómo se guarda una solución (lista de números reales, bits, un recorrido).
+- **Necesita gradiente:** si hace falta calcular derivadas (solo el descenso de gradiente).
+- **Operador clave:** la regla principal de cada algoritmo. Símbolos: η = tamaño del paso; ∇f = gradiente; Δ = cuánto empeora; T = temperatura; v = velocidad; p, g = mejor lugar propio y del grupo; τ = feromona; η en ACO = cercanía 1/d; φ = número al azar.
+- **Exploración / explotación:** qué parte del algoritmo busca zonas nuevas y qué parte afina lo bueno.
+- **Garantía de óptimo global:** si asegura encontrar el mejor de todos (casi ninguno lo garantiza).
 
 ## Tabla maestra
 

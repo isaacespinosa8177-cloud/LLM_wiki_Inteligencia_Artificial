@@ -3,11 +3,13 @@ title: Course overview
 type: overview
 tags: [overview, course-map]
 sources: [slides-01-introduction-to-ai, slides-02-problem-solving, slides-03-intelligent-agents, slides-04-optimization, slides-xx-logic-programming-prolog]
-updated: 2026-10-01
+updated: 2026-10-07
 ---
 # Course overview (Mapa del curso de Inteligencia Artificial)
 
 > **Summary (EN):** The course is built around one idea — the rational agent — and four ways for an agent to decide what to do: search a state space for a plan (Unit 2), reason logically from a knowledge base (Unit 3), or optimize an objective with nature-inspired metaheuristics (Unit 4), after foundations and history (Unit 1). This page shows how the units connect and where to start reading.
+
+> **En palabras simples (ES):** Todo el curso gira alrededor de una idea: un **agente** (un programa o robot) que tiene que decidir qué hacer. La Unidad 1 explica qué es un agente y en qué tipo de "mundo" trabaja. Las otras tres son **tres formas de decidir**: buscar un camino en un mapa de posibilidades (Unidad 2), razonar con reglas lógicas (Unidad 3) o ir mejorando una solución poco a poco, imitando a la naturaleza (Unidad 4).
 
 ## Mapa
 
@@ -37,12 +39,14 @@ flowchart TB
 
 ## Hilos que cruzan las unidades
 
-1. **La representación del estado** ([State Representation](concepts/state-representation.md)) decide qué algoritmos sirven: atómica → búsqueda; factorizada → CSP y optimización; estructurada → lógica.
-2. **DFS está en todas partes:** DFS clásica, minimax, backtracking de CSP y la ejecución SLD de Prolog son variantes de búsqueda en profundidad con retroceso.
-3. **Heurística ≈ función de aptitud:** h(n) guía a A\*; f(x) guía a GA/PSO; η = 1/d guía a las hormigas.
-4. **Exploración vs. explotación:** desde greedy vs. A\* hasta mutación, inercia y evaporación.
-5. **"Algorithm = Logic + Control"** (Kowalski): la misma lógica de N-Reinas con distinto control cambia 77× el costo.
-6. **Simbólico vs. estadístico vs. bioinspirado** como corrientes históricas ([History of AI](concepts/history-of-ai.md)).
+Seis ideas que aparecen una y otra vez, y que sirven para conectar temas en el examen:
+
+1. **Cómo guardas el estado decide qué algoritmo usar** ([State Representation](concepts/state-representation.md)). Si el estado es solo un nombre ("Sibiu") → búsqueda. Si es una lista de valores ((x, y), un Sudoku) → CSP y optimización. Si son objetos con relaciones ("Ana es hija de Héctor") → lógica.
+2. **La búsqueda en profundidad (DFS) está en todas partes.** DFS normal, minimax, el backtracking de los CSP y la forma en que Prolog responde son, en el fondo, "seguir un camino hasta el fondo y retroceder si falla".
+3. **Heurística ≈ función de aptitud.** Las dos son un número que orienta la búsqueda: h(n) guía a A\*; f(x) guía a GA y PSO; la cercanía η = 1/d guía a las hormigas.
+4. **Explorar vs. explotar.** Probar cosas nuevas o mejorar lo que ya funciona: aparece desde greedy vs. A\* hasta la mutación (GA), la inercia (PSO) y la evaporación (ACO).
+5. **"Algoritmo = Lógica + Control"** (Kowalski). La misma lógica de N-reinas con un orden distinto de pasos cambia el costo 77 veces.
+6. **Tres caminos históricos:** IA con reglas (simbólica), IA que aprende de datos (estadística) e IA inspirada en la naturaleza ([History of AI](concepts/history-of-ai.md)).
 
 ## Estado de la wiki
 

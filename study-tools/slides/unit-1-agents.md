@@ -64,6 +64,8 @@ footer: "Unit 1 · Foundations & Agents · IA review"
 
 **Say it in the exam:** "Design performance measures according to what one actually wants in the environment, not according to how one thinks the agent should behave."
 
+> ES: la nota debe premiar el resultado que quieres (piso limpio), no la acción que imaginas (aspirar).
+
 ---
 
 ## PEAS — specify the task environment first
@@ -88,6 +90,8 @@ footer: "Unit 1 · Foundations & Agents · IA review"
 6. **Single-agent** vs. **multi-agent** (competitive / cooperative)
 
 Classical search assumes: *fully observable, deterministic, static, discrete, known*.
+
+> ES: siete preguntas sobre el mundo del agente: ¿ve todo?, ¿hay azar?, ¿las decisiones se conectan?, ¿cambia mientras piensa?, ¿se puede contar?, ¿hay otros jugadores?, ¿conoce las reglas?
 
 ---
 
@@ -116,6 +120,8 @@ Classical search assumes: *fully observable, deterministic, static, discrete, kn
 
 **Learning agent:** any of the above + learning element, critic, problem generator (e.g., a chess program that improves by self-play).
 
+> ES: cada tipo agrega algo al anterior: reacciona → recuerda → planifica → compara qué tan bueno es cada resultado.
+
 ---
 
 ## Is the vacuum agent rational? (AIMA §2.2)
@@ -124,6 +130,8 @@ Classical search assumes: *fully observable, deterministic, static, discrete, kn
 - Measure **+1 per clean square per step** → **rational** (no agent does better in expectation).
 - Add **−1 per move** → **not rational**: it keeps oscillating when everything is clean.
 - Fix: a **model-based** agent that remembers both squares are clean and does *NoOp*.
+
+> ES: si moverse no cuesta, la aspiradora reflejo es racional; si cuesta, pierde puntos yendo y viniendo cuando todo ya está limpio.
 
 ---
 
@@ -136,6 +144,8 @@ Classical search assumes: *fully observable, deterministic, static, discrete, kn
 | **Structured** | objects and relations | `parent(hector, ana).` in Prolog / FOL |
 
 More expressive → more reasoning possible → more expensive.
+
+> ES: atómico = solo un nombre; factorizado = lista de valores; estructurado = objetos y relaciones.
 
 ---
 
